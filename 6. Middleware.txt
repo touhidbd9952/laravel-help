@@ -1,0 +1,162 @@
+when we need to set a condition, suppose if user are not login then user can't enter user panel. so this 
+kind of condition we can set by middleware.
+
+/////Create Middleware
+
+1. open command prompt
+2. command (create middleware)
+   -------
+	php artisan make:middleware Admin   //Admin is a name of new middleware
+
+3. (register middleware) go to kernel.php: (loc: app->Http->kernel)
+
+	protected $routeMiddleware =[
+		'Admin'=>\app\Http\Middleware\Admin,
+	];
+
+4. (use middleware) go to App->Http->Middleware->Admin
+
+write below code admin middleware
+---------------------------------
+
+	public function handle($request, closoure $next)
+	{
+		if(Auth::check && Auth::user()->id != 1)
+		{
+			return redirect('login');
+		}
+		return $next($request);
+	}
+
+5. use middleware
+
+	Route::get('dashboard',[AdminController::class,'dashboard'])->name('dashboard')->middleware('Admin');
+
+	or 
+	
+	Route::group(['middleware'=>['Admin','auth']],function(){
+	
+		Route::get('dashboard',[AdminController::class,'dashboard'])->name('dashboard');	
+
+	});
+
+   //we can also use middleware in controller by constructor
+
+	public function _construct()
+	{
+		$this->middleware('admin');
+		//$this->middleware('auth');
+	}
+	
+	
+
+
+////////For E-commerce site
+1. create 2 middleware
+	a. AdminMiddleware
+	b. UserMiddleware
+
+	php artisan make:middleware AdminMiddleware
+	php artisan make:middleware UserMiddleware
+
+2. go to kernel.php and add middleware like below
+
+	protected $routeMiddleware=[
+	.
+	.
+
+	'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'user' => \App\Http\Middleware\UserMiddleware::class,
+];
+
+3. Go to AdminMiddleware: (loc: app\Http\Middleware)
+
+	add below code in handle(Request...)
+	-------------------------------------
+	if (Auth::check() && Auth::user()->role_id != 2) 
+	{
+            return $next($request);
+        }
+	else
+	{
+            return redirect()->route('login');
+        }
+
+4. Go to UserMiddleware: (loc: app\Http\Middleware)
+
+	add below code in handle(Request...)
+	-------------------------------------
+	//user banned and unbanned
+        if (Auth::check() && Auth::user()->isban) {
+            $banned = Auth::user()->isban == '1';
+            Auth::logout();
+            if ($banned == 1) {
+               $message = "Your Account Has Been Banned.Please Contact With Admin";
+            }
+            return redirect()->route('login')->with('status', $message)->withErrors([
+                'banned' => 'Your Account Has been Banned. Please Contact Administrator'
+            ]);
+        }
+
+
+        // user active inactive
+        if (Auth::check()) {
+             $expireTime =  Carbon::now()->addSeconds(30);
+             Cache::put('user-is-online' . Auth::user()->id, true, $expireTime);
+             User::where('id',Auth::user()->id)->update(['last_seen' => Carbon::now()]);
+        }
+
+
+        if (Auth::check() && Auth::user()->role_id == 2) {
+            return $next($request);
+        }else{
+            return redirect()->route('login');
+        }
+
+
+5. Go to RedirectifAuthenticated (App->Http->Middleware)
+
+	in handle(), write below code
+
+	$guards = empty($guards) ? [null] : $guards;
+
+        foreach ($guards as $guard) 
+        {
+            if (Auth::guard($guard)->check() && Auth::user()->role->id == 1 ) 
+	    {
+                return redirect()->route('admin.dashboard');
+    
+            }
+	    elseif (Auth::guard($guard)->check() && Auth::user()->role->id == 2) 
+            {
+                return redirect()->route('user.dashboard');
+            }
+	    else
+            {
+                return $next($request);
+            } 
+        }
+
+6. Go to Database->Factory->userfactory and create a record for admin
+   Go to Database->seeder for create recode
+	php artisan migrate:refresh --seed
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

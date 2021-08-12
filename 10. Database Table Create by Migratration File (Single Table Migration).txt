@@ -1,0 +1,23 @@
+/////Migration/////
+Table create with model:
+------------------------
+
+	php artisan make:model Slider -m
+
+
+Table create by migrate:
+-----------------------
+	php artisan migrate
+
+
+Single Table  Update by Migrate:
+---------------------------------
+
+php artisan migrate:refresh --path=database/migrations/2021_07_11_024542_create_sliders_table.php
+
+
+To Drop all table and recreate table again:
+-------------------------------------------
+php artisan migrate:refresh
+
+

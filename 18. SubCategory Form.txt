@@ -1,0 +1,94 @@
+///page///
+
+@if(session('success'))
+                               
+  <div class="alert alert-success alert-dismissible fade show">
+       <strong>Success!</strong> {{ session('success') }}
+       <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+  </div>
+@endif
+
+<form action="{{route('subcategory.store')}}"  method="POST" class="form-horizontal">
+
+                                    @csrf
+
+                                <div class="card-body">
+
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Cagetory</label>
+                                        <div class="col-sm-9">
+                                            <select name="catid" class="form-control @error('catid') is-invalid @enderror">
+                                                <option></option>
+                                                @foreach($categories as $cat)
+                                                <option value="{{$cat->id}}">{{ $cat->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('catid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Subcategory Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="subcategory_name" autocomplete="off" class="form-control @error('subcategory_name') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('subcategory_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+
+
+////Route////
+
+Route::get('subcategory/addform', 'SubcategoryController@add_form')->name('subcategory.add_form');
+Route::post('subcategory/store', 'SubcategoryController@store')->name('subcategory.store');
+
+////in controller
+
+ public function add_form()
+    {
+        $categories = Category::all();
+        return view('backend.subcategory.add_form', compact('categories'));
+    }
+
+ //Subcategory store
+    public function store(Request $request)
+    {
+        //validation
+        $request->validate([
+            'subcategory_name' => 'required|max:255',
+            'catid'=> 'required',
+            
+        ],
+        [
+            'subcategory_name.required' => 'Category Name Required',
+            'subcategory_name.max' => 'Maximum 255 chars',
+            'catid.required' => 'Cagegory Required'
+            
+        ]);
+
+        //Subcategory Insert
+        Subcategory::insert([
+            'subcategory_name'=> $request->subcategory_name,
+            'catid' => $request->catid,
+            'created_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Subcategory Saved');
+    }

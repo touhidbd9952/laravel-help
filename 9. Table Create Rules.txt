@@ -1,0 +1,22 @@
+$table->id()  //auto increment inter id
+
+$table->unsignedBigInteger('order_id')
+
+$table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+
+$table->integer('order_number');
+
+$table->string('name',191);
+
+$table->float('amount', 8,2);
+
+$table->string('return_date')->nullable();
+
+$table->string('status')->default('pending');
+
+$table->text('description');
+
+$table->string('status')->default(0);
+
+$table->timestamps();
+

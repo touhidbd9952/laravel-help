@@ -1,0 +1,18 @@
+1. create model:  php artisan make:model Subcategory -m
+
+
+2. in Subcategory model, do the below task
+
+
+class Subcategory extends Model
+{
+    
+    protected $fillable = [
+        'catid','subcategory_name'
+    ];
+
+    public function category()
+    {
+        return $this->hasone(Category::class,'id','catid');
+    }
+}

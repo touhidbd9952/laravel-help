@@ -1,0 +1,127 @@
+////page////
+
+ <h5 class="card-title">
+                                    Sub Subcategory Entry Form
+                                    <a href="{{route('subsubcategory.view')}}"  style="float: right;">View</a>
+                                </h5>
+
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form action="{{route('subsubcategory.store')}}"  method="POST" class="form-horizontal">
+
+                                    @csrf
+
+                                <div class="card-body">
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Cagetory</label>
+                                        <div class="col-sm-9">
+                                            <select name="catid" id="categoryList" class="form-control @error('catid') is-invalid @enderror" autocomplete="off">
+                                                <option></option>
+                                                @foreach($categories as $cat)
+                                                <option value="{{$cat->id}}">{{ $cat->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('catid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Subcategory</label>
+                                        <div class="col-sm-9">
+                                            <select name="subcatid" id="subcategoryList" autocomplete="off" class="form-control @error('subcatid') is-invalid @enderror" required disabled>
+                                                @foreach ($subcategories as $subcat)
+                                                    <option value="{{ $subcat->id }}" class='parent-{{ $subcat->catid }} subcategory'>{{ $subcat->subcategory_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            
+                                            @error('subcatid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="subsubcategory_name" class="form-control @error('subcategory_name') is-invalid @enderror"
+                                                placeholder="Sub Subcategory Name">
+                                            @error('subcategory_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $("#subcategoryList").val("");
+    $('#categoryList').on('change', function () {
+    $("#subcategoryList").attr('disabled', false); //enable subcategory select
+    $("#subcategoryList").val("");
+    $(".subcategory").attr('disabled', true); //disable all category option
+    $(".subcategory").hide(); //hide all subcategory option
+    $(".parent-" + $(this).val()).attr('disabled', false); //enable subcategory of selected category/parent
+    $(".parent-" + $(this).val()).show(); 
+});
+</script>   
+
+
+
+////Route////
+
+Route::get('subsubcategory/addform', 'SubsubcategoryController@add_form')->name('subsubcategory.add_form');
+Route::post('subsubcategory/store', 'SubsubcategoryController@store')->name('subsubcategory.store');
+
+////Controller
+
+public function add_form()
+    {
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+        return view('backend.subsubcategory.add_form', compact('categories','subcategories'));
+    }
+
+    //Insert Subsubcategory Form data
+    public function store(Request $request)
+    {
+        //dd($request->all());
+        $request->validate([
+            'catid' => 'required',
+            'subcatid' => 'required',
+            'subsubcategory_name' => 'required|max:255|min:2'
+        ]);
+
+        //data insert
+        Subsubcategory::insert([
+            'catid' => $request->catid,
+            'subcatid' => $request->subcatid,
+            'subsubcategory_name' => trim($request->subsubcategory_name),
+            'created_at' => Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Subsubcategory inserted successfully');
+    }

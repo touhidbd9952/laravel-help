@@ -1,0 +1,80 @@
+////page/////
+
+ <h5 class="card-title">
+                                    Category List
+
+                                    <a href="{{route('category.add_form')}}" class="btn btn-sm btn-success" style="float: right;">Add Niew</a>
+                                </h5>
+
+                                @if(session('success'))
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+
+                                <div class="table-responsive">
+                                    <table id="zero_config" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>SL</th>
+                                                <th>Name</th>
+                                                <th>Indexing</th>
+                                                <th>Created_at</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        @foreach($categories as $cat)
+                                            <tr>
+                                                <td>{{ $categories->firstitem()+$loop->index }}</td>
+                                                <td>{{ $cat->category_name }}</td>
+                                                <td>{{ $cat->categoryserial }}</td>
+                                                <td>{{ $cat->created_at }}</td>
+                                                <td>
+                                                    <a href="{{url('category/edit/'.$cat->id)}}" class="btn btn-success">Edit</a>
+                                                    <a href="{{url('category/delete/'.$cat->id)}}" class="btn btn-danger" onclick="return confirm('Are you shure want to delete')">Delete</a>
+
+                                                </td>
+                                                
+                                            </tr>
+                                        @endforeach
+                                            
+                                        </tbody>
+                                        
+                                    </table>
+
+                                    {{ $categories->links() }}
+
+                                </div>
+
+////Route////
+
+Route::get('category/view','CategoryController@view')->name('category.view');
+Route::get('category/delete/{id}', 'CategoryController@delete');
+
+////Controller////
+
+ //All Category View
+    public function view()
+    {
+        //get all data from categories table
+        $categories = Category::latest()->paginate(5);  
+        return view('backend.category.view', compact('categories'));
+    }
+
+//Category delete
+    public function delete($id)
+    {
+        $subcategories = Subcategory::where('catid',$id)->get(); 
+        if(count($subcategories)==0){
+            Category::find($id)->delete();
+            return Redirect()->back()->with('success','Category Deleted');
+        }
+        else{
+            return Redirect()->back()->with('error-msg','This category is exist in subcategory table');
+        }
+        
+
+    }

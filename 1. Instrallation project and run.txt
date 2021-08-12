@@ -1,0 +1,27 @@
+////Installation////
+
+What are the requirement to setup laravel project
+-------------------------------------------------
+1. Xampp Server
+2. Composer (https://getcomposer.org/)
+3. git (https://git-scm.com)
+
+
+New Project Create:
+---------------------
+1. open command prompt
+2. c:\xmpp\htdoc\
+	
+   New project create (--prefer-dist means "prefer distributable")
+   ----------------------------------------------------------------
+   cod:	  composer create-project --prefer-dist laravel/laravel yourProjectName
+
+
+Run Project:
+------------
+1. open command prompt
+2. c:/xmpp/htdocs/yourProject/Name
+
+  Run project
+  -----------
+  cod:	php artisan serve

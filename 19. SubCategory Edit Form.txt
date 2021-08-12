@@ -1,0 +1,99 @@
+////page////
+
+@if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form action="{{url('subcategory/update/'.$subcategories->id)}}"  method="POST" class="form-horizontal">
+
+                                    @csrf
+
+                                <div class="card-body">
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Cagetory</label>
+                                        <div class="col-sm-9">
+                                            <select name="catid" class="form-control @error('catid') is-invalid @enderror">
+                                                <option></option>
+                                                @foreach($categories as $cat)
+                                                @if($subcategories->getAttribute('catid') == $cat->getAttribute('id'))
+                                                <option value="{{$cat->id}}" selected="selected">{{ $cat->category_name }}</option>
+                                                @else
+                                                <option value="{{$cat->id}}">{{ $cat->category_name }}</option>
+                                                @endif
+                                                @endforeach
+                                            </select>
+                                            @error('catid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Subcategory Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="subcategory_name" value="{{$subcategories->subcategory_name}}" class="form-control @error('subcategory_name') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('subcategory_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+
+////Route////
+
+Route::get('subcategory/edit/{id}', 'SubcategoryController@edit');
+Route::post('subcategory/update/{id}', 'SubcategoryController@update');
+
+////in controller////
+
+ public function edit($id)
+ {
+     $subcategories = Subcategory::find($id);
+     $categories = Category::all();
+     return view('backend.subcategory.edit', compact('subcategories','categories'));
+
+ }
+
+//Subcategory update
+    public function update(Request $request, $id)
+    {
+        //validation
+        $request->validate([
+            'subcategory_name' => 'required|max:255',
+            'catid'=> 'required',
+            
+        ],
+        [
+            'subcategory_name.required' => 'Category Name Required',
+            'subcategory_name.max' => 'Maximum 255 chars',
+            'catid.required' => 'Cagegory Required'
+            
+        ]);
+
+        //Subcategory Insert
+        Subcategory::find($id)->update([
+            'subcategory_name'=> $request->subcategory_name,
+            'catid' => $request->catid,
+            'updated_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Subcategory Updated');
+    }

@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Subcategory;
+use App\Category;
+use App\Subsubcategory;
+use Carbon\Carbon;
+
+class SubcategoryController extends Controller
+{
+    //View all subcategories
+    public function view()
+    {
+        //Get data from subcategories table
+        $subcategories = Subcategory::latest()->paginate(5);
+        //print_r($subcategories);die;
+        return view('backend.subcategory.view', compact('subcategories'));
+
+    }
+
+    //Subcategory add form
+    public function add_form()
+    {
+        $categories = Category::all();
+        return view('backend.subcategory.add_form', compact('categories'));
+    }
+
+    //Subcategory store
+    public function store(Request $request)
+    {
+        //validation
+        $request->validate([
+            'subcategory_name' => 'required|max:255',
+            'catid'=> 'required',
+            
+        ],
+        [
+            'subcategory_name.required' => 'Category Name Required',
+            'subcategory_name.max' => 'Maximum 255 chars',
+            'catid.required' => 'Cagegory Required'
+            
+        ]);
+
+        //Subcategory Insert
+        Subcategory::insert([
+            'subcategory_name'=> $request->subcategory_name,
+            'catid' => $request->catid,
+            'created_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Subcategory Saved');
+    }
+
+    //Sucategory edit
+    public function edit($id)
+    {
+        $subcategories = Subcategory::find($id);
+        $categories = Category::all();
+        return view('backend.subcategory.edit', compact('subcategories','categories'));
+
+    }
+
+    //Subcategory update
+    public function update(Request $request, $id)
+    {
+        //validation
+        $request->validate([
+            'subcategory_name' => 'required|max:255',
+            'catid'=> 'required',
+            
+        ],
+        [
+            'subcategory_name.required' => 'Category Name Required',
+            'subcategory_name.max' => 'Maximum 255 chars',
+            'catid.required' => 'Cagegory Required'
+            
+        ]);
+
+        //Subcategory Insert
+        Subcategory::find($id)->update([
+            'subcategory_name'=> $request->subcategory_name,
+            'catid' => $request->catid,
+            'updated_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Subcategory Updated');
+    }
+
+    //Subcategory delete
+    public function delete($id)
+    {
+        $subsubcategories = Subsubcategory::where('subcatid',$id)->get(); 
+        if(count($subsubcategories)==0){
+            Subcategory::find($id)->delete();
+            return Redirect()->back()->with('success','Subcategory Deleted');
+        }
+        else{
+            return Redirect()->back()->with('error-msg','This subcategory is exist in subsubcategory table');
+        }
+        
+    }
+
+
+
+
+
+
+}

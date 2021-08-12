@@ -1,0 +1,101 @@
+////Product Thumbnail Image Edit Page////
+
+<h5 class="card-title">
+                                    Product Thumbnail Edit Form
+                                    
+                                    <a href="{{route('product.view')}}" class="btn btn-sm btn-success"  style="float: right;">Product View</a>
+                                    <a href="{{url('product/imageview/'.$product->id)}}" class="btn btn-sm btn-success"  style="float: right;">Product Image View</a>
+                                </h5>
+
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form name="myform" action="{{url('product/change_thumbnail/'.$product->id)}}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+
+                                    @csrf
+
+                                    <input type="hidden" name="old_thumnail" value="{{$product->product_thambnail}}">
+                                    
+
+                                <div class="card-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Thumbnail Image</label>
+                                        <div class="col-sm-9">
+                                            <input type="file"  name="product_thambnail" id="imgInp"  class="form-control @error('productimage') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                                <img src="{{asset($product->product_thambnail)}}" id="blah" style="width: 300px;height:auto;margin-top:10px;">
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Change Thumbnail</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+
+////Route////
+
+Route::get('productthumbnailimage/edit/{id}','ProductController@edit_productthumbnailimage');
+Route::post('product/change_thumbnail/{id}', 'ProductController@change_thumbnail');
+
+////Controller////
+
+public function edit_productthumbnailimage($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('backend.product.edit_productthumbnailimage',compact('product'));
+    }
+
+ public function change_thumbnail(Request $request,$id)
+    {
+        //dd($request->all());
+        $request->validate([
+            'product_thambnail' => 'required|mimes:jpeg,jpg,png,gif'
+        ]);
+
+        $old_thumnail = $request->old_thumnail;
+        $new_product_thambnail = $request->file('product_thambnail');
+        if(is_file($new_product_thambnail))
+        {
+            //delete old image
+            if(is_file($old_thumnail))
+            {
+                unlink($old_thumnail);
+            }
+            
+            //create new image
+            $image_name_gen = hexdec(uniqid()).'.'.$new_product_thambnail->getClientOriginalExtension();
+            Image::make($new_product_thambnail)->resize(600,600)->save('img/product/thambnail/'.$image_name_gen);
+
+            $new_product_thambnail_image_with_path = 'img/product/thambnail/'.$image_name_gen;
+            
+            //update product table by id
+            Product::findOrFail($id)->update([
+                'product_thambnail' => $new_product_thambnail_image_with_path,
+                'updated_at' => Carbon::now(),
+            ]);
+
+            //Toaster Message
+            $notification = array(
+                'message' => 'Product thambnail changed',
+                'alert-type' => 'success'
+            );
+
+            return Redirect()->back()->with($notification);
+
+        }

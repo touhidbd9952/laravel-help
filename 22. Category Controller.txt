@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Category;
+use App\Subcategory;
+use Carbon\Carbon;
+
+class CategoryController extends Controller
+{
+    //All Category View
+    public function view()
+    {
+        //get all data from categories table
+        $categories = Category::latest()->paginate(5);  
+        return view('backend.category.view', compact('categories'));
+    }
+
+    //Category add form
+    public function add_form()
+    {
+        return view('backend.category.add_form');
+    }
+    //Category Store
+    public function store(Request $request)
+    {
+       
+        //validation  
+        
+        $request->validate([
+            'category_name' => 'required|max:255',
+            
+        ],
+        [
+            'category_name.required' => 'Category Name Required',
+            'category_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        // echo $request->category_name;die;
+        Category::insert([
+            'category_name'=>$request->category_name,
+            'created_at'=>Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Saved Successfully');
+        
+    }
+
+    //Category edit
+    public function edit($id)
+    {
+        $categories = Category::find($id);
+        return view('backend.category.edit', compact('categories'));
+    }
+
+    //Category update
+    public function update(Request $request, $id)
+    {   
+        //validation  
+        $request->validate([
+            'category_name' => 'required|max:255',
+            
+        ],
+        [
+            'category_name.required' => 'Category Name Required',
+            'category_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        //dd($request->all());
+        Category::find($id)->update([
+            'category_name'=>$request->category_name,
+            'categoryserial' => $request->categoryserial, 
+            'updated_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Category updated');
+    }
+
+    //Category delete
+    public function delete($id)
+    {
+        $subcategories = Subcategory::where('catid',$id)->get(); 
+        if(count($subcategories)==0){
+            Category::find($id)->delete();
+            return Redirect()->back()->with('success','Category Deleted');
+        }
+        else{
+            return Redirect()->back()->with('error-msg','This category is exist in subcategory table');
+        }
+        
+
+    }
+}

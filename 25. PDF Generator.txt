@@ -1,0 +1,36 @@
+Step:1  download "dompdf"  (https://github.com/barryvdh/laravel-dompdf)
+
+Step:2  Package install
+
+	composer require barryvdh/laravel-dompdf
+
+Step:3 Add Service Provider in "config/app.php"
+
+	Barryvdh\DomPDF\ServiceProvider::class,
+
+Step:4 Add facade in "config/app.php" in "alises"
+
+	'PDF' => Barryvdh\DomPDF\Facade::class,
+
+
+How to use
+--------------
+
+1. Image show in PDF (if required)
+    
+	<img src="{{public_path($item->product->product_thumbnail)}}" height="60px;" with="60px;">
+
+2. in controller
+
+	$pdf = PDF::loadView('user.order.invoice', compact('order','orderItems'))
+	       ->setPaper('a4')
+	       ->setoptions([
+			'tempDir'=>public_path(),
+			'chroot' =>public_path(),
+		]);
+
+	return $pdf->download('invoice.pdf');
+
+
+
+	

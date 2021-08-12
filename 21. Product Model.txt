@@ -1,0 +1,29 @@
+1. create model: php artisan make:model Product -m
+
+class Product extends Model
+{
+    
+
+    protected $guarded = [];     //model:d
+
+    //Joining below table with product table
+    //Brand
+    public function brand()
+    {
+        return $this->hasone(Brand::class,'id','brandid');
+    }
+    //Category
+    public function category()
+    {
+        return $this->hasone(Category::class,'id','catid');
+    }
+    //Subcategory
+    public function subcategory()
+    {
+        return $this->hasone(Subcategory::class,'id','subcatid');
+    }
+    //Subsubcategory
+    public function subsubcategory()
+    {
+        return $this->hasone(Subsubcategory::class,'id','subsubcatid');
+    }

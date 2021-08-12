@@ -1,0 +1,407 @@
+////page////
+
+<h5 class="card-title">
+                            Product Edit Form
+
+                            <a href="{{ route('product.view') }}" style="float: right;">View</a>
+                        </h5>
+
+                        @if (session('success'))
+
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <strong>Success!</strong> {{ session('success') }}
+                                <button type="button" class="close" data-dismiss="alert"
+                                    style="float:right;">&times;</button>
+                            </div>
+                        @endif
+
+
+                        <form name="myform" action="{{ url('product/update/' . $products->id) }}" method="POST"
+                            enctype="multipart/form-data" class="form-horizontal">
+
+                            @csrf
+
+                            <input type="hidden" name="old_subcatid" value="{{$products->subcatid}}">
+                            <input type="hidden" name="old_subsubcatid" value="{{$products->subsubcatid}}">
+                            <input type="hidden" name="product_code_gen" value="{{$products->product_code}}">
+
+                            <div class="card-body">
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
+                                        Name</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="product_name" value="{{ $products->product_name }}"
+                                            autocomplete="off"
+                                            class="form-control @error('product_name') is-invalid @enderror"
+                                            placeholder="Product Name">
+                                        @error('product_name')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
+                                        Code</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="product_code" value="{{ $products->product_code }}"
+                                            autocomplete="off"
+                                            class="form-control @error('product_code') is-invalid @enderror"
+                                            placeholder="Product code" disabled
+                                        @error('product_code')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Model No.</label>
+                                    <div class="col-sm-9">
+                                        <input type="text"  name="modelnumber" value="{{ $products->modelnumber }}" autocomplete="off" class="form-control @error('modelnumber') is-invalid @enderror"
+                                            placeholder="Product model number">
+                                        @error('modelnumber')
+                                            <span class="text-danger"> {{$message}}  </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Brand</label>
+                                    <div class="col-sm-9">
+                                        <select name="brandid" autocomplete="off"
+                                            class="form-control @error('brandid') is-invalid @enderror">
+                                            <option></option>
+                                            @foreach ($brands as $b)
+                                                <option value="{{ $b->id }}" @if ($products->brandid == $b->id) {{ 'selected=selected' }} @endif>
+                                                    {{ $b->brand_name }} </option>
+                                            @endforeach
+                                        </select>
+                                        @error('brandid')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Category</label>
+                                    <div class="col-sm-9">
+                                        <select name="catid" id="categoryList" autocomplete="off"
+                                            class="form-control @error('catid') is-invalid @enderror" required>
+                                            <option></option>
+                                            @foreach ($categories as $cat)
+                                                <option value="{{ $cat->id }}" @if ($products->catid == $cat->id) {{ 'selected=selected' }} @endif>
+                                                    {{ $cat->category_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('catid')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Subcategory</label>
+                                    <div class="col-sm-9">
+                                        <select name="subcatid" id="subcategoryList" autocomplete="off"
+                                            class="form-control @error('subcatid') is-invalid @enderror" required disabled>
+                                            @foreach ($subcategories as $subcat)
+                                                <option value="{{ $subcat->id }}" @if ($products->subcatid == $subcat->id) {{ 'selected=selected' }} @endif
+                                                    class='parent-{{ $subcat->catid }} subcategory'>
+                                                    {{ $subcat->subcategory_name }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('subcatid')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Sub
+                                        Subcategory</label>
+                                    <div class="col-sm-9">
+                                        <select name="subsubcatid" id="subsubcategoryList" autocomplete="off"
+                                            class="form-control @error('subsubcatid') is-invalid @enderror" required
+                                            disabled>
+                                            @foreach ($subsubcategories as $subsubcat)
+                                                <option value="{{ $subsubcat->id }}"
+                                                    class='parent-{{ $subsubcat->subcatid }} subsubcategory'>
+                                                    {{ $subsubcat->subsubcategory_name }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('subsubcatid')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
+                                        Quantity</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" name="product_qty" value="{{ $products->product_qty }}"
+                                            autocomplete="off"
+                                            class="form-control @error('product_qty') is-invalid @enderror">
+                                        @error('product_qty')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
+                                        Size</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="product_size" value="{{ $products->product_size }}"
+                                            data-role="tagsinput" id="tagPlaces1" autocomplete="off"
+                                            class="form-control @error('product_size') is-invalid @enderror">
+                                        @error('product_size')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
+                                        Color</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="product_color" value="{{ $products->product_color }}"
+                                            data-role="tagsinput" id="tagPlaces2" autocomplete="off"
+                                            class="form-control @error('product_color') is-invalid @enderror">
+                                        @error('product_color')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Seling
+                                        Price</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" name="saling_price" value="{{ $products->saling_price }}"
+                                            autocomplete="off"
+                                            class="form-control @error('saling_price') is-invalid @enderror">
+                                        @error('saling_price')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Discount</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" name="discount_price" value="{{ $products->discount_price }}"
+                                            autocomplete="off"
+                                            class="form-control @error('discount_price') is-invalid @enderror">
+                                        @error('discount_price')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Short
+                                        Description</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="shortdescp" value="{{ $products->shortdescp }}"
+                                            autocomplete="off" class="form-control @error('shortdescp') is-invalid @enderror"
+                                            placeholder="Product Short Description">
+                                        @error('shortdescp')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Long
+                                        Description</label>
+                                    <div class="col-sm-9">
+                                        <textarea name="longdescp" autocomplete="off"
+                                            class="form-control @error('longdescp') is-invalid @enderror"
+                                            placeholder="Product Long Describtion">{{ $products->longdescp }}</textarea>
+                                        @error('longdescp')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
+                                        Tags</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="product_tags" value="{{ $products->product_tags }}"
+                                            data-role="tagsinput" id="tagPlaces4" autocomplete="off"
+                                            class="form-control @error('product_tags') is-invalid @enderror"
+                                            data-roll="tagsinput">
+                                        @error('product_tags')
+                                            <span class="text-danger"> {{ $message }} </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Hot
+                                        deals</label>
+                                    <div class="col-sm-9">
+                                        <input type="checkbox" name="hot_deals" value="1"
+                                            {{ $products->hot_deals == 1 ? 'checked' : '' }} autocomplete="off"
+                                            class="form-check-input">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Featured</label>
+                                    <div class="col-sm-9">
+                                        <input type="checkbox" name="featured" value="1"
+                                            {{ $products->featured == 1 ? 'checked' : '' }} autocomplete="off"
+                                            class="form-check-input">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Special
+                                        offer</label>
+                                    <div class="col-sm-9">
+                                        <input type="checkbox" name="special_offer" value="1"
+                                            {{ $products->special_offer == 1 ? 'checked' : '' }} autocomplete="off"
+                                            class="form-check-input">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Special　deals</label>
+                                    <div class="col-sm-9">
+                                        <input type="checkbox" name="special_deals" value="1"
+                                            {{ $products->special_deals == 1 ? 'checked' : '' }} autocomplete="off"
+                                            class="form-check-input">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="fname"
+                                        class="col-sm-3 text-end control-label col-form-label">Status</label>
+                                    <div class="col-sm-9">
+                                        <select name="status" class="form-control @error('status') is-invalid @enderror">
+                                            <option value="1" {{$products->status=='1'? 'selected':''}}>Active</option>
+                                            <option value="0" {{$products->status=='0'? 'selected':''}}>In-active</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                            <div class="border-top">
+                                <div class="card-body">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+////Route////
+
+Route::get('product/edit/{id}', 'ProductController@edit');
+Route::post('product/update/{id}', 'ProductController@update');
+
+////Controllere////
+
+public function edit($id)
+    {
+        //get product info by id
+        $products = Product::find($id);
+        $brands = Brand::all();
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+        $subsubcategories = Subsubcategory::all();
+        return view('backend.product.edit',compact('products','brands','categories','subcategories','subsubcategories'));
+    }
+
+    //product update
+    public function update(Request $request, $id)
+    {
+        //dd($request->all());
+        //validation  
+        $request->validate([
+            'product_name' => 'required|max:255',
+            'product_code_gen' => 'required',
+            'brandid' => 'required',
+            'catid' => 'required',
+            'product_qty' => 'required',
+            'saling_price' => 'required',
+            'shortdescp' => 'required|max:255',
+            'longdescp' => 'required',
+        ],
+        [
+            'product_name.required' => 'Product Name Required',
+            'product_name.max' => 'Maximum 255 chars',
+        ]);
+
+        //dd($request->all());
+        // echo $request->category_name;die;
+
+        $old_subcatid = $request->old_subcatid;
+        $old_subsubcatid = $request->old_subsubcatid;
+        $subcatid = $request->subcatid;
+        $subsubcatid = $request->subsubcatid;
+
+        //condition for subcategory
+        if($subcatid ==""){$subcatid = $old_subcatid;}
+        else if($old_subcatid == $subcatid){$subcatid = $old_subcatid;}
+        else{$subcatid = $request->subcatid;}
+
+        //condition for subsubcategory
+        if($subsubcatid ==""){$subsubcatid = $old_subsubcatid;}
+        else if($old_subsubcatid == $subsubcatid){$subsubcatid = $old_subsubcatid;}
+        else{$subsubcatid = $request->subsubcatid;}
+
+        $hot_deals = $request->hot_deals==1 ? 1:0;
+        $featured = $request->featured==1 ? 1:0;
+        $special_offer = $request->special_offer==1 ? 1:0;
+        $special_deals = $request->special_deals==1 ? 1:0;
+
+                
+        //Insert data and get id
+        Product::find($id)->update([
+            'product_name'=> trim($request->product_name),
+            'product_code'=> $request->product_code_gen,
+            'modelnumber'=> trim($request->modelnumber),
+            'brandid'=> $request->brandid,
+            'catid'=> $request->catid,
+            'subcatid'=> $subcatid,
+            'subsubcatid'=> $subsubcatid,
+            'product_qty'=> $request->product_qty,
+            'product_size'=> $request->product_size,
+            'product_color'=> $request->product_color,
+            'saling_price'=> $request->saling_price,
+            'discount_price'=> $request->discount_price,
+            'shortdescp'=> $request->shortdescp,
+            'longdescp'=> $request->longdescp,
+            'hot_deals'=> $hot_deals,
+            'featured'=> $featured,
+            'special_offer'=> $special_offer,
+            'special_deals'=> $special_deals,
+            'product_tags'=> $request->product_tags,
+            'product_slug'=> strtolower(str_replace(' ','-',$request->product_name)),
+            'status'=> $request->status,
+            'userid'=> Auth::user()->id,
+            'updated_at'=>Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Updated Successfully');
+    }

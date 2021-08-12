@@ -1,0 +1,50 @@
+1. in menu
+
+	<a href="{{ route('brands') }}" class="@yield('brands')">
+
+2. in view page
+
+	@extends('layouts.admin-master')
+
+	@section('brands') 
+		active
+	@endsection
+	
+	@section('content')
+
+		//html code
+
+
+	@endsection
+
+
+--------------------------------------------------------------
+
+Selected Submenu (Active)
+
+1. in menu->submenu
+
+	<a href="{{ route('brands') }}" class="@yield('brands')"
+		Brand
+		<ul>
+		   <a href="{{ route('brand.addForm') }}" class="@yield(brandForm)"> Add Brand </a>
+		</ul>
+	</a>
+
+2. in view page
+
+	@extends('layouts.admin-master')
+
+	@section('brands')
+		active show-sub
+	@endsection
+
+	@section('brandForm')
+		active
+	@endsection
+
+	@section('content')
+
+		//HTML Page code
+
+	@endsection

@@ -1,0 +1,82 @@
+////page////
+
+<h5 class="card-title">
+                                    Category Entry Form
+
+                                    <a href="{{route('category.view')}}"  style="float: right;">View</a>
+                                </h5>
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form action="{{route('category.store')}}"  method="POST" class="form-horizontal">
+
+                                    @csrf
+
+                                <div class="card-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="category_name" class="form-control @error('category_name') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('category_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+
+////Route////
+
+Route::get('category/addform', 'CategoryController@add_form')->name('category.add_form');
+Route::post('category/store', 'CategoryController@store')->name('category.store');
+
+////Controller////
+
+ //Category add form
+    public function add_form()
+    {
+        return view('backend.category.add_form');
+    }
+
+    //Category Store
+    public function store(Request $request)
+    {
+       
+        //validation  
+        
+        $request->validate([
+            'category_name' => 'required|max:255',
+            
+        ],
+        [
+            'category_name.required' => 'Category Name Required',
+            'category_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        // echo $request->category_name;die;
+        Category::insert([
+            'category_name'=>$request->category_name,
+            'created_at'=>Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Saved Successfully');
+        
+    }

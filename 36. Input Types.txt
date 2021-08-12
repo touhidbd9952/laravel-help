@@ -1,0 +1,30 @@
+Input types
+1.	Text
+<input type=”text” name=”username” id=”” value=”{{ old(‘username’) }}”>
+2.	Password
+<input type=”password” name=”” id=””>
+3.	Email
+<input type=”email” name=”” id=””>
+4.	Number
+<input type=”number” name=”” id=””>
+5.	Date
+<input type=”date” name=”” id=””>
+
+//wed, 30 December 2020
+<input type=”date” name=”coupon_validity” value=”{{ old(‘coupon_validity’) }}” min=”{{ Carbon\Carbon::now()->format(‘Y-m-d’) }}”>
+
+//edit form
+<input type=”date” name=”coupon_validity” value=”{{ old(‘coupon_validity’) }}” min=”{{ Carbon\Carbon::parse($item->coupon_validity)-> format(‘Y-m-d’) }}”>
+
+//valid/Invalid
+@if($item->coupon_validity >= Carbon\Carbon::now()->format(‘Y-m-d’))
+Valid
+@else
+Invalid
+@endif
+
+
+6.	Hidden
+<input type=”hidden” name=”” id=””>
+
+7.	

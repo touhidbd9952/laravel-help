@@ -1,0 +1,148 @@
+////Product Mutiple Image edit////
+
+<h5 class="card-title">
+                                    Product Image Edit Form
+
+                                    <a href="{{route('product.view')}}" class="btn btn-sm btn-success"  style="float: right;">Product View</a>
+                                    <a href="{{url('product/imageview/'.$productimagedata->productid)}}" class="btn btn-sm btn-success"  style="float: right;">Product Image View</a>
+                                </h5>
+
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form name="myform" action="{{url('productimage/update/'.$productimagedata->id)}}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+
+                                    @csrf
+
+                                    <input type="hidden" name="oldproductimage" value="{{$productimagedata->productimage}}">
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Image</label>
+                                        <div class="col-sm-9">
+                                            <input type="file"  name="productimage" id="imgInp"  class="form-control @error('productimage') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('productimage')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                    <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label"></label>
+                                        <div class="col-sm-9">
+                                            <img src="{{asset($productimagedata->productimage)}}" id="blah" style="height:300px;width:300px">
+                                            
+                                        </div>
+                                    </div>
+
+
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(e) {
+	
+    function readURL(input) 
+   {
+       //main
+       if (input.files && input.files[0]) 
+       {
+           var reader = new FileReader();
+   
+           reader.onload = function (e) 
+           {
+               $('#blah').attr('src', e.target.result);
+           }
+   
+           reader.readAsDataURL(input.files[0]);
+       }
+   }
+
+   $("#imgInp").change(function(){
+       readURL(this); //main
+   });
+   
+});
+</script> 
+
+
+
+////Route////
+Route::get('product/view','ProductController@view')->name('product.view');
+Route::get('product/imageview/{id}', 'ProductController@imageview');
+
+Route::get('productimage/edit/{id}','ProductController@edit_productimage');
+Route::post('productimage/update/{id}','ProductController@update_productimage');
+
+////Controller////
+
+public function edit_productimage($id)
+    {
+        //get data
+        $productimagedata = Productimage::find($id);
+        return view('backend.product.productimage_edit', compact('productimagedata'));
+    }
+
+    //update productimage multiple
+    public function update_productimage(Request $request,$id)
+    {
+        //validation  
+        $request->validate([
+            'productimage' => 'required|mimes:jpg,jpeg,png,gif',
+        ]);
+        //productimageinfo before modify
+        $pre_productimageinfo = Productimage::find($id);
+        $productid = $pre_productimageinfo->productid;
+        $oldproductimage = $pre_productimageinfo->productimage;
+
+
+        $productimage = $request->file('productimage');
+        if($productimage)
+        {
+                $name_gen = hexdec(uniqid()).'.'.$productimage->getClientOriginalExtension();
+                Image::make($productimage)->resize(200,200)->save('img/product/multipleimage/'.$name_gen);
+
+                //delete old image
+                if(is_file($oldproductimage))
+                {
+                    unlink($oldproductimage);
+                }
+                
+
+                //Insert image data 
+                Productimage::find($id)->update([
+                    'productid'=>$productid,
+                    'productimage'=>'img/product/multipleimage/'.$name_gen,
+                    'updated_at'=>Carbon::now(),
+                ]);
+        }
+
+        //Toaster Message
+        $notification = array(
+            'message' => 'Product image changed',
+            'alert-type' => 'success'
+        );
+
+        return Redirect()->back()->with($notification);
+        //return redirect('product/imageview/'.$productid);
+        //return $this->imageview($productid);
+
+    }

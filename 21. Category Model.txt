@@ -1,0 +1,8 @@
+1. create model: php artisan make:model Category -m
+
+
+class Category extends Model
+{
+    protected $guarded = [];
+}
+

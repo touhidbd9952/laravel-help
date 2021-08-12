@@ -1,0 +1,34 @@
+Mail Testing: sometime we need to test mail. how to test mail? we can send from laravel
+              website to SMTP.
+
+Step:1 Create Account in mail trap io
+       ------------------------------
+
+1. go to mailtrap.io
+2. signup -> sign up with your Email
+
+	Email: --------
+	Password: ------
+	ConfirmPass: -----
+
+3. login by your mailtrap email and password
+
+	a. Inboxes -> demo inbox -> smtp settings -> show credentials
+
+	copy:  	Host
+		Port
+		Username
+		Password
+
+
+Step2: Laravel Project
+       ---------------
+
+1. open .env file
+	a. App_URL = 
+	b. SMTP
+		Mail_Username= mailtrap smtp username
+		Mail_Password= mailtrap smtp password
+
+	c. Restart Server:
+		php artisan serve

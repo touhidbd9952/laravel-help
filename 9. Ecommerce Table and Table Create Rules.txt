@@ -1,0 +1,481 @@
+///Ecommerce Tables//////
+
+User
+1.	Id
+2.	Name
+3.	Role_id
+4.	Email
+5.	Email_verified_at
+6.	Password
+7.	Remember_token
+8.	Isban
+9.	lastSeen
+10.	provider_id
+11.	Created_at
+12.	Updated_at
+
+Product Images
+1.	Id
+2.	Product_id
+3.	Image
+4.	Status (Active/Inactive)
+5.	Created_at
+6.	Updated_at
+
+Shipping Table
+1.	Id
+2.	Order_id
+3.	Shipping_name
+4.	Shipping_email
+5.	Shipping_phone
+6.	Division_id
+7.	District_id
+8.	State_id
+9.	Post_code
+10.	Notes
+11.	Created_at
+12.	Updated_at
+
+Category
+1.	Id
+2.	Category_name_en
+3.	Category_name_bn
+4.	Category_slug_en
+5.	Category_slug_bn
+6.	Category_icon
+7.	Created_at
+8.	Updated_at
+
+
+Slider
+1.	Id
+2.	Image
+3.	Description_en
+4.	Description_bn
+5.	Status
+6.	Title_en
+7.	Title_bn
+8.	Created_at
+9.	Updated_at
+
+Order_item
+1.	Id
+2.	Order_id
+3.	Product_id
+4.	Color
+5.	Size
+6.	Qty
+7.	Price
+8.	Created_at
+9.	Updated_id
+
+Roles
+1.	Id
+2.	Name
+3.	Created_at
+4.	Updated_at
+
+Wish list
+1.	Id
+2.	User_id
+3.	Product_id
+4.	Created_at
+5.	Updated_at
+
+Permission
+1.	Id
+2.	Role_id
+3.	Permission
+4.	Created_at
+5.	Updated_at
+
+Password_resets
+1.	Id
+2.	Email
+3.	Token
+4.	Created_at
+
+Coupon
+1.	Id
+2.	Coupon_name
+3.	Coupon_discount
+4.	Coupon_validity
+5.	Status
+6.	Created_at
+7.	Updated_at
+
+Product review
+1.	Id
+2.	User_id
+3.	Product_id
+4.	Comment
+5.	Rating
+6.	Status
+7.	Created_at
+8.	Updated_at
+
+Subcategory
+1.	Id
+2.	Category_id
+3.	Subcategory_name_en
+4.	Subcategory_name_bn
+5.	Subcategory_slug_en
+6.	Subcategory_slug_bn
+7.	Created_at
+8.	Updated_at
+
+Ship_Division
+1.	Id
+2.	Division_name
+3.	Created_at
+4.	Updated_at
+	
+Brand
+1.	Id
+2.	Brand_name_en
+3.	Brand_name_bn
+4.	Brand_slug_en
+5.	Brand_slug_bn
+6.	Brand_image
+7.	Created_at
+8.	Updated_at
+
+Ship_District
+1.	Id
+2.	Division_id
+3.	District_name
+4.	Created_at
+5.	Updated_at
+	
+Subsubcategory
+1.	Id
+2.	Category_id
+3.	Subcategory_id
+4.	Subsubcategoy_name_en
+5.	Subsubcategoy_name_bn
+6.	Subsubcategory_slug_en
+7.	Subsubcategory_slug_bn
+8.	Created_at
+9.	Updated_at
+
+Ship_state
+1.	Id
+2.	Division_id
+3.	District_id
+4.	State_name
+5.	Created_at
+6.	Updated_at
+	
+Product
+1.	Id
+2.	Brand_id
+3.	Category_id
+4.	Subcategory_id
+5.	Subsubcategory_id
+6.	Product_name_en
+7.	Product_name_bn
+8.	Product_slug_en
+9.	Product_slug_bn
+10.	Product_code
+11.	Product_model
+12.	Product_qty
+13.	Product_tags_en
+14.	Product_tags_bn
+15.	Short_descp_en
+16.	Short_descp_bn
+17.	Long_descp_en
+18.	Long_descp_bn
+19.	Product_size_en
+20.	Product_size_bn
+21.	Product_color_en
+22.	Product_color_bn
+23.	Selling price
+24.	Discount
+25.	Product_thambnail
+26.	Hot_deals
+27.	Feaftured
+28.	Special_offer
+29.	Special_deals
+30.	Status(active/inactive)
+31.	Created_at
+32.	Updated_at
+
+Orders
+1.	Id
+2.	User_id
+3.	District_id
+4.	State_id
+5.	Shipping_name
+6.	Shipping_email
+7.	Shipping_phone
+8.	Post_code
+9.	Notes
+10.	Payment_type
+11.	Payment_methods
+12.	Transaction_id
+13.	Currency
+14.	Amount
+15.	Order_number
+16.	Invoice_no
+17.	Order_date
+18.	Order_month
+19.	Order_year
+20.	Confirm_date
+21.	Processing_date
+22.	Picked_date
+23.	Shipped_date
+24.	Delivered_date
+25.	Cancel_date
+26.	Return_date
+27.	Return_reason
+28.	Status
+29.	Created_at
+30.	Updated_at
+
+Orders
+1.	Id
+2.	Total_amount
+3.	Currency
+4.	Trans_id
+5.	Cus_name
+6.	Cus_email
+7.	Cus_add1
+8.	Cus_add2
+9.	Cus_city
+10.	Cus_state
+11.	Cus_postcode
+12.	Cus_country
+13.	Cus_phone
+14.	Cus_fax
+15.	Ship_name
+16.	Ship_add1
+17.	Ship_add2
+18.	Ship_city
+19.	Ship_state
+20.	Ship_postcode
+21.	Ship_phone
+22.	Ship_country
+23.	Shipping_mode
+24.	Product_category
+25.	Product_profile
+
+
+Schema::create('users', function (Blueprint $table) {
+     $table->increments('id');
+            $table->string('name');
+            $table->integer('role_id')->default(2);
+            $table->tinyInteger('isban')->default(0);
+            $table->string('last_seen')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('provider_id')->nullable();
+            $table->string('image')->nullable();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password')->nullable();
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+Schema::create('roles', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
+
+Schema::create('brands', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('brand_name_en');
+            $table->string('brand_name_bn');
+            $table->string('brand_slug_en');
+            $table->string('brand_slug_bn');
+            $table->string('brand_image');
+            $table->timestamps();
+        });
+
+Schema::create('categories', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('category_name_en');
+            $table->string('category_name_bn');
+            $table->string('category_slug_en');
+            $table->string('category_slug_bn');
+            $table->string('category_icon');
+            $table->timestamps();
+        });
+
+Schema::create('subcategories', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('category_id');
+            $table->string('subcategory_name_en');
+            $table->string('subcategory_name_bn');
+            $table->string('subcategory_slug_en');
+            $table->string('subcategory_slug_bn');
+            $table->timestamps();
+        });
+
+Schema::create('subsub_categories', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('category_id');
+            $table->integer('subcategory_id');
+            $table->string('subsubcategory_name_en');
+            $table->string('subsubcategory_name_bn');
+            $table->string('subsubcategory_slug_en');
+            $table->string('subsubcategory_slug_bn');
+            $table->timestamps();
+        });
+
+Schema::create('products', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('brand_id');
+            $table->integer('category_id');
+            $table->integer('subcategory_id');
+            $table->integer('subsubcategory_id');
+            $table->string('product_name_en');
+            $table->string('product_name_bn');
+            $table->string('product_slug_en');
+            $table->string('product_slug_bn');
+            $table->string('product_code');
+            $table->string('product_qty');
+            $table->string('product_tags_en');
+            $table->string('product_tags_bn');
+            $table->string('product_size_en')->nullable();
+            $table->string('product_size_bn')->nullable();
+            $table->string('product_color_en');
+            $table->string('product_color_bn');
+            $table->string('selling_price');
+            $table->string('discount_price')->nullable();
+            $table->text('short_descp_en');
+            $table->text('short_descp_bn');
+            $table->text('long_descp_en');
+            $table->text('long_descp_bn');
+            $table->string('product_thambnail');
+            $table->integer('hot_deals')->nullable();
+            $table->integer('featured')->nullable();
+            $table->integer('special_offer')->nullable();
+            $table->integer('special_deals')->nullable();
+            $table->integer('status')->default(1);
+            $table->timestamps();
+        });
+
+Schema::create('multi_imgs', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('product_id');
+            $table->string('photo_name');
+            $table->timestamps();
+        });
+
+Schema::create('sliders', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('image');
+            $table->string('title_en')->nullable();
+            $table->string('title_bn')->nullable();
+            $table->text('description_en')->nullable();
+            $table->text('description_bn')->nullable();
+            $table->integer('status')->default(1);
+            $table->timestamps();
+        });
+
+Schema::create('wishlists', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
+            $table->timestamps();
+        });
+
+Schema::create('coupons', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('coupon_name');
+            $table->integer('coupon_discount');
+            $table->string('coupon_validity');
+            $table->integer('status')->default(1);
+            $table->timestamps();
+        });
+
+Schema::create('ship_divisions', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('division_name');
+            $table->timestamps();
+        });
+
+Schema::create('ship_districts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('division_id');
+            $table->string('district_name');
+            $table->timestamps();
+        });
+
+Schema::create('ship_states', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('division_id');
+            $table->unsignedBigInteger('district_id');
+            $table->string('state_name');
+            $table->timestamps();
+        });
+
+Schema::create('orders', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('division_id');
+            $table->unsignedBigInteger('district_id');
+            $table->unsignedBigInteger('state_id');
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->integer('post_code');
+            $table->string('notes')->nullable();
+            $table->string('payment_type');
+            $table->string('payment_method')->nullable();
+            $table->string('transaction_id');
+            $table->string('currency');
+            $table->float('amount',8,2);
+            $table->string('order_number');
+            $table->string('invoice_no');
+            $table->string('order_date');
+            $table->string('order_month');
+            $table->string('order_year');
+            $table->string('confirmed_date')->nullable();
+            $table->string('processing_date')->nullable();
+            $table->string('picked_date')->nullable();
+            $table->string('shipped_date')->nullable();
+            $table->string('delivered_date')->nullable();
+            $table->string('cancel_date')->nullable();
+            $table->string('return_date')->nullable();
+            $table->string('return_reason')->nullable();
+            $table->string('status');
+            $table->timestamps();
+        });
+
+Schema::create('order_items', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('order_id');
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->unsignedBigInteger('product_id');
+            $table->string('color');
+            $table->string('size')->nullable();
+            $table->string('qty');
+            $table->float('price',8,2);
+            $table->timestamps();
+        });
+
+Schema::create('product_reviews', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
+            $table->text('comment');
+            $table->integer('rating');
+            $table->enum('status',['pending','approve'])->default('pending');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+Schema::create('permissions', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('role_id');
+            $table->longText('permission');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+
+

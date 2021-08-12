@@ -1,0 +1,51 @@
+Scheduler / Cron Jobs
+Step-1: Create Schedule
+        -------------------
+	php artisan make:command SendEmails
+
+Step-2: Open SendEmails.php (appConsoleCommands)
+        --------------------------------------------
+1.	protected $signature = 'sendmails';
+2.	protected $description = 'Send email to users';
+3.	public function handle()
+{
+  //write your schedule query here
+	$users = User::all();
+	foreach($users as $user)
+	{
+		Mail::raw(“your mail message”, 
+			function($message)use($user){
+		
+			$message->from(‘senderemail@gmail.com’);	
+			$message->to($user->email);
+			$message->subject(‘mail subject’);
+	
+		});
+	}
+}
+
+Step-3: Go to kernel.php (appconsolekernel.php)
+
+1.	protected  $commands = [ \App\Console\Commands\SendEmails::class,];
+2.	protected  function schedule(Schedule $schedule)
+{
+ 	$schedule->command(‘sendmails’)->everyMinute();
+}
+
+Run Schedule to check in local server
+-------------------------------------
+
+	Php artisan schedule:run
+
+Cpanel, Set Cron Jobs
+---------------------
+a.	Login to your cpanel
+b.	Click on “Cron Jobs”
+1.	Command setting: select a time when schedule will run
+2.	Command:
+a.	Copy general command (given at the top)and paste here
+b.	Change it: …/public_html/your project name/artisan schedule:run >>/dev/null 2>&1
+3.	Click on “Add New Cron Job” button to create.
+
+
+… now wait for schedule run…

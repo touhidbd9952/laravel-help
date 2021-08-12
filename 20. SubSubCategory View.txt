@@ -1,0 +1,79 @@
+////page////
+
+ <h5 class="card-title">
+                                    Subsubcategory List
+                                    
+                                    <a href="{{route('subsubcategory.add_form')}}" class="btn btn-sm btn-success" style="float: right;">Add Niew</a>
+                                </h5>
+
+                                @if(session('success'))
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+
+                                <div class="table-responsive">
+                                    <table id="zero_config" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>SL</th>
+                                                <th>Category</th>
+                                                <th>Subcategory</th>
+                                                <th>Name</th>
+                                                <th>Created_at</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        @foreach($subsubcategories as $sscat)
+                                            <tr>
+                                                <td>{{ $subsubcategories->firstitem()+$loop->index }}</td>
+                                                <td>{{ $sscat->category->category_name }}</td>
+                                                <td>{{ $sscat->subcategory->subcategory_name }}</td>
+                                                <td>{{ $sscat->subsubcategory_name }}</td>
+                                                <td>{{ Carbon\Carbon::parse($sscat->created_at)->diffForHumans() }}</td>
+                                                <td>
+                                                    <a href="{{url('subsubcategory/edit/'.$sscat->id)}}" class="btn btn-success">Edit</a>
+                                                    <a href="{{url('subsubcategory/delete/'.$sscat->id)}}" class="btn btn-danger" onclick="return confirm('Are you shure want to delete')">Delete</a>
+
+                                                </td>
+                                                
+                                            </tr>
+                                        @endforeach
+                                            
+                                        </tbody>
+                                        
+                                    </table>
+
+                                    {{ $subsubcategories->links() }}
+
+                                </div>
+
+////Route////
+
+Route::get('subsubcategory/view','SubsubcategoryController@view')->name('subsubcategory.view');
+Route::get('subsubcategory/delete/{id}', 'SubsubcategoryController@delete');
+
+
+////Controller////
+
+    public function view()
+    {
+        $subsubcategories = Subsubcategory::latest()->paginate(5);
+        return view('backend.subsubcategory.view',compact('subsubcategories'));
+    }
+
+    public function delete($id)
+    {
+        $products = Product::where('subsubcatid',$id)->get();
+        if(count($products)==0){
+            Subsubcategory::find($id)->delete();
+            return Redirect()->back()->with('success','Subsubcategory Deleted');
+        }
+        else{
+            return Redirect()->back()->with('error-msg','This susubcategory is exist in product table');
+        }
+        
+    }

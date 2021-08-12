@@ -1,0 +1,21 @@
+/////Create Database
+
+1. go to phpMyadmin
+2. create a database "laravelhelpdb"
+
+/////Connect Database with project
+
+go to .env file (loc: root)
+
+	DB_CONNECTION=mysql
+	DB_HOST=127.0.0.1
+	DB_PORT=3306
+	DB_DATABASE=laravelhelpdb
+	DB_USERNAME=root
+	DB_PASSWORD=
+
+/////Create Table by Migration
+
+1. go to command prompt
+2. command: php artisan migrate
+

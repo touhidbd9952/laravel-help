@@ -1,0 +1,10 @@
+Data-table setting rules
+
+Data-table has css and js file. Data-table js file
+need to place below way
+
+1. first "jquery.js" file
+2. popper.js
+3. bootstrap.js
+4. jquery-ui.js
+5. data-tables js file

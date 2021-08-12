@@ -1,0 +1,167 @@
+Loc: resources->views
+
+
+////syntex (view page)/////////////
+
+@extends('layouts.app')   //master page
+@section('title') home @endsection
+@section('content')
+
+	// HTML Code
+
+@endsection
+
+
+////syntex (master page)///////////
+
+<html>
+ <head>
+	<title>@yield('title')</title>
+       
+        <link rel="stylesheet" href="{{ asset('backend') }}/css/starlight.css">
+	
+ </head>
+
+ <body>
+
+	@yield('content')
+
+
+         <script src="{{ asset('backend') }}/lib/d3/d3.js"></script>
+ </body>
+</html>
+
+
+////Foreach Loop in Laravel
+
+@foreach($users as $d)
+ <tr>
+	<td>{{ $users->firstItem()+$loop->index }}</td>
+	<td>{{ $d->name }}</td>
+	<td>{{ $d->email }}</td>
+	<td>{{ Carbon\Carbon::parse($d->created_at)->diffforHumans() }}</td>
+ </tr>	
+@endforeach
+
+
+////if....else...
+
+@if()
+  //your html code
+@else
+  //html code
+@endif
+
+
+////if...
+
+@if(Route::has('login'))
+     //your html code
+@endif
+
+////How to write general php in laravel
+
+<?php 
+ 	$sl = 1;
+	$total = count($users);
+?>
+
+
+////How to Access Authentication
+
+<span> {{ Auth::user()->name }}
+<span> {{ Auth::user()->id }}
+
+
+/////@foreach() @forelse() @endforelse @endforeach
+
+@foreach($categories as $cat)
+	<div>{{ $cat->name }}</div>
+	
+	@php
+		$catwiseProduct = App\Models\Product::where('category_id',$cat->id)->orderBy('id','DESE')->get();
+	@endphp
+
+	@forelse($catwiseProduct as $product)
+
+		<span>{{ $product->name }}</span>
+		@empty
+			<span>No product found</span>
+
+	@endforelse
+@endforeach
+
+
+//////Form ///////
+
+<form action="{{ route('category.store') }}" method="POST">
+                
+                    @csrf
+                    
+                    <div class="form-group">
+                      <label class="form-control-label">Category Icon: <span class="tx-danger">*</span></label>
+                      <input class="form-control" type="text" name="category_icon" value="{{ old('brand_name_en') }}" placeholder="Enter category_icon">
+                      @error('category_icon')
+                          <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-control-label">Category Name English: <span class="tx-danger">*</span></label>
+                      <input class="form-control" type="text" name="category_name_en" value="{{ old('category_name_en') }}" placeholder="Enter brand_name_bn">
+                      @error('category_name_en')
+                      <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-control-label">Category Name Bangla: <span class="tx-danger">*</span></label>
+                        <input class="form-control" type="text" name="category_name_bn" value="{{ old('category_name_bn') }}" placeholder="Enter brand_name_bn">
+                        @error('category_name_bn')
+                        <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                      </div>
+
+                    <div class="form-layout-footer">
+                      <button type="submit" class="btn btn-info">Category Add</button>
+                    </div><!-- form-layout-footer -->
+                  </form>
+
+
+/////Route
+
+Route::post('category/store',[CategoryController::class,'categoryStore'])->name(category.store);
+
+/////Controller
+
+public function categoryStore(Request $request)
+	{
+
+        $request->validate([
+            'category_name_en' => 'required',
+            'category_name_bn' => 'required',
+            'category_icon' => 'required',
+       ]);
+
+       Category::insert([
+			 'category_name_en' => $request->category_name_en,
+			'category_name_bn' => $request->category_name_bn,
+			'category_slug_en' => strtolower(str_replace(' ','-',$request->category_name_en)),
+			'category_slug_bn' => str_replace(' ','-',$request->category_name_bn),
+			'category_icon' => $request->category_icon,
+			'created_at' => Carbon::now(),
+       ]);
+
+       $notification=array(
+        'message'=>'Catetory Added Success',
+        'alert-type'=>'success'
+    );
+	
+    return Redirect()->back()->with($notification);
+
+    }
+
+
+
+
+

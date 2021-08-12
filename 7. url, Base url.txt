@@ -1,0 +1,28 @@
+Base url :	{{ url('/') }}
+
+url:		<a href="{{ url('/') }}">Home</a>
+
+url:		<a href="{{ url('/about') }}">About</a>
+
+url2:		<a href="{{ URL::to('contact') }}">Contact</a>
+
+route:		<a href="{{ route('aboutus') }}">AboutUS</a>
+
+		<a href="{{ route('product.edit',['id'=>$pro->id]) }}">	Edit </a>
+
+CSS		<link href="{{ asset('css/app.css') }}" ref="stylesheet">
+		<link href="{{asset('/')}}/css/app.css" ref="stylesheet">
+
+JS		<script src="{{ asset('js/app.js') }}"></script>
+		<script src="{{ asset('/') }}/js/app.js"></script>
+
+img		<img src="{{ asset('img/image.jpg') }}" />
+		<img src="{{ asset('/') }}/img/image.jpg" />
+
+url:		<a href="{{ url('category/Edit/'.$cat->id) }}">Edit</a>
+
+From url:	<form action="{{ url('category/update/'.$cat->id) }}" method="POST">
+
+style:		style="background-image:url({{asset('fontend/assets/images/sliders/1.jpg')}})";
+
+				

@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Category;
+use App\Product;
+use App\Subcategory;
+use App\Subsubcategory;
+use Carbon\Carbon;
+
+class SubsubcategoryController extends Controller
+{
+    //Open Sub Subcategory Add Form
+    public function add_form()
+    {
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+        return view('backend.subsubcategory.add_form', compact('categories','subcategories'));
+    }
+
+    //Insert Subsubcategory Form data
+    public function store(Request $request)
+    {
+        //dd($request->all());
+        $request->validate([
+            'catid' => 'required',
+            'subcatid' => 'required',
+            'subsubcategory_name' => 'required|max:255|min:2'
+        ]);
+
+        //data insert
+        Subsubcategory::insert([
+            'catid' => $request->catid,
+            'subcatid' => $request->subcatid,
+            'subsubcategory_name' => trim($request->subsubcategory_name),
+            'created_at' => Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Subsubcategory inserted successfully');
+    }
+
+    //view subsubcategory info
+    public function view()
+    {
+        $subsubcategories = Subsubcategory::latest()->paginate(5);
+        return view('backend.subsubcategory.view',compact('subsubcategories'));
+    }
+
+    //show edit form with data by id
+    public function edit($id)
+    {
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+        $subsubcategories = Subsubcategory::findOrFail($id);
+        return view('backend.subsubcategory.edit',compact('categories','subcategories','subsubcategories'));
+    }
+
+    //update data by id
+    public function update(Request $request, $id)
+    {
+        //dd($request->all());
+        $request->validate([
+            'catid' => 'required',
+            'subsubcategory_name' => 'required|max:255|min:2'
+        ]);
+
+        //set subcategory id
+        $subcatid=$request->old_subcatid;
+        if($request->subcatid !="" && $request->old_subcatid == $request->subcatid)
+        {
+            $subcatid = $request->subcatid;
+        }
+        
+        //data insert
+        Subsubcategory::findOrFail($id)->update([
+            'catid' => $request->catid,
+            'subcatid' => $subcatid,
+            'subsubcategory_name' => trim($request->subsubcategory_name),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Subsubcategory updated successfully');
+    }
+
+    //Subsubcategory delete
+    public function delete($id)
+    {
+        $products = Product::where('subsubcatid',$id)->get();
+        if(count($products)==0){
+            Subsubcategory::find($id)->delete();
+            return Redirect()->back()->with('success','Subsubcategory Deleted');
+        }
+        else{
+            return Redirect()->back()->with('error-msg','This susubcategory is exist in product table');
+        }
+        
+    }
+
+
+
+
+
+
+
+}

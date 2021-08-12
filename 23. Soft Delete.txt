@@ -1,0 +1,36 @@
+step:1   (incontroller)
+
+public function viewdata()
+{
+    $categories = Category::latest()->paginate(10);
+    $trashcat = Category::onlyTrashed()->latest()->paginate(10);
+    
+    return view('admin.category.index', compact('categories','trashcat'));
+}
+
+
+step:2  (page)
+
+1. show data in view page from $categories
+2. show data in view page from $trashcat
+
+
+step:3  (controller)
+
+public function softDelete($id)
+{
+    $delete = Category::find($id)->delete();
+    return Redirect()->back()->with('success', 'category deleted');
+}
+
+public function RestoreDeleteData($id)
+{
+    Category::withTrashed()->find($id)->restore();
+    return Redirect()->back()->with('success','Category restored');
+}
+
+public function parmanentDeleteData($id)
+{
+    Category::onlyTrashed()->find($id)->forceDelete();
+    return Redirect()->back()->with('success', 'Category parmanently deleted');
+}

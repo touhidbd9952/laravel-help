@@ -1,0 +1,46 @@
+Controller:
+-----------
+1. LoginController :
+   ----------------- 
+	app->Http->Controllers->Auth->LoginControllere.php
+
+2. RegisterController: 
+   -------------------
+	app->Http->Controllers->Auth->RegisterController.php
+
+3. ForgetPasswordController: 
+   -------------------------
+	app->Http->Controllers->Auth->ForgetPasswordController.php
+
+Page
+----
+1. login page: 
+   -----------
+   	Resources ->views->auth->login.blade.php
+
+2. Register page: 
+   --------------
+	Resources ->views->auth->register.blade.php
+
+3. Forget Password: 
+   ----------------
+	Resources ->views->auth->password->email.blade.php
+
+Route
+-----
+Auth::routes()
+
+// Authentication Routes...
+$this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
+$this->post('login', 'Auth\LoginController@login');
+$this->post('logout', 'Auth\LoginController@logout')->name('logout');
+
+// Registration Routes...
+$this->get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+$this->post('register', 'Auth\RegisterController@register');
+
+// Password Reset Routes...
+$this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
+$this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+$this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
+$this->post('password/reset', 'Auth\ResetPasswordController@reset');

@@ -1,0 +1,20 @@
+1. way
+
+@guest
+
+   //html code that can see every body
+@else
+   //Html code that only can see login user
+@endguest
+
+
+2. another way
+
+@auth
+
+     //Html code that only can see login user
+@else
+     
+     //html code that can see every body
+@endauth
+

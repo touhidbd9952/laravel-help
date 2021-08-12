@@ -1,0 +1,93 @@
+////page/////
+
+<h5 class="card-title">
+                                    Category Edit Form
+
+                                    <a href="{{route('category.view')}}"  style="float: right;">View</a>
+                                </h5>
+
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form action="{{url('category/update/'.$categories->id)}}"  method="POST" class="form-horizontal">
+
+                                    @csrf
+
+                                <div class="card-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="category_name" value="{{$categories->category_name}}" class="form-control @error('category_name') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('category_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Category Serial</label>
+                                        <div class="col-sm-9">
+                                            <input type="number"  name="categoryserial" value="{{$categories->categoryserial}}" class="form-control @error('categoryserial') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('categoryserial')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+
+/////Route////
+
+Route::get('category/edit/{id}', 'CategoryController@edit');
+Route::post('category/update/{id}', 'CategoryController@update');
+
+/////Controller/////
+
+//Category edit
+    public function edit($id)
+    {
+        $categories = Category::find($id);
+        return view('backend.category.edit', compact('categories'));
+    }
+
+    //Category update
+    public function update(Request $request, $id)
+    {   
+        //validation  
+        $request->validate([
+            'category_name' => 'required|max:255',
+            
+        ],
+        [
+            'category_name.required' => 'Category Name Required',
+            'category_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        //dd($request->all());
+        Category::find($id)->update([
+            'category_name'=>$request->category_name,
+            'categoryserial' => $request->categoryserial, 
+            'updated_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Category updated');
+    }

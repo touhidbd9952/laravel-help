@@ -1,0 +1,33 @@
+Controller
+----------
+	app -> Http -> controller
+
+Migrations
+----------
+	database -> migration
+
+Public
+------
+	(root)
+        1. css  2. js	3. img
+
+Views
+-----
+	resources -> views
+
+routes
+------
+	routes -> web.php
+
+.env
+----
+	root
+	(for database connection, mail(smtp)config)
+
+Middleware
+----------
+	app -> Http -> Middleware
+
+Model
+-----
+	app -> model

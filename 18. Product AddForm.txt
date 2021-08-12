@@ -1,0 +1,410 @@
+////page////
+
+<h5 class="card-title">
+                                    Product Entry Form
+                                    
+                                    <a href="{{route('product.view')}}"  style="float: right;">View</a>
+                                </h5>
+
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form name="myform" action="{{route('product.store')}}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+
+                                    @csrf
+
+                                    <input type="hidden" name="product_code_gen" value="{{$productcode}}">
+
+                                <div class="card-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="product_name" autocomplete="off" class="form-control @error('product_name') is-invalid @enderror"
+                                                placeholder="Product Name">
+                                            @error('product_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Code</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="product_code" value="{{$productcode}}" autocomplete="off" class="form-control @error('product_code') is-invalid @enderror"
+                                                placeholder="Product code" disabled>
+                                            @error('product_code')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Model No.</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="modelnumber" autocomplete="off" class="form-control @error('modelnumber') is-invalid @enderror"
+                                                placeholder="Product model number">
+                                            @error('modelnumber')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Brand</label>
+                                        <div class="col-sm-9">
+                                            <select name="brandid" autocomplete="off" class="form-control @error('brandid') is-invalid @enderror">
+                                                <option></option>
+                                                @foreach($brands as $b)
+                                                <option value="{{$b->id}}">{{ $b->brand_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('brandid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Category</label>
+                                        <div class="col-sm-9">
+                                            <select name="catid" id="categoryList" autocomplete="off" class="form-control @error('catid') is-invalid @enderror" required>
+                                                <option></option>
+                                                @foreach($categories as $cat)
+                                                <option value="{{$cat->id}}">{{ $cat->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('catid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Subcategory</label>
+                                        <div class="col-sm-9">
+                                            <select name="subcatid" id="subcategoryList" autocomplete="off" class="form-control @error('subcatid') is-invalid @enderror" required disabled>
+                                                @foreach ($subcategories as $subcat)
+                                                    <option value="{{ $subcat->id }}" class='parent-{{ $subcat->catid }} subcategory'>{{ $subcat->subcategory_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            
+                                            @error('subcatid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Sub Subcategory</label>
+                                        <div class="col-sm-9">
+                                            <select name="subsubcatid" id="subsubcategoryList" autocomplete="off" class="form-control @error('subsubcatid') is-invalid @enderror" required disabled>
+                                                @foreach ($subsubcategories as $subsubcat)
+                                                    <option value="{{ $subsubcat->id }}" class='parent-{{ $subsubcat->subcatid }} subsubcategory'>{{ $subsubcat->subsubcategory_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            
+                                            @error('subsubcatid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Quantity</label>
+                                        <div class="col-sm-9">
+                                            <input type="number"  name="product_qty" autocomplete="off" class="form-control @error('product_qty') is-invalid @enderror">
+                                            @error('product_qty')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Size</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="product_size" data-role="tagsinput" id="tagPlaces1" autocomplete="off" class="form-control @error('product_size') is-invalid @enderror">
+                                            @error('product_size')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Color</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="product_color" data-role="tagsinput" id="tagPlaces2" autocomplete="off" class="form-control @error('product_color') is-invalid @enderror">
+                                            @error('product_color')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Seling Price</label>
+                                        <div class="col-sm-9">
+                                            <input type="number"  name="saling_price" autocomplete="off" class="form-control @error('saling_price') is-invalid @enderror">
+                                            @error('saling_price')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Discount</label>
+                                        <div class="col-sm-9">
+                                            <input type="number"  name="discount_price" autocomplete="off" class="form-control @error('discount_price') is-invalid @enderror">
+                                            @error('discount_price')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Short Description</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="shortdescp" autocomplete="off" class="form-control @error('shortdescp') is-invalid @enderror"
+                                                placeholder="Product Short Description">
+                                            @error('shortdescp')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Long Description</label>
+                                        <div class="col-sm-9">
+                                            <textarea  name="longdescp" autocomplete="off" class="form-control @error('longdescp') is-invalid @enderror"
+                                                placeholder="Product Long Describtion"></textarea>    
+                                            @error('longdescp')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Tags</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="product_tags" data-role="tagsinput" id="tagPlaces4" autocomplete="off" class="form-control @error('product_tags') is-invalid @enderror" data-roll="tagsinput">
+                                            @error('product_tags')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Hot deals</label>
+                                        <div class="col-sm-9">
+                                            <input type="checkbox"  name="hot_deals" value="1" autocomplete="off" class="form-check-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Featured</label>
+                                        <div class="col-sm-9">
+                                            <input type="checkbox"  name="featured" value="1" autocomplete="off" class="form-check-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Special offer</label>
+                                        <div class="col-sm-9">
+                                            <input type="checkbox"  name="special_offer" value="1" autocomplete="off" class="form-check-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Special　deals</label>
+                                        <div class="col-sm-9">
+                                            <input type="checkbox"  name="special_deals" value="1" autocomplete="off" class="form-check-input">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Thumbnail Image</label>
+                                        <div class="col-sm-9">
+                                            <input type="file"  name="product_thambnail" id="imgInp"  class="form-control @error('productimage') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                                <img src="" id="blah" style="width: 300px;height:auto;margin-top:10px;">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Product Image</label>
+                                        <div class="col-sm-9">
+                                            <input type="file"  name="productimage[]" id="productmultipleimage"  class="form-control @error('productimage') is-invalid @enderror"
+                                                placeholder="Name Here" multiple>
+                                            <div id="myImg"></div>
+                                        </div> 
+                                    </div>
+
+
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+
+
+////Route////
+
+Route::get('product/addform', 'ProductController@add_form')->name('product.add_form');
+Route::post('product/store', 'ProductController@store')->name('product.store');
+
+
+////Controller////
+
+public function add_form()
+    {
+        //product code generate
+        $products = Product::all();
+        $productcode = '';
+        $start = 10000;
+        if(count($products)==0)
+        {
+            $productcode = $start + 1;
+        }
+        else
+        {
+            $productcode = count($products) + $start + 1;
+        }
+
+        //get all other data
+        $brands = Brand::all();
+        $categories = Category::all();  
+        $subcategories = Subcategory::all();
+        $subsubcategories = Subsubcategory::all();
+        return view('backend.product.add_form', compact('productcode','brands','categories','subcategories','subsubcategories'));
+    }
+
+    //Product store
+    public function store(Request $request)
+    {
+        //dd($request->all());
+        //validation  
+        $request->validate([
+            'product_name' => 'required|max:255',
+            'product_code_gen' => 'required',
+            'brandid' => 'required',
+            'catid' => 'required',
+            'subcatid' => 'required',
+            'subsubcatid' => 'required',
+            'product_qty' => 'required',
+            'saling_price' => 'required',
+            'product_thambnail' => 'required|image|mimes:jpeg,png,jpg',
+            'shortdescp' => 'required|max:255',
+            'longdescp' => 'required',
+        ],
+        [
+            'product_name.required' => 'Product Name Required',
+            'product_name.max' => 'Maximum 255 chars',
+        ]);
+
+        //dd($request->all());
+        
+        $product_thambnail = $request->file('product_thambnail'); 
+        $product_thambnail_name_gen = hexdec(uniqid()).'.'.$product_thambnail->getClientOriginalExtension();
+        Image::make($product_thambnail)->resize(600,600)->save('img/product/thambnail/'.$product_thambnail_name_gen);
+
+        $product_thambnail_image = 'img/product/thambnail/'.$product_thambnail_name_gen;
+
+
+        $hot_deals = $request->hot_deals==1 ? 1:0;
+        $featured = $request->featured==1 ? 1:0;
+        $special_offer = $request->special_offer==1 ? 1:0;
+        $special_deals = $request->special_deals==1 ? 1:0;
+
+        //Insert data and get id
+        $id = Product::insertGetId([
+            'product_name'=> trim($request->product_name),
+            'product_code'=> $request->product_code_gen,
+            'modelnumber'=> trim($request->modelnumber),
+            'brandid'=> $request->brandid,
+            'catid'=> $request->catid,
+            'subcatid'=> $request->subcatid,
+            'subsubcatid'=> $request->subsubcatid,
+            'product_qty'=> $request->product_qty,
+            'product_size'=> $request->product_size,
+            'product_color'=> $request->product_color,
+            'saling_price'=> $request->saling_price,
+            'discount_price'=> $request->discount_price,
+            'shortdescp'=> $request->shortdescp,
+            'longdescp'=> $request->longdescp,
+            'hot_deals'=> $hot_deals,
+            'featured'=> $featured,
+            'special_offer'=> $special_offer,
+            'special_deals'=> $special_deals,
+            'product_tags'=> $request->product_tags,
+            'product_slug'=> strtolower(str_replace(' ','-',$request->product_name)),
+            'product_thambnail'=> $product_thambnail_image,
+            'userid'=> Auth::user()->id,
+            'created_at'=>Carbon::now(),
+        ]); 
+
+        
+
+        //Product Multiple Image Upload with product id
+        $productimage = $request->file('productimage');
+        if($productimage)
+        {
+            foreach($productimage as $pimage)
+            {
+                if($pimage->getClientOriginalExtension() == 'png' || $pimage->getClientOriginalExtension()=='jpg'||$pimage->getClientOriginalExtension()=='jpeg')
+                {
+                    $name_gen = hexdec(uniqid()).'.'.$pimage->getClientOriginalExtension();
+                    Image::make($pimage)->resize(200,200)->save('img/product/multipleimage/'.$name_gen);
+
+                    //Insert image data 
+                    Productimage::insert([
+                        'productid'=>$id,
+                        'productimage'=>'img/product/multipleimage/'.$name_gen,
+                        'created_at'=>Carbon::now(),
+                    ]);
+                }
+
+            }
+        }
+
+        return Redirect()->back()->with('success','Saved Successfully');
+    }

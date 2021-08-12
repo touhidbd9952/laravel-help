@@ -1,0 +1,85 @@
+Step:1 Create mailer class
+
+	php artisan make:mail orderMail       //it create a Mail model and mailableclass
+
+
+Step:2 go to App->Mail(Folder) 
+
+	class orderMail extends Mailable
+	{
+
+	   public function _constructor()
+	   {
+
+
+	   }
+
+	   public function build()
+           {
+		return $this->view('------');
+           }
+	}
+
+
+Step:3 by using Mail model we need to create a link with mailable class
+
+	in controller
+        -------------
+
+        //what type of data are pass with mail
+
+	$data = array();
+	$data['invoice_number'] = $invoice;
+	$data['totalamount'] = $totalamount;
+
+       //to which mail address, mail need to send
+       //by which mailable class
+
+	Mail::to($request->email)->send(new orderMail($data));
+
+
+Step:4 In orderMail (class)
+
+	public $data;
+
+	public function _construct($data)
+	{
+	   $this->data = $data;
+	}
+
+	public function build()
+	{
+           //send data
+	   return $this->from('senderemail@gmail.com')
+		       ->view('mail.order_mail', compact($this->data))
+		       ->subject('Email from online shop');
+	}
+
+Step:5 in order_mail.blade.php
+
+	------
+	---- --- ---
+	Invoice No: {{ $data['invoice_number'] }}
+	Invoice Amount: {{ $data['totalamount'] }}
+
+	---- --- 
+	-- -- ---
+
+
+
+/////////////// Mail Send General way ////////////////////////////////////////
+
+	$users = User::all();
+
+	foreach($users as $user)
+	{
+		Mail::raw(“your mail message”, 
+			function($message)use($user){
+		
+			$message->from(‘senderemail@gmail.com’);	
+			$message->to($user->email);
+			$message->subject(‘mail subject’);
+	
+		});
+	}
+

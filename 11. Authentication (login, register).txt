@@ -1,0 +1,68 @@
+In laravel by default have login and register form. to use it do the below task
+
+1. Install node js (https://nodejs.org/en/)
+
+2. Laravel/ui package install:
+	
+	a. open command prompt
+	b. command:  
+		composer require laravel/ui
+		
+		php artisan ui bootstrap --auth
+		php artisan ui vue --auth
+
+		npm install && npm run dev
+
+		php artisan migrate  //if need to add role_id in user table, then add it first before migrate
+
+3. Restart Server: php artisan serve
+
+///After install Authentication below things we will get
+1. Login form
+2. Register form
+3. User.php (user model loc: app->Http->model)
+
+(if need help:  https://laravel.com/docs/7.x/frontend)
+
+
+////users table////
+	    $table->id();
+            $table->string('name');
+            $table->integer('role_id')->default(2);
+            $table->tinyInteger('isban')->default(0);
+            $table->string('last_seen')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('provider_id')->nullable();
+            $table->string('image')->nullable();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password')->nullable();
+            $table->rememberToken();
+            $table->timestamps();
+
+////roles table////
+
+	    $table->id();
+            $table->string('name');
+            $table->timestamps();
+
+
+////Role model////
+
+protected $fillable = [
+        'name',
+    ];
+
+    public function user(){
+        return $this->hasMany('App\Models\User');
+    }
+
+    public function permission(){
+        return $this->hasOne('App\Models\Permission');
+    }
+
+////User model////
+
+public function role(){
+        return $this->belongsTo('App\Models\Role');
+    }

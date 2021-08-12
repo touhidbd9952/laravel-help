@@ -1,0 +1,601 @@
+///////Cart Package Install and Publish///////
+//1. installation
+composer require bumbummen99/shoppingcart
+
+//2. pulish
+php artisan vendor:publish --provider="Gloudemens\Shoppingcart\ShoppingcartServiceProvider" --tag="config"
+
+//after publishing, you will see a model "Cart" in model folder, by using this you can add cart, edit cart, delete cart,... 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///add csrf token meta tag
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+
+///in html, click addToCart button to open cartModal with product id pass
+
+<button class="btn btn-primary icon" type="button" title="Add Cart" data-toggle="modal" data-target="#cartModal" id="{{ $product->id }}" onclick="productView(this.id)">
+
+///cartModal//////
+
+<div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><span id="pname"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeModal" >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" style="width:16rem;">
+                        <img src="" class="card-img-top" id="pimage" alt="" style="height: 200px;">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-group">
+                        <li class="list-group-item">Price: <strong class="text-danger">$<span id="pprice"></span> </strong>
+                            <del id="oldprice">$</del>
+                        </li>
+                        <li class="list-group-item">Product Code: <strong id="pcode"></strong></li>
+                        <li class="list-group-item">Category: <strong id="pcategory"></strong></li>
+                        <li class="list-group-item">Brand: <strong id="pbrand"></strong> </li>
+                        <li class="list-group-item">Stock: <span class="badge badge-pill badge-success" id="aviable" style="background:green; color:white;"></span>
+                            <span class="badge badge-pill badge-danger" id="stockout" style="background:red; color:white;"></span>
+                        </li>
+                      </ul>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="color">Select Color</label>
+                        <select class="form-control" id="color" name="color">
+                        </select>
+                      </div>
+                      <div class="form-group" id="sizeArea">
+                        <label for="size">Select Size</label>
+                        <select class="form-control" id="size" name="size">
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="qty">Quantity</label>
+                        <input type="number" class="form-control" id="qty" value="1" min="1">
+                      </div>
+                      <input type="hidden" id="product_id">
+                      <button type="submit" class="btn btn-danger" onclick="addToCart()">Add To Cart</button>
+                      </div>
+                </div>
+            </div>
+        </div>
+
+      </div>
+    </div>
+
+
+///////Mini Cart Area in fontend master page in top menu bar////////
+
+<ul class="dropdown-menu">
+			<li>
+                {{-- mini cart start with ajax  --}}
+                <div id="miniCart">
+
+                </div>
+                {{-- mini cart end  --}}
+
+
+			<div class="clearfix cart-total">
+				<div class="pull-right">
+
+						<span class="text">Sub Total :</span>$<span class='price' id="cartSubTotal"></span>
+
+				</div>
+				<div class="clearfix"></div>
+
+				<a href="checkout.html" class="btn btn-upper btn-primary btn-block m-t-20">Checkout</a>
+			</div><!-- /.cart-total-->
+
+		</li>
+		</ul><!-- /.dropdown-menu-->
+
+///
+
+<script type="text/javascript">
+    $.ajaxSetup({
+        headers:{
+            'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')
+        }
+    })
+
+    //start product view with modal
+    function productView(id){
+        $.ajax({
+            type:'GET',
+            url: '/product/view/modal/'+id,
+            dataType:'json',
+            success:function(data){
+               $('#pname').text(data.product.product_name_en);
+               $('#price').text(data.product.selling_price);
+               $('#pcode').text(data.product.product_code);
+               $('#pcategory').text(data.product.category.category_name_en);
+               $('#pbrand').text(data.product.brand.brand_name_en);
+               $('#pimage').attr('src','/'+data.product.product_thambnail);
+               $('#product_id').val(id);
+               $('#qty').val(1);
+                //product price
+               if (data.product.discount_price == null) {
+                    $('#pprice').text('');
+                    $('#oldprice').text('');
+                    $('#pprice').text(data.product.selling_price);
+               }else{
+                $('#pprice').text(data.product.discount_price);
+                $('#oldprice').text(data.product.selling_price);
+               }
+
+               //stock
+               if (data.product.product_qty > 0) {
+                    $('#aviable').text('');
+                    $('#stockout').text('');
+                    $('#aviable').text('aviable');
+               }else{
+                    $('#aviable').text('');
+                    $('#stockout').text('');
+                    $('#stockout').text('stockout');
+               }
+
+               //color
+               $('select[name="color"]').empty();
+               $.each(data.color,function(key,value){
+                    $('select[name="color"]').append('<option value="'+value+'">'+value+'</option>')
+               })
+               //size
+               $('select[name="size"]').empty();
+               $.each(data.size,function(key,value){
+                    $('select[name="size"]').append('<option value="'+value+'">'+value+'</option>')
+                    if (data.size == "") {
+                        $('#sizeArea').hide();
+                    }else{
+                        $('#sizeArea').show();
+                    }
+               })
+
+
+            }
+        })
+    }
+      //end product view with modal
+
+//Start add to cart product
+    function addToCart(){
+         var product_name = $('#pname').text();
+         var id = $('#product_id').val();
+         var color = $('#color option:selected').text();
+         var size = $('#size option:selected').text();
+         var quantity = $('#qty').val();
+
+         $.ajax({
+             type: "POST",
+             dataType: 'json',
+             data:{
+                 color:color, size:size, quantity:quantity, product_name:product_name
+             },
+             url: "/cart/data/store/"+id,
+             success:function(data){
+                miniCart();
+                 $('#closeModal').click();
+                 //  start message
+                 const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                      })
+
+                     if($.isEmptyObject(data.error)){
+                          Toast.fire({
+                            type: 'success',
+                            title: data.success
+                          })
+                     }else{
+                           Toast.fire({
+                              type: 'error',
+                              title: data.error
+                          })
+					 }
+                    //  end message
+             }
+         })
+    }
+//End add to cart product
+</script>
+
+@yield('scripts')
+
+<script>
+    function miniCart(){
+        $.ajax({
+            type:'GET',
+            url: '/product/mini/cart',
+            dataType:'json',
+            success:function(response){
+                $('span[id="cartSubTotal"]').text(response.cartTotal);
+                $('#cartQty').text(response.cartQty);
+                var miniCart = ""
+               $.each(response.carts, function(key,value){
+                   miniCart += `<div class="cart-item product-summary">
+					<div class="row">
+						<div class="col-xs-4">
+							<div class="image">
+								<a href="detail.html"><img src="/${value.options.image}" alt=""></a>
+							</div>
+						</div>
+						<div class="col-xs-7">
+							<h3 class="name"><a href="index8a95.html?page-detail">${value.name}</a></h3>
+							<div class="price">${value.price}$ * ${value.qty}</div>
+						</div>
+						<div class="col-xs-1 action">
+							<button type="submit" id="${value.rowId}" onclick="miniCartRemove(this.id)"><i class="fa fa-trash"></i></button>
+						</div>
+					</div>
+				</div><!-- /.cart-item -->
+				<div class="clearfix"></div> <hr>`
+
+               });
+
+               $('#miniCart').html(miniCart);
+
+            }
+        })
+    }
+    miniCart();
+
+    /// mini cart remove start
+    function miniCartRemove(rowId){
+        $.ajax({
+            type:'GET',
+            url: '/minicart/product-remove/'+rowId,
+            dataType:'json',
+            success:function(data){
+                miniCart();
+                //  start message
+                const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                      })
+
+                     if($.isEmptyObject(data.error)){
+                          Toast.fire({
+                            type: 'success',
+                            title: data.success
+                          })
+                     }else{
+                           Toast.fire({
+                              type: 'error',
+                              title: data.error
+                          })
+					 }
+                    //  end message
+            }
+        });
+    }
+    // mini cart remove end
+
+</script>
+
+
+//////route///////
+
+//product view modal with ajax
+Route::get('product/view/modal/{id}',[IndexController::class,'productViewAjax']);
+// add to cart
+Route::post('/cart/data/store/{id}',[CartController::class,'addToCart']);
+//mini cart
+Route::get('product/mini/cart',[CartController::class,'miniCart']);
+
+Route::get('/minicart/product-remove/{rowId}',[CartController::class,'miniCartRemove']);
+//cart
+ Route::get('my-cart',[CartController::class,'create'])->name('cart');
+ Route::get('/get-cart-product',[CartController::class,'getAllCart']);
+ Route::get('/cart-remove/{rowId}',[CartController::class,'destory']);
+ Route::get('/cart-increment/{rowId}',[CartController::class,'cartIncrement']);
+ Route::get('/cart-decrement/{rowId}',[CartController::class,'cartDecrement']);
+
+
+///////in Controller///////
+
+ public function productViewAjax($product_id)
+	{
+            $product = Product::with('category','brand')->findOrFail($product_id);
+
+            $color = $product->product_color_en;
+            $product_color = explode(',',$color);
+            $size = $product->product_size_en;
+            $produt_size = explode(',',$size);
+
+        return response()->json(array(
+            'product' => $product,
+            'color' => $product_color,
+            'size' => $produt_size,
+        ));
+
+    }
+
+ //store cart
+    public function addToCart(Request $request,$id)
+	{
+
+        if (Session::has('coupon')) 
+		{
+            Session::forget('coupon');
+        }
+
+        $product = Product::findOrFail($id);
+
+            if ($product->discount_price == NULL)
+			 {
+                Cart::add([
+                    'id' => $id,
+                     'name' => $request->product_name,
+                     'qty' => $request->quantity,
+                     'price' => $product->selling_price,
+                     'weight' => 1,
+                     'options' => [
+                         'image' => $product->product_thambnail,
+                         'color' => $request->color,
+                         'size' => $request->size,
+                        ],
+                     ]);
+
+                     return response()->json(['success' => 'Sucessfully Added On Your Cart']);
+            }
+			else 
+			{
+                Cart::add([
+                    'id' => $id,
+                     'name' => $request->product_name,
+                     'qty' => $request->quantity,
+                     'price' => $product->discount_price,
+                     'weight' => 1,
+                     'options' => [
+                        'image' => $product->product_thambnail,
+                        'color' => $request->color,
+                        'size' => $request->size,
+                       ],
+                     ]);
+					 
+                     return response()->json(['success' => 'Sucessfully Added On Your Cart']);
+            }
+
+
+    }
+
+    // ==================== mini cart section =======================
+    public function miniCart()
+	{
+        $carts = Cart::content();
+        $cartQty = Cart::count();
+        $cartTotal = Cart::total();
+
+        return response()->json(array(
+            'carts' => $carts,
+            'cartQty' => $cartQty,
+            'cartTotal' => round($cartTotal),
+        ));
+    }
+
+    //mini cart remove
+    public function miniCartRemove($rowId)
+	{
+        Cart::remove($rowId);
+        return response()->json(['success' => 'Product Remove From Cart']);
+    }
+
+    ///////////////wishlist
+    public function addToWishlist(Request $request,$product_id)
+	{
+        if (Auth::check())
+		 {
+				$exists = Wishlist::where('user_id',Auth::id())->where('product_id',$product_id)->first();
+				if (!$exists) {
+					Wishlist::insert([
+						'user_id' => Auth::id(),
+						'product_id' => $product_id,
+						'created_at' => Carbon::now(),
+					]);
+					
+					return response()->json(['success' => 'Sucessfully Added On Your Wishlist']);
+				}
+				else
+				{
+					return response()->json(['error' => 'The Product Has Already On Your Wishlist']);
+				}
+
+        }
+		else 
+		{
+            return response()->json(['error' => 'At First Login Your Account']);
+        }
+   }
+
+//    ================================= Cart Page =======================================
+
+        //create
+        public function create()
+		{
+            return view('user.cart-page');
+        }
+
+        //get all product
+        public function getAllCart()
+		{
+            $carts = Cart::content();
+            $cartQty = Cart::count();
+            $cartTotal = Cart::total();
+
+            return response()->json(array(
+                'carts' => $carts,
+                'cartQty' => $cartQty,
+                'cartTotal' => round($cartTotal),
+            ));
+        }
+
+        //cart remove product
+        public function destory($rowId)
+		{
+            Cart::remove($rowId);
+			
+            if (Session::has('coupon')) 
+			{
+                Session::forget('coupon');
+            }
+			
+            return response()->json(['success' => 'Product Remove From Cart']);
+        }
+
+        //cart increment
+        public function cartIncrement($rowId)
+		{
+
+            $row = Cart::get($rowId);
+			
+            Cart::update($rowId, $row->qty + 1);
+			
+            if (Session::has('coupon')) 
+			{
+                $coupon_name = Session::get('coupon')['coupon_name'];
+				
+                $coupon = Coupon::where('coupon_name',$coupon_name)->first();
+				
+                Session::put('coupon',[
+                    'coupon_name' => $coupon->coupon_name,
+                    'coupon_discount' => $coupon->coupon_discount,
+                    'discount_amount' => round(Cart::total() * $coupon->coupon_discount/100),
+                    'total_amount' => round( Cart::total() - Cart::total() * $coupon->coupon_discount/100)
+                ]);
+            }
+			
+            return response()->json('increment');
+        }
+
+        //cart decrement
+        public function cartDecrement($rowId){
+
+            $row = Cart::get($rowId);
+			
+            if ($row->qty == 1) 
+			{
+                return response()->json('not decrement');
+            }
+			else
+			 {
+					Cart::update($rowId, $row->qty - 1);
+					if (Session::has('coupon')) {
+						$coupon_name = Session::get('coupon')['coupon_name'];
+						$coupon = Coupon::where('coupon_name',$coupon_name)->first();
+						Session::put('coupon',[
+							'coupon_name' => $coupon->coupon_name,
+							'coupon_discount' => $coupon->coupon_discount,
+							'discount_amount' => round(Cart::total() * $coupon->coupon_discount/100),
+							'total_amount' => round( Cart::total() - Cart::total() * $coupon->coupon_discount/100)
+						]);
+                }
+				
+                return response()->json('decrement');
+            }
+        }
+
+// ===================== coupon start =======================
+
+    public function couponApply(Request $request)
+	{
+
+			$coupon = Coupon::where('coupon_name',$request->coupon_name)->where('coupon_validity','>=',Carbon::now()->format('Y-m-d'))->first();
+			
+			if ($coupon)
+			 {
+					Session::put('coupon',[
+						'coupon_name' => $coupon->coupon_name,
+						'coupon_discount' => $coupon->coupon_discount,
+						'discount_amount' => round(Cart::total() * $coupon->coupon_discount/100),
+						'total_amount' => round( Cart::total() - Cart::total() * $coupon->coupon_discount/100)
+					]);
+					
+					return response()->json(array(
+						'validity' => true,
+						'success' => 'Coupon Applied Success'
+					));
+			}
+			else
+			 {
+				return response()->json(['error' => 'Invalid Coupon']);
+			}
+    }
+
+    //coupon calculation
+    public function couponCalcaultion()
+	{
+        if (Session::has('coupon'))
+		 {
+				return response()->json(array(
+					'subtotal' => Cart::total(),
+					'coupon_name' => session()->get('coupon')['coupon_name'],
+					'coupon_discount' => session()->get('coupon')['coupon_discount'],
+					'discount_amount' => session()->get('coupon')['discount_amount'],
+					'total_amount' => session()->get('coupon')['total_amount'],
+				));
+        }
+		else 
+		{
+            return response()->json(array(
+                'total' => Cart::total(),
+            ));
+        }
+    }
+
+    //remove coupon
+    public function removeCoupon()
+	{
+        Session::forget('coupon');
+		
+        return response()->json(['success' => 'Coupon Remove Success']);
+    }
+
+    //checkout
+    public function checkoutCreate()
+	{
+        if (Auth::check()) 
+		{
+           if (Cart::total() > 0)
+		    {
+                $carts = Cart::content();
+                $cartQty = Cart::count();
+                $cartTotal = Cart::total();
+				
+                $divisions = ShipDivision::orderBy('division_name','ASC')->get();
+				
+                return view('fontend.checkout',compact('carts','cartQty','cartTotal','divisions'));
+           }
+		   else 
+		   {
+				$notification=array(
+					'message'=>'Shopping Now',
+					'alert-type'=>'error'
+				);
+				return Redirect()->to('/')->with($notification);
+           }
+        }
+		else 
+		{
+            $notification=array(
+                'message'=>'You Nedd to Login First',
+                'alert-type'=>'error'
+            );
+			
+            return Redirect()->route('login')->with($notification);
+        }
+    }
+

@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
+use App\Brand;
+use Carbon\Carbon;
+
+class BrandController extends Controller
+{
+    //Brand Add Form
+    public function add_form()
+    {
+        return view('backend.brand.add_form');
+    }
+
+    //Brand Store
+    public function store(Request $request)
+    {
+        //validation  
+        
+        $request->validate([
+            'brand_name' => 'required|max:255',
+            'brand_image' => 'required|mimes:jpg,jpeg,png,gif', 
+            
+        ],
+        [
+            'brand_name.required' => 'Brand Name Required',
+            'brand_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        // echo $request->category_name;die;
+
+        //Brand Image
+        $brand_image = $request->file('brand_image');
+        $name_gen = hexdec(uniqid()).'.'.$brand_image->getClientOriginalExtension();
+        Image::make($brand_image)->resize(200,200)->save('img/brand/'.$name_gen);
+
+        $last_image = 'img/brand/'.$name_gen;
+        //echo $name_gen;die;
+
+
+        Brand::insert([
+            'brand_name'=>$request->brand_name,
+            'brand_image' => $last_image,
+            'created_at'=>Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Saved Successfully');
+    }
+
+    //Brands View
+    public function view()
+    {
+        $brands = Brand::latest()->paginate(5);
+        return view('backend.brand.view', compact('brands'));
+    }
+
+    //Brand Edit
+    public function edit($id)
+    {
+        $brands = Brand::find($id);
+        return view('backend.brand.edit', compact('brands'));
+    }
+
+    //Brand update
+    public function update(Request $request, $id)
+    {
+        //validation  
+        
+        $request->validate([
+            'brand_name' => 'required|max:255',
+            'brand_image' => 'mimes:jpg,jpeg,png,gif', 
+            
+        ],
+        [
+            'brand_name.required' => 'Brand Name Required',
+            'brand_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        // echo $request->category_name;die;
+        $old_brand_image = Brand::find($id)->brand_image; 
+        $brand_image = $request->file('brand_image');
+        if($brand_image)
+        {
+            $name_gen = hexdec(uniqid()).'.'.$brand_image->getClientOriginalExtension();
+            Image::make($brand_image)->resize(200,200)->save('img/brand/'.$name_gen);
+
+            $last_image = 'img/brand/'.$name_gen;
+            
+            //if old image exist, delete it
+            unlink($old_brand_image);
+
+            Brand::find($id)->update([
+                'brand_name'=>$request->brand_name,
+                'brand_image' => $last_image,
+                'updated_at'=>Carbon::now(),
+            ]);
+
+        }
+        else
+        {
+            Brand::find($id)->update([
+                'brand_name'=>$request->brand_name,
+                'updated_at'=>Carbon::now(),
+            ]);
+        }
+        
+        return Redirect()->back()->with('success','Updated Successfully');
+    }
+
+    //Brand Delete
+    public function delete($id)
+    {
+        $brand = Brand::find($id);
+        unlink($brand->brand_image);
+        Brand::find($id)->delete();
+        return Redirect()->back()->with('success','Deleted Successfully');
+    }
+
+
+
+
+
+
+}

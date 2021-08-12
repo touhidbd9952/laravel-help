@@ -1,0 +1,265 @@
+1. Create Controller:
+	php artisan make:controller ContactController
+2. goto app->Http->ContractController
+
+///Basic Controller Structure:
+
+<?php
+
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+
+class ContactController extends Controller
+{
+
+}
+
+///Create function
+public function contact()
+{
+   return view('contact');
+}
+public function about()
+{
+   return redirect('about');
+}
+public function index()
+{
+   $users = User::all(); //all record of user table
+   return view('home', compact('users'));
+}
+public function testingData()
+{
+   $users = User::all();
+   dd($users);
+}
+
+///// Data Query Technique////
+1. Eloquent ORM (use model)
+2. QueryBilder (use db)
+
+
+/////Eloquent ORM////
+
+1. $users = User::all()
+2. $user_id = Auth::user()->id;
+3. user_name = Auth::user()->name;
+4. $tag_en = Product::groupBy('product_tag_en')->select('product_tag_en')->get();
+5. $products = Product::where('status',1)->orwhere('status',2)->get();
+6. $product = Product::find($id);
+7. $product = Project::findOrFail($id);
+8. $categories = Category::orderBy('category_name','ASC')->get();
+9. $categories = Category::where('status',1)->orderBy('id','DESC')->get();
+10.$categories = Category::where('status',1)->where('id',$catid)->orderBy('category_name','DESC')->get();
+11. $featured = Product::where('featured',1)->where('status',1)->orderBy('id','DESC')->get();
+
+/////Query Builder////
+
+1. $users = DB::table('users')->get();
+2. $users = DB::table('users')->first();
+
+///Not Equal to/Greater than/less then
+$hotdeals = Product::where('discount','!=',0)->get();
+
+//////Insert Data/////
+1. Eloquent ORM	
+
+	Category::insert([
+		'category_name'=>$request->category_name,
+		'user_id'=>Auth::user()->id,
+		'created_at'=> Carbon::now(),
+	]);
+	return Redirect()->back()->with('success',"category Saved Successfully");	
+
+2. QueryBilder
+
+	$data = array();
+	$data['category_name']=$request->category_name;
+	$data['user_id']=Auth::user()->id;
+	$data['cated_at']=Carbon::now();
+
+	DB::table('categories')->insert($data);
+	return Redirect()->back()->with('success',"category Saved Successfully");	
+
+/////Select Data All
+	
+1. Eloquent ORM
+
+	$categories = Category::all();
+	$subcategories = Subcat::with('category')->orderBy('id','DESC')->get();
+	$subsubcategories = Subsubcategory::with('category','subcategory')->orderBy('id','DESC')->get();
+
+2. QueryBilder
+
+	$categories = DB::table('categories')->get();
+
+/////Select 1 record for Edit
+
+1. Eloquent ORM
+
+	$categories = Category::findOrFail($id);
+	return view('admin.category.edit', compact('categories'));
+
+2. QueryBilder
+
+	$categories = DB::table('categories')->where('id',$id)->first();
+	return view('admin.category.edit', compact('categories'));
+
+/////Update Data
+
+1. Eloquent ORM
+	
+	Category::findOrFail($id)->update([
+		'category_name' =>$request->category_name,
+		'user_id' =>Auth::user()->id,
+		'updated_at' =>	Carbon::now(),
+	]);
+	
+   	return Redirect()->route('category.all')->with('success','updated successfully');
+
+2. QueryBilder
+
+	$data = array();
+	$data['category_name'] = $request->category_name;
+	$data['user_id'] = Auth::user()->id;
+	$data['updated_at'] = Carbon::now();
+	DB::table('categories')->where('id',$id)->update($data);
+
+	return Redirect()->route('category.all')->with('success','updated successfully'); 
+
+/////Delete Data
+
+1. Eloquent ORM
+
+	Category::findOrFail($id)->delete();
+
+2. QueryBilder
+	
+	DB::table('categories')->where('id',$id)->delete();
+
+/////Last created/updated record show first
+
+Category::latest()->get();
+
+//////Pagination
+
+1. Eloquent ORM
+
+	$categories = Category::latest()->paginate(10); //per page 10 record show
+
+2. QueryBilder
+	
+	$categories = DB::table('categories')->paginate(10);
+
+
+in view page :  {{$categories->links}}
+
+
+/////Join Query
+
+1. Eloquent ORM
+	
+	create a function in Model(Category)
+	-------------------------------------
+	public function user()
+	{
+	   return $this->hasOne(User::class, 'id', 'user_id');
+	}
+
+	or
+
+	pubic function user()
+	{
+	   return $this->belongsTo('App\model\User','user_id');
+	}
+in HTML
+-------
+	<td>{{ $category->user->name }}</td>
+
+2. QueryBuilder
+	
+	in controller
+	-------------
+	$categories = DB::table('categories')
+			->join('users','categories.user_id','user.id')
+			->select('categories.*','users.name')
+			->paginate(10);
+	return view('admin.category.index', compact('categories'));
+in HTML
+-------
+	<td>{{ $category->name }}</td>
+
+
+/////Last inserted id
+
+1. Eloqurenet ORM
+
+	$id = User::insertGetId([
+		'username' => $request->username,
+		'password' => Hash::make($request->password),
+	]);
+
+2. QueryBilder
+
+	$id = DB::getPdo()->lastInsertId();
+	or
+	$id = DB::table('users')->insertGetId([
+		'email' => $request->email,
+		'password' => $request->password,
+	]);
+
+/////Limit
+
+$sliders = Slider::where('status',1)->orderBy('id','DESE')->limit(5)->get();
+
+
+
+//////For ecommerce Site
+
+1. Create 2 controller
+	a. AdminController
+	b. UserController
+php artisan make:controller AdminController
+php artisan make:controller UserController
+
+2. go to LoginController: (loc: app->Http->controller->Auth->LoginController)
+
+	protected $redirectTo = RouteServiceProvider::Home;
+	
+	protected function redirectTo(){
+		if(Auth()->user()->role_id ==1)
+		{
+			return route('admin.dashboard');
+		}
+		else
+		{
+			return route('user.dashboard');
+		}
+	}
+
+3. go to RegisterController: (loc: app->Http->controller->Auth->RegisterController)
+
+a. add here
+   --------
+        protected function redirectTo(){
+		if(Auth()->user()->role_id ==1)
+		{
+			return route('admin.dashboard');
+		}
+		else
+		{
+			return route('user.dashboard');
+		}
+	}
+
+b. in Create(array $data) function, add below line
+	
+	'role_id' =>2,
+
+
+
+	
+
+
+
+

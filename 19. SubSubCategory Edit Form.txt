@@ -1,0 +1,124 @@
+////page////
+
+<h5 class="card-title">
+                                    Sub Subcategory Edit Form 
+                                    
+                                    <a href="{{route('subsubcategory.view')}}" style="float: right;">view</a>
+                                </h5>
+                                
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form action="{{url('subsubcategory/update/'.$subsubcategories->id)}}"  method="POST" class="form-horizontal">
+
+                                    @csrf
+
+                                    <input type="hidden" name="old_subcatid" value="{{$subsubcategories->subcatid}}">
+
+                                <div class="card-body">
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Cagetory</label>
+                                        <div class="col-sm-9">
+                                            <select name="catid" id="categoryList" class="form-control @error('catid') is-invalid @enderror" autocomplete="off">
+                                                <option></option>
+                                                @foreach($categories as $cat)
+                                                <option value="{{$cat->id}}" {{$subsubcategories->catid == $cat->id ? 'selected' : ''}}>{{ $cat->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('catid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Subcategory</label>
+                                        <div class="col-sm-9">
+                                            <select name="subcatid" id="subcategoryList" autocomplete="off" class="form-control @error('subcatid') is-invalid @enderror" required disabled>
+                                                @foreach ($subcategories as $subcat)
+                                                    <option value="{{ $subcat->id }}" {{$subsubcategories->subcatid == $subcat->id ? 'selected' : ''}} class='parent-{{ $subcat->catid }} subcategory'>{{ $subcat->subcategory_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            
+                                            @error('subcatid')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="subsubcategory_name" value="{{$subsubcategories->subsubcategory_name}}" class="form-control @error('subcategory_name') is-invalid @enderror"
+                                                placeholder="Sub SubCategory Name">
+                                            @error('subcategory_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+
+////Route////
+
+Route::get('subsubcategory/edit/{id}', 'SubsubcategoryController@edit');
+Route::post('subsubcategory/update/{id}', 'SubsubcategoryController@update');
+
+////Controller////
+
+ //show edit form with data by id
+    public function edit($id)
+    {
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+        $subsubcategories = Subsubcategory::findOrFail($id);
+        return view('backend.subsubcategory.edit',compact('categories','subcategories','subsubcategories'));
+    }
+
+    //update data by id
+    public function update(Request $request, $id)
+    {
+        //dd($request->all());
+        $request->validate([
+            'catid' => 'required',
+            'subsubcategory_name' => 'required|max:255|min:2'
+        ]);
+
+        //set subcategory id
+        $subcatid=$request->old_subcatid;
+        if($request->subcatid !="" && $request->old_subcatid == $request->subcatid)
+        {
+            $subcatid = $request->subcatid;
+        }
+        
+        //data insert
+        Subsubcategory::findOrFail($id)->update([
+            'catid' => $request->catid,
+            'subcatid' => $subcatid,
+            'subsubcategory_name' => trim($request->subsubcategory_name),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Subsubcategory updated successfully');
+    }

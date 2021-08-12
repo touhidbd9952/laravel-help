@@ -1,0 +1,148 @@
+////ProductImage View Page////
+
+<h5 class="card-title">
+                                    Product: {{$selectedproduct->product_name}} 
+
+                                    <a href="{{route('product.view')}}" class="btn btn-sm btn-success"  style="float: right;">Product View</a>
+                                    <a href="{{route('product.add_form')}}" class="btn btn-sm btn-success" style="float: right;">Add Niew Product</a>
+                                </h5>
+
+                                @if(session('success'))
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+
+                                <div class="row">
+                                                                        
+                                    <div class="col-md-3">
+                                            <div class="p-20">
+                                                <h5>Thumbnail Image </h5>
+                                                <img src="{{ asset($selectedproduct->product_thambnail) }}" style="height:200px;widht:180px;">
+
+                                                <a href="{{url('productthumbnailimage/edit/'.$selectedproduct->id)}}" class="btn btn-success" style="float:left;">Edit</a>
+                                                    
+                                            </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="{{url('productimage/addmore/'.$selectedproduct->id)}}" class="btn btn-primary" style="float: right;">Add More Multiple Image</a>
+                                    </div>
+                                </div>    
+
+                                <div class="row">
+                               
+                                @foreach($productmultipleimages as $pimage)
+                                    <div class="col-md-3">
+                                        <div class="p-20">
+                                            <p></p>
+                                            <img src="{{ asset($pimage->productimage) }}" style="height:200px;widht:180px;">
+
+                                            
+                                            <a href="{{url('productimage/edit/'.$pimage->id)}}" class="btn btn-success" style="float:left;">Edit</a>
+                                            <a href="{{url('productimage/delete/'.$pimage->id)}}" onclick="return confirm('Are you Shure want to delete?')" class="btn btn-danger" style="float:right;">Delete</a>
+
+                                        </div>
+                                        
+                                    </div>
+                                @endforeach
+                                
+                                </div>
+
+
+////Route////
+
+Route::get('product/imageview/{id}', 'ProductController@imageview');
+Route::get('product/view','ProductController@view')->name('product.view');
+Route::get('product/addform', 'ProductController@add_form')->name('product.add_form');
+//product Thumbnail Image
+Route::get('productthumbnailimage/edit/{id}','ProductController@edit_productthumbnailimage');
+//multiple image
+Route::get('productimage/addmore/{id}', 'ProductController@productimage_addmore');
+Route::get('productimage/edit/{id}','ProductController@edit_productimage');
+Route::get('productimage/delete/{id}','ProductController@delete_productimage');
+
+////Controller/////
+
+  public function imageview($id)
+    {
+        //get product image by id
+        //$productimages = Productimage::where('productid', $id)->pluck('name', 'surname');
+        $selectedproduct = Product::find($id);
+        $productmultipleimages = Productimage::where('productid', $id)->get(); 
+        return view('backend.product.imageview',compact('selectedproduct','productmultipleimages'));
+    }
+
+//Product Add Form
+    public function add_form()
+    {
+        //product code generate
+        $products = Product::all();
+        $productcode = '';
+        $start = 10000;
+        if(count($products)==0)
+        {
+            $productcode = $start + 1;
+        }
+        else
+        {
+            $productcode = count($products) + $start + 1;
+        }
+
+        //get all other data
+        $brands = Brand::all();
+        $categories = Category::all();  
+        $subcategories = Subcategory::all();
+        $subsubcategories = Subsubcategory::all();
+        return view('backend.product.add_form', compact('productcode','brands','categories','subcategories','subsubcategories'));
+    }
+
+//Product List view
+    public function view()
+    {
+        $products = Product::latest()->paginate(5);
+        return view('backend.product.view',compact('products'));
+    }
+
+//edit product thumbnail image
+public function edit_productthumbnailimage($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('backend.product.edit_productthumbnailimage',compact('product'));
+    }
+
+//add more product image multiple
+    public function productimage_addmore($id)
+    {
+        $productid = $id;
+        return view('backend.product.addmore_product_image', compact('productid'));
+    }
+
+ //edit productimage multiple
+    public function edit_productimage($id)
+    {
+        //get data
+        $productimagedata = Productimage::find($id);
+        return view('backend.product.productimage_edit', compact('productimagedata'));
+    }
+
+ public function delete_productimage($id)
+    {
+        //Get info
+        $productImagesData = Productimage::find($id); 
+        $productid = $productImagesData->productid; 
+        $image = $productImagesData->productimage; 
+        
+        //delete info
+        Productimage::find($id)->delete();
+        //delete image
+        if(is_file($image))
+        {
+            unlink($image);
+        }
+        
+        return redirect('product/imageview/'.$productid);
+    }

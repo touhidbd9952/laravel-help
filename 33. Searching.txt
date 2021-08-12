@@ -1,0 +1,26 @@
+public function search(Request $request)
+    {
+        $posts = array();
+        $category = Category::where('name',"LIKE", "%".$request->searchword."%")->first(); 
+        if(!empty($category))
+        {
+            $posts = Post::where('cat_id','=',$category->id)->get();   
+        }
+        if(empty($posts))
+        {
+            
+            $posts = Post::where('title',"LIKE", "%".$request->searchword."%")->get();
+            
+        }
+        if(empty($posts))
+        {
+            $user = User::where('name',"LIKE", "%".$request->searchword."%")->first(); 
+            if(!empty($user))
+            {
+                $posts = Post::where('user_id','=',$user->id)->get();   
+            }
+        }
+
+        
+        return view('welcome', compact('posts'));
+    }

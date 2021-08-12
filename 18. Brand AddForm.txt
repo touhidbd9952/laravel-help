@@ -1,0 +1,139 @@
+////Add Brand Form///
+
+<h5 class="card-title">
+                                    Brand Entry Form 
+                                    <a href="{{route('brand.view')}}"  style="float: right;">View</a>
+                                </h5>
+                                @if(session('success'))
+                               
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <strong>Success!</strong> {{ session('success') }}
+                                    <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                                </div>
+                                @endif
+                                
+                                <form action="{{route('brand.store')}}"  method="POST" enctype="multipart/form-data" class="form-horizontal">
+
+                                    @csrf
+
+                                <div class="card-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Brand Name</label>
+                                        <div class="col-sm-9">
+                                            <input type="text"  name="brand_name" class="form-control @error('brand_name') is-invalid @enderror"
+                                                placeholder="Name Here">
+                                            @error('brand_name')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label">Brand Image</label>
+                                        <div class="col-sm-9">
+                                            <input type="file" name="brand_image" id="imgInp" class="form-control @error('brand_image') is-invalid @enderror">
+                                            @error('brand_image')
+                                                <span class="text-danger"> {{$message}}  </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                    <label for="fname"
+                                            class="col-sm-3 text-end control-label col-form-label"></label>
+                                        <div class="col-sm-9">
+                                            <img src="" id="blah" style="height:300px;width:300px">
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                   
+                                </div>
+                                <div class="border-top">
+                                    <div class="card-body">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            </div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(e) {
+	
+    function readURL(input) 
+   {
+       //main
+       if (input.files && input.files[0]) 
+       {
+           var reader = new FileReader();
+   
+           reader.onload = function (e) 
+           {
+               $('#blah').attr('src', e.target.result);
+           }
+   
+           reader.readAsDataURL(input.files[0]);
+       }
+   }
+
+   $("#imgInp").change(function(){
+       readURL(this); //main
+   });
+   
+});
+</script>    
+
+
+
+////Route////
+
+Route::get('brand/addform', 'BrandController@add_form')->name('brand.add_form');
+Route::post('brand/store', 'BrandController@store')->name('brand.store');
+
+////Controller////
+
+//Brand Add Form
+    public function add_form()
+    {
+        return view('backend.brand.add_form');
+    }
+
+    //Brand Store
+    public function store(Request $request)
+    {
+        //validation  
+        
+        $request->validate([
+            'brand_name' => 'required|max:255',
+            'brand_image' => 'required|mimes:jpg,jpeg,png,gif', 
+            
+        ],
+        [
+            'brand_name.required' => 'Brand Name Required',
+            'brand_name.max' => 'Maximum 255 chars',
+            
+        ]);
+        // echo $request->category_name;die;
+
+        //Brand Image
+        $brand_image = $request->file('brand_image');
+        $name_gen = hexdec(uniqid()).'.'.$brand_image->getClientOriginalExtension();
+        Image::make($brand_image)->resize(200,200)->save('img/brand/'.$name_gen);
+
+        $last_image = 'img/brand/'.$name_gen;
+        //echo $name_gen;die;
+
+
+        Brand::insert([
+            'brand_name'=>$request->brand_name,
+            'brand_image' => $last_image,
+            'created_at'=>Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Saved Successfully');
+    }

@@ -1,0 +1,75 @@
+//namespace
+use App\Http\Controllers\Fontend\ContactController;
+use App\Http\Controllers\Backend\ContactController;
+
+//Default Route//
+
+	Route::get('/',function(){ return view('welcome'); });
+
+//custom route//
+
+	Route::get('contact','ContactController@contact')->name('contact');  //laravel 7
+
+	Route::get('contact', [ContactController::class,'contact'])->name('contact'); // laravel 8
+
+	Route::get('category/all',[CategoryController::class,'category_all'])->name('category.all');
+	Route::get('category/addform',[CategoryController::class,'category_addform'])->name('category.addform');
+	Route::post('category/add',[CategoryController::class,'category_add'])->name('category.add');
+	Route::get('category/edit/{id}',[CategoryController::class,'category_edit'])->name('category.edit');
+	Route::post('category/update/{id}',[CategoryController::class,'category_update'])->name('category.update');
+	Route::get('category/delete/{id}',[CategoryController::class,'category_delete'])->name('category.delete');
+
+//route group//
+	
+	Route::group();
+	Route::group([]);
+	Route::group([],function(){});
+	Route::group([],function(){
+		//your route
+	});
+
+	Route::group(['prefix'=>'admin'],function(){
+		//your route
+	});
+
+	Route::group(['middleware'=>'admin'],function(){
+		//your route
+	});
+
+	Route::group(['prefix'=>'admin','middleware'=>'admin'],function(){
+		//your route
+	});
+
+	Route::group(['prefix'=>'admin','middleware'=>['admin','auth']],function(){
+		//your route
+	});
+
+	Route::group(['prefix'=>'admin','middleware'=>['admin','auth']],function(){
+		Route::get('category/all',[CategoryController::class,'category_all'])->name('category.all');
+		Route::get('category/addform',[CategoryController::class,'category_addform'])->name('category.addform');
+		Route::post('category/add',[CategoryController::class,'category_add'])->name('category.add');
+		Route::get('category/edit/{id}',[CategoryController::class,'category_edit'])->name('category.edit');
+		Route::post('category/update/{id}',[CategoryController::class,'category_update'])->name('category.update');
+		Route::get('category/delete/{id}',[CategoryController::class,'category_delete'])->name('category.delete');
+	});
+
+
+////////In Controller//////////////////////////////////
+
+//to go particular function in same controller
+return redirect('product/imageview/'.$proid);
+or
+return $this->imageview($proid);
+
+//to back the distination
+return Redirect()->back->with('success',"saved successfully");
+
+//return view
+return view('contact');
+or
+return view('backend.product.productimage_edit', compact('products'));
+or
+return view('backend.product.productimage_edit', compact('products','category'));
+
+	
+				

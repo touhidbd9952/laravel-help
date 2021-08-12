@@ -1,0 +1,24 @@
+////Barcode Generate////
+
+Step-1: Install picqer/php-barcode-generator Package
+        --------------------------------------------
+
+	composer require picqer/php-barcode-generator
+
+Step-2: add a css for barcode in view page
+        ----------------------------------
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+
+<h3>Product 2: MAC-1200</h3>
+
+  @php
+      $generatorPNG = new Picqer\Barcode\BarcodeGeneratorPNG();
+ @endphp
+
+<img src="data:image/png;base64,{{ base64_encode($generatorPNG->getBarcode('MAC-1200', $generatorPNG::TYPE_CODE_128)) }}">
+
+
+
+For more help: https://realprogrammer.in/how-to-generate-barcode-in-laravel-8/
