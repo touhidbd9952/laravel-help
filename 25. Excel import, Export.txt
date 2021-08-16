@@ -1,0 +1,115 @@
+Step:1 package install for Excel
+       -------------------------
+
+	composer require maatwebsite/excel   (enter)
+
+     configuration (Config->app.php)
+     -------------
+
+     1. in Service provider: 
+
+		Maatwebsite\Excel\ExcelServiceProvider::class,   
+
+     2. 'aliases'   
+
+		'Excel'=>Maatwebsite\Excel\Facades\Excel::class,
+
+     3. Publishing
+
+		php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider"
+
+
+
+//////Excel Export (Database to Excel sheet)/////////////////////
+
+     1. Create an export class in "App/Exports"
+
+		php artisan make:export UserExport --model=User      (enter)
+
+     2. in "UserExport" class (App->Export/UserExport.php)
+
+		public collection()
+		{
+		  return User::select('name','email','phone')->get();
+		}
+
+     3. in "UserController" write a function for excel export
+ 
+		public function export()
+		{
+		   return Excel::download(new UserExport,'users.xlsx');
+		}
+
+     4. in menu
+
+		<a href="{{ route('export.user') }}">Download Excel</a>
+
+     5. in Route
+
+		Route::get('export/user',[UserController::class,'export'])->name('export.user');
+
+
+
+//////Import from Excel (Excel sheet to Database)/////////////////////
+
+
+     1. create Import class "UsersImport" in (App/Imports) 
+
+		php artisan make:import UsersImport --model=User    (enter)
+
+     2. open "UsersImport" class from (App/Imports/UsersImport.php)
+
+		public function model(array $row)
+		{
+			return new User([
+				'name'  => $row[0],        //excel sheet must have user name in first column
+				'email' => $row[1],
+				'phone'	=> $row[2],
+				'created_at' => Carbon/Carbon::now();
+			]);
+		
+		}
+
+
+     3. in "UserController", create function "ImportUser"
+
+		public function import_form()
+		{
+			
+			return view('admin.user.import_user');  // user import form page
+		}
+
+		public function import(Request $request)
+		{
+			Excel::import(new UsersImport, $request->file(import_file));
+
+			$notification = array(
+				'message' = 'User Import Success',
+				'alert-type' = 'success'
+			);
+
+			return Redirect()->back()->with($notification);
+		}
+
+     4. Open an excel file and set data as below
+
+		--------------------------------------------------------
+		  Karim Hossain  |  karim@gmail.com	|  0123456789
+		--------------------------------------------------------
+		--------------------------------------------------------
+		  Rahim Mia      |  rahim@gmail.com	|  0123456712
+		--------------------------------------------------------
+		--------------------------------------------------------
+		  Monir Hasan    |  monir@gmail.com	|  0123456456
+		--------------------------------------------------------
+		--------------------------------------------------------
+		  :              |  :           	|  :
+		--------------------------------------------------------
+
+     5. in Route
+
+		Route::get('/user/import_form',[UserController::class,'import_form'])->name('user.importform');
+		Route::post('/user/import',[UserController::class,'import'])->name('import.user');
+
+
+
