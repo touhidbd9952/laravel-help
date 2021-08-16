@@ -1,0 +1,92 @@
+Service Container is Object Oriented Concept
+
+1. what we need to do
+   	a. Create Class
+	d. Declare Variable in Class
+	c. Create Function/method in Class
+	d. 
+	   1. from outside, pass data to variable of class by using function of class
+	   2. process on data and then return the result of process
+
+2. After class written task (create class, create variable, function) is finish 
+   then, to use this class as "Service" we need to bind it with "Application"
+
+3. now this binded class, we can use anywhere (Route, Controller) by creating its object.
+
+
+Step:1 Create Class
+       a. Right click on "app" --> new file
+       b. Give a name "CalculateClass.php"
+
+     in CalculateClass.php
+     ---------------------
+
+	<?php
+		namespace app;
+		
+		class calculateClass
+		{
+		    	public $age;
+
+			//methods
+			function provide_birth_year($yearofBirth)
+			{
+				$this->age = 2021 - $yearofBirth;
+				return $this->age;
+			}
+		
+		}
+
+
+Step:2  in web.php (Route->web.php)
+        ---------------------------
+
+	//bind as service
+	app()->bind('abeCalculator', function(){
+		
+		return new \App\CalculateClass();   //constructor
+	});
+
+Step:3  in Controller (PersonController)
+        -------------
+
+	use app\CalculateClass;
+
+	public function person_info(Request $request)
+	{
+
+		CalculateClass $calculateClassObj;
+
+		$age = $calculateClassObj->provide_birth_year($request->yearOfBirth);
+
+		return $age;
+	}
+
+
+note
+-----
+1. we need to create a person_info form
+   ------------------------------------
+
+   <form action="{{route(person_info)}}" method="post">
+
+	@csrf
+
+	<div class="form-controller">
+          <label>Age</lable>
+	  <input type="number" name="age">		
+	</div>
+
+	<input type="submit" value="Send" class="btn btn-primary">
+
+   </form>
+
+
+2. Route (web.php)
+
+	Route::post('person/personinfo',[PersonController::class,'person_info'])->name('person_info');
+
+
+
+	
+	  

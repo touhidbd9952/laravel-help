@@ -1,0 +1,24 @@
+1. we need to set PHP Current Version
+
+2. Database create & save db name, username, password in a note pad
+
+3. Import Database
+
+4. upload
+
+	a. put project zip file in "public_html" and extract it.
+	
+	b. move all the file and folder to public_html 
+
+	c. go to public folder, select all and move to public_html
+
+5. configuration
+
+	a. open "index.php" file, in line 24 and 38, remove (../) before vendor and 
+	   bootstrap path
+
+	b. open "config" folder and go to "app.php" and open it. 
+           Go to line "57", set domain path in "asset url"
+
+	c. set database name, username and password in .env file
+

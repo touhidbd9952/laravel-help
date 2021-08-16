@@ -1,0 +1,21 @@
+when same query is written in several function in a controller, then 
+software execution time getting increase
+
+if we want we can create query ontime and share it to all view function
+
+Step:1  Go to app->Providers->AppServiceProvider.php
+
+	use Illuminate\Support\Facades\view;
+	use app\Category;
+
+	public function boot()
+	{
+		View::share('Categories', Category::where('status',1)->get());
+	}
+
+Step:2 commenting
+
+	in controller, comment all the category query that are same as written in "AppServiceProvider"
+	//$categories = Category::where('status',1)->get();
+
+
