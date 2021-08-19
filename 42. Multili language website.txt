@@ -1,0 +1,159 @@
+/////How to Create Multilingual Website in Laravel?/////
+
+Step 1: Install Laravel
+
+	composer create-project --prefer-dist laravel/laravel blog
+
+Step 2: Create Lang Files
+	
+a. resources/lang/en/messages.php
+
+	<?php
+  
+	return [
+  
+    		'title' => 'This is English Language Title.',
+  
+	];
+
+b. resources/lang/fr/messages.php
+
+	<?php
+  
+	return [
+  
+    		'title' => 'Ceci est le titre fr langue anglaise.',
+  
+	];
+
+c. resources/lang/sp/messages.php
+
+	<?php
+  
+	return [
+  
+    		'title' => 'Ceci est le titre fr langue anglaise.',
+  
+	];
+
+
+Step 3: Create Routes
+
+	Route::get('lang/home', 'LangController@index');
+	Route::get('lang/change', 'LangController@change')->name('changeLang');
+
+Step 4: Create LangController Controller
+
+	public function index()
+    	{
+        	return view('lang');
+    	}
+
+	public function change(Request $request)
+    	{
+        	App::setLocale($request->lang);
+        	session()->put('locale', $request->lang);
+  
+        	return redirect()->back();
+    	}
+
+
+
+
+Step 5: Create View
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>How to Create Multi Language Website in Laravel - ItSolutionStuff.com</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+  
+        <h1>How to Create Multi Language Website in Laravel - ItSolutionStuff.com</h1>
+  
+        <div class="row">
+            <div class="col-md-2 col-md-offset-6 text-right">
+                <strong>Select Language: </strong>
+            </div>
+            <div class="col-md-4">
+                <select class="form-control changeLang">
+                    <option value="en" {{ session()->get('locale') == 'en' ? 'selected' : '' }}>English</option>
+                    <option value="fr" {{ session()->get('locale') == 'fr' ? 'selected' : '' }}>France</option>
+                    <option value="sp" {{ session()->get('locale') == 'sp' ? 'selected' : '' }}>Spanish</option>
+                </select>
+            </div>
+        </div>
+    
+        <h1>{{ __('messages.title') }}</h1>
+     
+    </div>
+</body>
+  
+<script type="text/javascript">
+  
+    var url = "{{ route('changeLang') }}";
+  
+    $(".changeLang").change(function(){
+        window.location.href = url + "?lang="+ $(this).val();
+    });
+  
+</script>
+</html>
+
+
+Step 6: Create Middleware
+
+	php artisan make:middleware LanguageManager
+
+
+<?php
+  
+namespace App\Http\Middleware;
+  
+use Closure;
+use App;
+  
+class LanguageManager
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+        if (session()->has('locale')) {
+            App::setLocale(session()->get('locale'));
+        }
+          
+        return $next($request);
+    }
+}
+
+
+/////////Now we need to register it to kernel file. so let's add it as bellow:
+
+app/Http/Kernel.php
+
+protected $middlewareGroups = [
+        'web' => [
+            
+            \App\Http\Middleware\LanguageManager::class,
+        ],
+
+
+////////Now we are ready to run our application.
+
+	php artisan serve
+
+////////Now you can open bellow url on your browser:
+
+	http://localhost:8000/lang/home
