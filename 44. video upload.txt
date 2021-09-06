@@ -1,0 +1,196 @@
+//////Video Form///////////////////////////////////////////////////////////////////////////////////////
+@if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <strong>Success!</strong> {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                    </div>
+                    @endif
+
+                    <form action="{{ url('productvideo/addmoreupload/' . $product->id) }}" method="post" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="form-group row">
+                            <label for="videofile" class="col-md-4 col-form-label text-md-right">Select video to upload</label>
+
+                            <div class="col-md-6">
+                                <input  type="file" name="videofile" id="videofile" class="form-control @error('videofile') is-invalid @enderror"  value="{{ old('videofile') }}" required  autofocus>
+
+                                @error('videofile')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        
+
+                        
+
+                        <div class="form-group row mb-0">
+                            <div class="col-md-8 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    Upload
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+//////Route//////////////////////////////////////////////////////////////////////////////////////
+
+    Route::get('product/videoview/{product_id}', [ProductController::class,'productvideo_view']);
+    Route::get('productvideo/addmore/{id}', [ProductController::class,'productvideo_addmore']);
+    Route::post('productvideo/addmoreupload/{id}', [ProductController::class,'productvideo_addmore_upload']);
+    Route::get('productvideo/edit/{id}',[ProductController::class,'edit_productvideo']);
+    Route::post('productvideo/update/{id}',[ProductController::class,'update_productvideo']);
+    Route::get('productvideo/delete/{id}',[ProductController::class,'delete_productvideo']);
+
+//////Controller/////////////////////////////////////////////////////////////////////////////////
+
+////////////Product Video/////////////////////
+
+    public function productvideo_view($product_id)
+    {
+        $productvideos = Product_multiple_video::with('product')->where('product_id',$product_id)->paginate(10);
+        $product = Product::find($product_id);
+        return view('admin.product_multiple_video.view_multiple_video', compact('productvideos','product'));
+    }
+    public function productvideo_addmore($product_id)
+    {
+        $product = Product::find($product_id);
+        return view('admin.product_multiple_video.add_video_form',compact('product'));
+    }
+    public function productvideo_addmore_upload(Request $request, $product_id)
+    {
+        
+        $this->validate($request, [
+            'videofile' => 'required|file|mimetypes:video/mp4',
+      ]);
+       
+        if ($request->hasFile('videofile'))
+        {
+            $file = $request->file('videofile');
+            $name_gen = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            //$file->move('uploads/videos/product/multiplevideo/', $file->getClientOriginalName());
+            $file->move('uploads/videos/product/multiplevideo/', $name_gen);
+            Product_multiple_video::insert([
+                'product_id'=>$product_id,
+                'video'=>'uploads/videos/product/multiplevideo/'.$name_gen,
+                'user_id' => Auth::user()->id,
+                'publish_status'=> 'publish', 
+                'created_at'=>Carbon::now(),
+            ]);
+
+            return Redirect()->back()->with('success','Video uploaded');
+        }
+        else
+        {
+            return Redirect()->back()->with('error','Video file is required');
+        }
+    }
+
+    public function edit_productvideo($product_video_id)
+    {
+        $productvideo = Product_multiple_video::find($product_video_id);
+        return view('admin.product_multiple_video.edit_video_form', compact('productvideo'));
+    }
+
+    public function update_productvideo(Request $request, $productvideo_id)
+    {
+        $this->validate($request, [
+            'videofile' => 'required|file|mimetypes:video/mp4',
+      ]);
+       
+      $oldproductvideo = $request->oldproductvideo;
+        if ($request->hasFile('videofile'))
+        {
+            //delete previous video
+            if(is_file($oldproductvideo))
+            {
+                unlink($oldproductvideo);
+            } 
+
+            //upload
+            $file = $request->file('videofile');
+            $name_gen = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $file->move('uploads/videos/product/multiplevideo/', $name_gen);
+            //update data
+            Product_multiple_video::find($productvideo_id)->update([
+                'product_id'=>$request->product_id,
+                'video'=>'uploads/videos/product/multiplevideo/'.$name_gen,
+                'user_id' => Auth::user()->id,
+                'publish_status'=> 'publish', 
+                'updated_at'=>Carbon::now(),
+            ]);
+
+            return Redirect()->back()->with('success','Video updated');
+        }
+        else
+        {
+            return Redirect()->back()->with('error','Video file is required');
+        }
+    }
+
+    public function delete_productvideo($productvideo_id)
+    {
+        //Get info
+        $productVideoData = Product_multiple_video::find($productvideo_id); 
+        $product_id = $productVideoData->product_id; 
+        $video = $productVideoData->video; 
+        
+        //delete info
+        Product_multiple_video::find($productvideo_id)->delete();
+        //delete image
+        if(is_file($video))
+        {
+            unlink($video);
+        }
+        
+        return redirect('product/videoview/'.$product_id)->with('success','Video deleted');
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////Edit/////////////////
+
+@if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <strong>Success!</strong> {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" style="float:right;">&times;</button>
+                    </div>
+                    @endif
+
+                    <form action="{{ url('productvideo/update/' . $productvideo->id) }}" method="post" enctype="multipart/form-data">
+                        @csrf
+
+                        <input type="hidden" name="oldproductvideo" value="{{$productvideo->video}}">
+                        <input type="hidden" name="product_id" value="{{$productvideo->product_id}}">
+
+                        <div class="form-group row">
+                            <label for="videofile" class="col-md-4 col-form-label text-md-right">Select video to upload</label>
+
+                            <div class="col-md-6">
+                                <input  type="file" name="videofile" id="videofile" class="form-control @error('videofile') is-invalid @enderror"   required  autofocus>
+                                <video id="my-video"  class="video-js" controls preload="auto" width="300" height="auto" data-setup="{}">
+                                    <source src="{{ asset($productvideo->video) }}" type="video/mp4">
+                                 </video>
+                                @error('videofile')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        
+
+                        
+
+                        <div class="form-group row mb-0">
+                            <div class="col-md-8 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    Upload
+                                </button>
+                            </div>
+                        </div>
+                    </form>
