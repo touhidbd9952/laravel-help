@@ -1,4 +1,5 @@
 ////in Controllere
+use Illuminate\Support\Facades\Session;
 
 // Set data in Session
 
