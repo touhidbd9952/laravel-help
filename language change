@@ -1,0 +1,89 @@
+
+/////html page /////
+
+<p>Language:
+                      <?php  
+                        if(session()->get('language')=='en')
+                        {
+                      ?>
+                      <a href="javascript:" onclick="change_language('jp')">Japanese</a>
+                      <?php     
+
+                        }
+                        else {
+                       ?>
+                       <a href="javascript:" onclick="change_language('en')">English</a> 
+                       <?php   
+                          
+                        }
+                      ?> 
+                    </p>
+
+
+<script>
+    function change_language(lan)
+    {
+      $.ajax({
+            type:'GET',
+            url: '/change_language/'+lan,
+            dataType:'json',
+            success:function(response){
+              location.reload();
+            }
+        })
+    }
+  </script>
+
+/////Router////////////////////////////////////////////
+
+Route::get('/change_language/{lan}', [App\Http\Controllers\MainController::class, 'change_language']);
+
+//////////Controller //////////////////////////////////
+
+public function change_language($lan)
+    {
+        $pageurl ="";
+        if($lan =="en")
+        {
+            Session::put('language','en') ; 
+        }
+        else if($lan =="jp"){
+            Session::put('language','jp') ;
+        }
+        //return response()->json('changed');
+        return response()->json($lan);
+    }
+
+public function get_pageurl($en_url,$jp_url)
+    {
+        $pageurl ="";
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $language = "en";
+            Session::put('language',$language) ; 
+            $pageurl  = $en_url;
+        }
+        else if($language =="jp"){
+            $language = "jp";
+            Session::put('language',$language) ;
+            $pageurl  = $jp_url;
+        }
+
+        return $pageurl ;
+    }
+
+public function index()
+    {
+        $page =$this->get_pageurl('en.welcome','jp.welcome');
+
+        return view($page);
+    }
+    public function aboutus()
+    {
+        $page =$this->get_pageurl('en.aboutus','jp.aboutus');
+        
+        return view($page);
+    }
+
