@@ -1,3 +1,6 @@
+////create table by migration//////
+php artisan make:migration create_products_table --create=products
+
 1. create model with migration file
 
 	php artisan make:model ModelName -m
