@@ -1,0 +1,7 @@
+///if you want to controll /register route then do the below task
+//Go to web.php and write below line after
+//Auth::routes();
+
+Route::any('/register', function(){
+    return view('auth.login');
+});
