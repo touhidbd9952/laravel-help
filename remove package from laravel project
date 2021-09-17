@@ -1,0 +1,8 @@
+to remove a package from Laravel using PHP Composer?
+
+
+    1. Remove declaration from file composer.json (in the "require" section)
+    2. Remove any class aliases from file app.php
+    3. Remove any references to the package from my code :-)
+    4. Run composer update
+    5. Run composer dump-autoload
