@@ -1,0 +1,54 @@
+////We need to do below task for SEO
+1. website url:  https://customfabsolutions.com
+2. website title:    Custom Fab Solutions: Custom Fabrication and Design
+3. meta description:  Custom Fab Solutions provides customers with industry-leading and high-quality custom fabrication and design services. Contact us today to learn more.
+4. meta google-site-verification
+
+////Folow below example
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Custom Fabrication and Design | Custom Fab Solutions</title>
+
+<meta name="description" content="Custom Fab Solutions provides customers with industry-leading and high-quality custom fabrication and design services. Contact us today to learn more.">
+
+
+
+<meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+
+
+
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Custom Fabrication and Design | Custom Fab Solutions">
+<meta property="og:description" content="Custom Fab Solutions provides customers with industry-leading and high-quality custom fabrication and design services. Contact us today to learn more.">
+<meta property="og:url" content="https://customfabsolutions.com/">
+<meta property="og:site_name" content="Custom Fabrication">
+<meta property="og:updated_time" content="2021-01-21T20:29:54+00:00">
+<meta property="og:image" content="https://secureservercdn.net/45.40.146.38/s3e.8c7.myftpupload.com/wp-content/uploads/revslider/ATG-Main/CFS-Fusion-Bonding-1980x600.png">
+<meta property="og:image:secure_url" content="https://secureservercdn.net/45.40.146.38/s3e.8c7.myftpupload.com/wp-content/uploads/revslider/ATG-Main/CFS-Fusion-Bonding-1980x600.png">
+<meta property="og:image:width" content="1979">
+<meta property="og:image:height" content="600">
+<meta property="og:image:alt" content="Custom Fab Solutions shop">
+<meta property="og:image:type" content="image/png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Custom Fabrication and Design | Custom Fab Solutions">
+<meta name="twitter:description" content="Custom Fab Solutions provides customers with industry-leading and high-quality custom fabrication and design services. Contact us today to learn more.">
+<meta name="twitter:site" content="@ApolloTechGroup">
+<meta name="twitter:creator" content="@ApolloTechGroup">
+<meta name="twitter:image" content="https://secureservercdn.net/45.40.146.38/s3e.8c7.myftpupload.com/wp-content/uploads/revslider/ATG-Main/CFS-Fusion-Bonding-1980x600.png">
+
+
+<meta name="google-site-verification" content="KkCDNDWTmGLNwwAJI1k-1P2aA6OU1dPe2jOwT3WPm7U">
+
+
+<meta name="generator" content="Powered by Slider Revolution 6.3.5 - responsive, Mobile-Friendly Slider Plugin for WordPress with comfortable drag and drop interface.">
+
+
+<meta name="msapplication-TileImage" content="https://secureservercdn.net/45.40.146.38/s3e.8c7.myftpupload.com/wp-content/uploads/2019/11/cropped-CFS-Favicon-270x270.png">
+
+</head>
