@@ -1,0 +1,26 @@
+///Create FTP Account in Cpanel///
+
+1. go to Cpanel and login. Click on "FTP Accounts"
+  a. Log in : info
+	b. Domain: your domain name
+	c. password: click on "Password Generator" 
+	d. Directory: remove all from directory input box
+	e. Quota: Unlimited
+2. click on "Create FTP Account" button
+
+///Copy FTP Account Info///
+1. click on "Configure FTP Client" option in FTP Accounts
+	
+	FTP Username: info@woodyengineering.com 
+	FTP server: ftp.woodyengineering.com 
+	FTP & explicit FTPS port:  21 
+	FTP password: your created password 
+
+///Use FTP by use FileZila Client///
+open FileZila software
+	
+	Host: FTP server name
+	Username: FTP Username
+	Password: FTP password
+	Port: FTPS port
+
