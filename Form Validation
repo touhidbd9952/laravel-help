@@ -19,3 +19,22 @@ $request->validate([
             'membership_with_other_auctioneers' => 'max:255',
             
         ]);
+$request->validate([
+            'name_en' => 'required|max:255',
+            'name_jp' => 'max:255',
+            'email1' => $request->oldemail1 != $request->email1?'required|max:255|email|unique:bidder_registers':'required|max:255|email',
+            'email2' => $request->oldemail2 != $request->email2?'max:255|email|unique:bidder_registers':'max:255|email',
+            'password' => 'min:6|required_with:confirm_password|same:confirm_password',   
+            'confirm_password' => 'min:6',
+            'company_name_en' => 'required|max:255',
+            'company_name_jp' => 'max:255',
+            'person_incharge_en' => 'required|max:255',
+            'person_incharge_jp' => 'max:255',
+            'country' => 'required|max:255',
+            'zip_code' => 'required|max:255',
+            'address' => 'required|max:500',
+            'phone1' => $request->oldphone1 != $request->phone1?'required|max:255|unique:bidder_registers':'required|max:255',
+            'phone2' => $request->oldphone2 != $request->phone2?'max:255|unique:bidder_registers':'max:255',
+            'fax' => 'max:255',
+            'membership_with_other_auctioneers' => 'max:255',
+        ]);
