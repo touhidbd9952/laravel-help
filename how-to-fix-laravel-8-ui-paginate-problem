@@ -1,0 +1,8 @@
+just make sure you have this in your AppServiceProvider.
+
+use Illuminate\Pagination\Paginator;
+
+public function boot()
+{
+     Paginator::useBootstrap();
+}
