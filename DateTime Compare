@@ -1,0 +1,47 @@
+///Laravel Carbon eq() equals/////
+..............................................
+
+        $date1 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $date2 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $result = $date1->eq($date2);  //true or false
+
+///Laravel Carbon ne() not equals//////
+..............................................
+
+        $date1 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $date2 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 11:20:00');
+
+        $result = $date1->ne($date2); //true or false
+
+
+///Laravel Carbon gt() greater than//////
+..............................................
+
+        $date1 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 11:20:00');
+
+        $date2 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $result = $date1->gt($date2); //true or false
+
+
+///Laravel Carbon gte() greater than or equals//////
+..............................................
+
+        $date1 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $date2 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $result = $date1->gte($date2); //true or false
+
+
+///Laravel Carbon lt() less than ///////
+..............................................
+
+	$date1 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 09:20:00');
+
+        $date2 = Carbon::createFromFormat('m/d/Y H:i:s', '12/01/2020 10:20:00');
+
+        $result = $date1->lt($date2); //true or false
