@@ -1,3 +1,6 @@
+$auction_startdate = date('Y-m-d H:i:s',strtotime($actionpro->start_time_of_auction)); ///result:  10/07/2021 3:00 PM --> 2021-10-07 15:00:00
+
+
 ///Laravel Carbon eq() equals/////
 ..............................................
 
