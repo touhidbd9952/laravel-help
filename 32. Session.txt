@@ -40,3 +40,18 @@ if (Session::has('coupon'))
         <strong>GrandTotal: </strong> ${{ $cartTotal }}
 @endif
 
+
+
+
+//////Here's a solution that will test every 500 milliseconds if the user session has expired.////////
+
+ function CheckSession() {
+            var session = '<%=Session["username"] != null%>';
+            if (session == false) {
+                alert("Your Session has expired");
+                window.location = "login.aspx";
+            }
+        }
+
+setInterval(CheckSession(),500);
+
