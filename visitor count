@@ -1,0 +1,51 @@
+
+////visitor table in db/////
+Schema::create('visitors', function (Blueprint $table) {
+            $table->id();
+            $table->string('visitor_ip')->nullable();
+            $table->string('visit_date')->nullable();
+            $table->integer('total_visit');
+            $table->timestamps();
+        });
+        
+////in Controller/////
+public function set_visitor()
+    {
+        $visitor_ip = $_SERVER['REMOTE_ADDR'];
+        $visitorslist = Visitor::all();
+        $previous_visitor = 0;
+        if(count($visitorslist)>0)
+        {
+            for($i=0;$i<count($visitorslist);$i++)
+            {
+                if($visitor_ip == $visitorslist[$i]->visitor_ip)
+                {
+                    $previous_visitor = 1;
+                    //if exist, time update
+                    if(date("Y-m-d") != $visitorslist[$i]->updated_at)
+                    {
+                        Visitor::find($visitorslist[$i]->id)->update([
+                            'updated_at'=> Carbon::now(),
+                        ]);
+                    }
+                    
+                }
+                else{
+                    $previous_visitor = 0;
+                }
+            }
+        }
+        //if not exist, new insert
+        if($previous_visitor == 0)
+        {
+            Visitor::insert([
+                'visitor_ip'=> $_SERVER['REMOTE_ADDR'],
+                'visit_date'=> Carbon::now(),
+                'total_visit'=> 1,
+                'created_at'=> Carbon::now(),
+            ]);
+        }
+        //$visitorslist = Visitor::all();
+        //return $visitorslist;
+        
+    }
