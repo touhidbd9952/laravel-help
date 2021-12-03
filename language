@@ -1,0 +1,101 @@
+///Create Language Function
+
+public function get_pagelanguage()
+    {
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_Login_ID'] = "Login ID";
+            $pagelanguage['LG_Password'] = "Password";
+            $pagelanguage['LG_Login'] = "Login";
+            $pagelanguage['LG_Forgot_Your_Password'] = "Forgot Your Password";
+            $pagelanguage['LG_Auction_No'] = "Auction No";
+            $pagelanguage['LG_Maker'] = "Maker";
+            $pagelanguage['LG_Year'] = "Year";
+            $pagelanguage['LG_Hour'] = "Hour";
+            $pagelanguage['LG_Delivery_Yard'] = "Delivery Yard";
+            $pagelanguage['LG_Releasing_Charge'] = "Releasing Charge";
+            $pagelanguage['LG_Model'] = "Model";
+            $pagelanguage['LG_Serial'] = "Serial";
+            $pagelanguage['LG_Current_Bid'] = "Current Bid";
+            $pagelanguage['LG_Bidder_No'] = "Bidder No";
+            $pagelanguage['LG_Bids'] = "Bids";
+            $pagelanguage['LG_Bid'] = "Bid";
+            $pagelanguage['LG_Time_Left'] = "Time Left";
+            $pagelanguage['LG_Feature'] = "Feature";
+            $pagelanguage['LG_Comment'] = "Comment";
+            $pagelanguage['LG_Bidding_Status'] = "Bidding Status";
+            $pagelanguage['LG_Category_List'] = "Category List";
+            $pagelanguage['LG_Item_Search'] = "Item Search";
+            $pagelanguage['LG_Search'] = "Search";
+            $pagelanguage['LG_Choice'] = "Choice";
+            $pagelanguage['LG_ALL'] = "ALL";
+            $pagelanguage['LG_New_Today'] = "New Today";
+            $pagelanguage['LG_End_soon'] = "End soon";
+            $pagelanguage['LG_Reload'] = "Reload";
+            $pagelanguage['LG_Refresh'] = "Refresh";
+            $pagelanguage['LG_RemoveFromselection'] = "Remove From selection";
+            $pagelanguage['LG_AddToSelection'] = "Add to selection";
+            $pagelanguage['LG_JPY'] = "JPY";
+            $pagelanguage['LG_You_are_currently_the_highest_bidder'] = "You are currently the highest bidder";
+            $pagelanguage['LG_You_are_not_currently_the_highest_bidder'] = "You are not currently the highest bidder";
+            $pagelanguage['LG_You_lose_the_bid'] = "You lose the bid";
+            $pagelanguage['LG_Sorry_No_Auction_Data_Found'] = "Sorry!!! No Auction Data Found";
+            
+
+            
+
+            return $pagelanguage;
+        }
+        else
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_Login_ID'] = "ログインID";
+            $pagelanguage['LG_Password'] = "パスワード";
+            $pagelanguage['LG_Login'] = "ログイン";
+            $pagelanguage['LG_Forgot_Your_Password'] = "パスワードをお忘れですか";
+            $pagelanguage['LG_Auction_No'] = "オークション番号";
+            $pagelanguage['LG_Maker'] = "メーカー";
+            $pagelanguage['LG_Year'] = "年";
+            $pagelanguage['LG_Hour'] = "時間";
+            $pagelanguage['LG_Delivery_Yard'] = "配達ヤード";
+            $pagelanguage['LG_Releasing_Charge'] = "料金の解放";
+            $pagelanguage['LG_Model'] = "モデル";
+            $pagelanguage['LG_Serial'] = "シリアル";
+            $pagelanguage['LG_Current_Bid'] = "現在の入札";
+            $pagelanguage['LG_Bidder_No'] = "入札者番号";
+            $pagelanguage['LG_Bids'] = "入札";
+            $pagelanguage['LG_Bid'] = "入札";
+            $pagelanguage['LG_Time_Left'] = "残り時間";
+            $pagelanguage['LG_Feature'] = "特徴";
+            $pagelanguage['LG_Comment'] = "コメント";
+            $pagelanguage['LG_Bidding_Status'] = "入札状況";
+            $pagelanguage['LG_Category_List'] = "カテゴリリスト";
+            $pagelanguage['LG_Item_Search'] = "アイテム検索";
+            $pagelanguage['LG_Search'] = "検索";
+            $pagelanguage['LG_Choice'] = "選択";
+            $pagelanguage['LG_ALL'] = "全て";
+            $pagelanguage['LG_New_Today'] = "今日の新機能";
+            $pagelanguage['LG_End_soon'] = "もうすぐ終了";
+            $pagelanguage['LG_Reload'] = "リロード";
+            $pagelanguage['LG_Refresh'] = "更新";
+            $pagelanguage['LG_RemoveFromselection'] = "選択から削除";
+            $pagelanguage['LG_AddToSelection'] = "選択に追加";
+            $pagelanguage['LG_JPY'] = "日本円";
+            $pagelanguage['LG_You_are_currently_the_highest_bidder'] = "あなたは現在最高入札者です";
+            $pagelanguage['LG_You_are_not_currently_the_highest_bidder'] = "あなたは現在、最高入札者ではありません";
+            $pagelanguage['LG_You_lose_the_bid'] = "あなたは入札を失います";
+            $pagelanguage['LG_Sorry_No_Auction_Data_Found'] = "ごめん！！！ オークションデータが見つかりません";
+
+            return $pagelanguage;
+        }
+    }
+    
+    
+    ////// Get Language data
+    $pagelanguage = $this->get_pagelanguage(); //dd($pagelanguage);
+    return view($page,compact('auctionproducts','pagelanguage'));
+    
+    
