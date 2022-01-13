@@ -1,0 +1,95 @@
+///in Controller//////
+
+public function __construct()
+    {
+        //base url
+        $base_url = URL::to('/'); 
+        Session::put('base_url',$base_url) ;
+        //$base_url = Session::get('base_url');
+
+        //language
+        if (Session::has('language')) 
+        {
+            $language = "";
+            $language = Session::get('language');
+            if($language =="")
+            {
+                $language = "en";
+                Session::put('language',$language) ;
+            }
+        }
+        ///////////////////////////////////////////
+        
+
+    }
+    public function change_language($lan)
+    {
+        $pageurl ="";
+        if($lan =="en")
+        {
+            Session::put('language','en') ; 
+        }
+        else if($lan =="jp"){
+            Session::put('language','jp') ;
+        }
+        //return response()->json('changed');
+        return response()->json($lan);
+    }
+    
+    public function get_pageurl($en_url,$jp_url)
+    {
+        $pageurl ="";
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $language = "en";
+            Session::put('language',$language) ; 
+            $pageurl  = $en_url;
+        }
+        else if($language =="jp"){
+            $language = "jp";
+            Session::put('language',$language) ;
+            $pageurl  = $jp_url;
+        }
+
+        return $pageurl ;
+    }
+    public function get_pagelanguage()
+    {
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_Login_ID'] = "Login ID";
+            $pagelanguage['LG_Password'] = "Password";
+            $pagelanguage['LG_Login'] = "Login";
+            
+            return $pagelanguage;
+        }
+        else
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_Login_ID'] = "ログインID";
+            $pagelanguage['LG_Password'] = "パスワード";
+            $pagelanguage['LG_Login'] = "ログイン";
+            
+            return $pagelanguage;
+        }
+    }
+    
+    public function index()
+    {
+        $this->set_visitor();
+
+        $page =$this->get_pageurl('fontend.en.welcome','fontend.jp.welcome');   //dd('paisi');
+        $pagelanguage = $this->get_pagelanguage(); //dd($pagelanguage);
+        $notice = Notice::where('status',1)->get(); 
+        
+        return view($page,compact('notice','pagelanguage'));
+    }
+    
+    ////in view page/////
+    
+    {{$pagelanguage['LG_Smartphone_Access']}}
