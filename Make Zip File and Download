@@ -1,0 +1,58 @@
+use ZipArchive;
+
+//file download
+    public function downloadZip($id)
+    {
+        $data = Product_multiple_image::where('product_id',$id)->get();
+        foreach($data as $key => $value)
+        {
+            $imgarr[] =  $value->image;
+        }
+
+        $timeName = time();
+        $ziplink = $this->converToZip($imgarr,$timeName);
+        //return redirect($ziplink);
+
+        //$response = response()->download('./uploads/images/product/multipleimage/'. $timeName . '.zip');
+        $response = response()->download('./uploads/zipfiles/'. $timeName . '.zip');
+        return $response;
+    }
+    public function converToZip($imgarr,$timeName)
+    {   //dd($imgarr);
+        $zip = new ZipArchive;
+        //$storage_path = 'uploads/images/product/multipleimage';
+        $storage_path = 'uploads/zipfiles';
+        //$timeName = time();
+        $zipFileName = $storage_path . '/' . $timeName . '.zip';
+        $zipPath = asset($zipFileName);
+        $res = $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE); 
+        if ($res) 
+        {
+            foreach ($imgarr as $file) 
+            {
+                $file = (string)$file;
+                $zip->addFile($file,basename($file));
+            }
+            $zip->close();
+
+            if ($zip->open($zipFileName) === true) {
+                return $zipPath;
+            } else {
+                return false;
+            }
+        }
+    }
+    //clear memory
+    public function clear_memory()
+    {
+        //clear zip file from the directory
+        File::cleanDirectory('./uploads/zipfiles');
+        return response()->json(array(
+            'result' => "Memory clear",
+        ));
+    }
+    
+    ////////in view page////////
+    <a href="{{url('auction/downloadZip/'.$p->id)}}" class="btn download">
+          Download Photos
+    </a>
