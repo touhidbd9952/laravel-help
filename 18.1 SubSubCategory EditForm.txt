@@ -1,0 +1,194 @@
+<form action="{{url('subsubcategory/update/'.$subsubcategories->id)}}" enctype="multipart/form-data"  method="POST" class="form-horizontal">
+
+                        @csrf
+
+                        <input type="hidden" name="old_img" value="{{$subsubcategories->image}}">
+                        <input type="hidden" name="old_sm_img" value="{{$subsubcategories->image_sm}}">
+
+                    <div class="card-body">
+                    
+                        <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Category</label>
+                            <div class="col-sm-6">
+                                <select name="cat_id" id="categoryList" class="form-control @error('cat_id') is-invalid @enderror">
+                                    <option value="0">---</option>
+                                   @foreach($categories as $cat)
+                                    <option value="{{$cat->id}}" {{$subsubcategories->cat_id == $cat->id?"selected":""}}>{{$cat->title_en}}</option>
+                                   @endforeach    
+                                </select>
+                                @error('cat_id')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Subcategory</label>
+                            <div class="col-sm-6">
+                                <select name="subcat_id" id="subcategoryList" autocomplete="off" class="form-control @error('subcat_id') is-invalid @enderror" required >
+                                    @foreach ($subcategories as $subcat)
+                                        <option value="{{ $subcat->id }}" {{$subsubcategories->subcat_id == $subcat->id?"selected":""}} class='parent-{{ $subcat->cat_id }} subcategory'>{{ $subcat->title_en }}</option>
+                                    @endforeach
+                                </select>
+                                
+                                @error('subcat_id')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Title (en)</label>
+                            <div class="col-sm-6">
+                                <input type="text"  name="title_en" value="{{$subsubcategories->title_en}}" class="form-control @error('title_en') is-invalid @enderror"
+                                    placeholder="Title Here">
+                                @error('title_en')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div> 
+
+                        <div class="form-group row">
+                            <label for="title"
+                                class="col-sm-3 text-end control-label col-form-label">Title (JP)</label>
+                            <div class="col-sm-6">
+                                <input type="text"  name="title_jp" value="{{$subsubcategories->title_jp}}" class="form-control @error('title_jp') is-invalid @enderror"
+                                    placeholder="Title In Japanese Here">
+                                @error('title_jp')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Sub-Subcategory Image</label>
+                            <div class="col-sm-6">
+                                <input type="file"  name="image" id="imgInp"  class="form-control @error('image') is-invalid @enderror" 
+                                onchange="loadFile(event)" autocomplete="off">
+                                <img src="{{asset($subsubcategories->image)}}" id="output" style="width: 300px;height:auto;margin-top:10px;">
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Publish status</label>
+                            <div class="col-sm-6">
+                                <select name="publishstatus" class="form-control @error('publishstatus') is-invalid @enderror">
+                                    <option value="1" {{$subsubcategories->publishstatus==1?'selected':''}}>Publish</option>
+                                    <option value="0" {{$subsubcategories->publishstatus==0?'selected':''}}>Unpublish</option>
+                                </select>
+                                @error('publish_status')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="border-top">
+                        <div class="card-body">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </form>
+                
+  <script>
+    var loadFile = function(event) {
+      var output = document.getElementById('output');
+      output.src = URL.createObjectURL(event.target.files[0]);
+      output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+    };
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script>
+      //$("#subcategoryList").val("");
+      $('#categoryList').on('change', function () {
+      $("#subcategoryList").attr('disabled', false); //enable subcategory select
+      $("#subcategoryList").val("");
+      $(".subcategory").attr('disabled', true); //disable all category option
+      $(".subcategory").hide(); //hide all subcategory option
+      $(".parent-" + $(this).val()).attr('disabled', false); //enable subcategory of selected category/parent
+      $(".parent-" + $(this).val()).show(); 
+  });
+  </script>
+  
+  ///////Controller///////
+  public function update(Request $request, $id)
+    {   
+        //validation  
+        $request->validate([
+            'title_en' => 'required|max:255',
+            'title_jp' => 'required|max:255',
+            'cat_id' => 'required',
+            'subcat_id' => 'required',
+        ],
+        [
+            'title_en.required' => 'SubCategory Title In English Required',
+            'title_en.max' => 'Maximum 255 chars',
+            'title_jp.required' => 'SubCategory Title In Japanese Required',
+            'title_jp.max' => 'Maximum 255 chars',
+            'cat_id.required' => 'Category Required',
+            'subcat_id.required' => 'Subcategory Required',
+            
+        ]);
+        //dd($request->all());
+        $image = "";
+        $image_path="";
+        $oldimg ="";
+        $image = $request->file('image');
+        if($image !="")
+        {
+            $oldimg = $request->old_img; 
+            $oldsmimg = $request->old_sm_img;
+            if(file_exists($oldimg))
+            {
+                unlink($oldimg);
+            }
+            if(file_exists($oldsmimg))
+            {
+                unlink($oldsmimg);
+            }
+            $ext = $image->getClientOriginalExtension();
+            if($ext == 'JPG'||$ext == 'jpg'||$ext == 'jpeg'||$ext == 'JPEG'||$ext == 'png'||$ext == 'PNG'||$ext == 'gif')
+            {
+                $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
+                Image::make($image)->resize(352,258)->save('uploads/images/subsubcategory/'.$name_gen);
+                Image::make($image)->resize(40,40)->save('uploads/images/subsubcategory_sm/'.$name_gen);
+                
+                $image_path = 'uploads/images/subsubcategory/'.$name_gen;
+                $sm_image_path = 'uploads/images/subsubcategory_sm/'.$name_gen;
+            }
+            else{
+                $image_path =  $request->old_img;
+                $sm_image_path =  $request->old_sm_img;
+            }
+        }
+        else{
+            $image_path =  $request->old_img;
+            $sm_image_path =  $request->old_sm_img;
+        }
+
+        Subsubcategory::find($id)->update([
+            'cat_id'=> $request->cat_id,
+            'subcat_id'=> $request->subcat_id,
+            'title_en'=>$request->title_en,
+            'title_jp'=>$request->title_jp,
+            'slug_en'=> strtolower(str_replace(' ','-',$request->title_en)),
+            'slug_jp'=> strtolower(str_replace(' ','-',$request->title_jp)),
+            'image'=>$image_path,
+            'image_sm'=>$sm_image_path,
+            'publishstatus'=>$request->publishstatus,
+            'user_id'=>Auth::user()->id,
+            'updated_at'=>Carbon::now(),
+        ]);
+        return Redirect()->back()->with('success','Updated successfully');
+    }
+  
