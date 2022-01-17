@@ -1,0 +1,53 @@
+//////download button image///////
+https://www.nhk.or.jp/lesson/common/images/btn_listen.png
+
+///////add style////////
+<style>
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-panel {
+  background-color: #FFFFFF;
+  color: #a0276e;
+}
+.playbtn {
+    background-image: url("../uploads/images/btn_listen.png");
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 88px auto;
+	width: 44px;
+    height: 40px;
+	overflow: hidden;
+}
+.play-button {
+    width: 44px;
+    height: 40px;
+    background-color: #42c253;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+	z-index:-1
+	overflow: hidden;
+}
+</style>
+
+///////add script/////////
+<script>
+ function playaudion(url)
+ { 
+  //stop all
+  var sounds = document.getElementsByTagName('audio');
+  for(i=0; i<sounds.length; i++) sounds[i].pause();
+  //play selected
+  var audio = document.createElement('audio');
+  audio.style.display = "none";
+  audio.src = document.getElementById('baseurl').value + url;
+  audio.autoplay = true;
+  audio.onended = function(){
+    audio.remove() //Remove when played.
+  };
+  document.body.appendChild(audio);
+}
+ </script>
+ 
+ ///////use audio////////
+ <div class="playbtn play-button" onclick="playaudion('/2/a1.mp3')"  style="float:right;margin-right: -45px;"></div>
