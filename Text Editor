@@ -1,0 +1,33 @@
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" rel="stylesheet">
+<!-- summernote -->
+<link rel="stylesheet" href="{{ asset('backend') }}/dist/css/summernote-bs4.css">
+
+<div class="form-group row">
+    <label for="fname"
+        class="col-sm-3 text-end control-label col-form-label">Details Description (en) <span class="red">*</span></label>
+    <div class="col-sm-6">
+        <textarea  name="long_descp_en" id="long_descp_en" autocomplete="off" class="form-control @error('long_descp_en') is-invalid @enderror"
+             style="height:250px;overflow:scroll;">{{old('long_descp_en')}}</textarea>
+        @error('long_descp_en')
+            <span class="text-danger"> {{$message}}  </span>
+        @enderror
+    </div>
+</div>
+
+<!-- Summernote -->
+<script src="{{ asset('backend') }}/dist/js/summernote-bs4.js"></script>
+<!-- CodeMirror -->
+<script src="{{ asset('backend') }}/dist/js/codemirror.js"></script>
+    
+<script>
+  $(function () {
+    // Summernote
+    $('#long_descp_en,#detail_des_jp').summernote()
+
+    // CodeMirror
+    CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
+      mode: "htmlmixed",
+      theme: "monokai"
+    });
+  })
+</script>
