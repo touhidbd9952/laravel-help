@@ -1,0 +1,133 @@
+<div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Product Size <span class="red">*</span></label>
+                            <div id="psize" class="col-sm-6">
+                                <input type="text"  name="product_size" data-role="tagsinput" id="tagPlaces1" autocomplete="off" class="form-control @error('product_size') is-invalid @enderror">
+                                <input type="hidden" name="ppsize" id="ppsize">
+                                @error('product_size')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Product Color <span class="red">*</span></label>
+                            <div id="pcolor" class="col-sm-6">
+                                <input type="text"  name="product_color" data-role="tagsinput" id="tagPlaces2" autocomplete="off" class="form-control @error('product_color') is-invalid @enderror">
+                                <input type="hidden" name="ppcolor" id="ppcolor">
+                                @error('product_color')
+                                    <span class="text-danger"> {{$message}}  </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+<script>
+    $("#ppsize").val("");
+    $("#ppcolor").val("");
+    $(function()
+    { 
+        $("#ppsize").val("");
+        // ::: TAGS BOX
+        $("#psize input").on({
+        focusout : function() {
+            var txt = this.value.replace(/[^a-z0-9\+\-\.\#]/ig,''); // allowed characters
+            if(txt) 
+            {
+                $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
+                //add value with commas
+                var ppsize = document.getElementById('ppsize').value;
+                ppsize += txt.toLowerCase()+',';
+                document.getElementById('ppsize').value = ppsize;
+            }
+            this.value = "";
+        },
+        keyup : function(ev) {
+            // if: comma|enter (delimit more keyCodes with | pipe)
+            if(/(188|13)/.test(ev.which)) $(this).focusout(); 
+        }
+        });
+        $('#psize').on('click', 'span', function() 
+        {
+          var searchword = $(this).text();
+          if(confirm("Remove "+ $(this).text() +"?")) 
+          {
+            var ppsize = document.getElementById('ppsize').value; 
+            var array = ppsize.split(',');                          
+            if(array.includes(searchword))
+            { 
+                var i = 0;
+                while (i < array.length) 
+                {
+                    if (array[i] === searchword) 
+                    {
+                        array.splice(i, 1);
+                    } 
+                    else 
+                    {
+                      ++i;
+                    }
+                }
+            }
+            $("#ppsize").val("");
+            document.getElementById('ppsize').value = array.toString();
+
+              $(this).remove(); 
+          }
+        });
+    });
+
+    $(function()
+    { 
+        $("#ppcolor").val("");
+        // ::: TAGS BOX
+        $("#pcolor input").on({
+        focusout : function() {
+            var txt = this.value.replace(/[^a-z0-9\+\-\.\#]/ig,''); // allowed characters
+            if(txt) 
+            {
+                $("<span/>", {text:txt.toLowerCase(), insertBefore:this});
+
+                //add value with commas
+                var ppcolor = document.getElementById('ppcolor').value;
+                ppcolor += txt.toLowerCase()+',';
+                document.getElementById('ppcolor').value = ppcolor;
+            }
+            this.value = "";
+        },
+        keyup : function(ev) {
+            // if: comma|enter (delimit more keyCodes with | pipe)
+            if(/(188|13)/.test(ev.which)) $(this).focusout(); 
+        }
+        });
+        $('#pcolor').on('click', 'span', function() 
+        {
+            var searchword = $(this).text();
+            if(confirm("Remove "+ $(this).text() +"?"))
+            { 
+                var ppcolor = document.getElementById('ppcolor').value; 
+                var array = ppcolor.split(',');                          
+                if(array.includes(searchword))
+                { 
+                    var i = 0;
+                    while (i < array.length) 
+                    {
+                        if (array[i] === searchword) 
+                        {
+                            array.splice(i, 1);
+                        } 
+                        else 
+                        {
+                        ++i;
+                        }
+                    }
+                }
+                $("#ppcolor").val("");
+                document.getElementById('ppcolor').value = array.toString();
+
+                $(this).remove();
+            } 
+        });
+    });
+     </script>
