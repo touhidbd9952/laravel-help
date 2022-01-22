@@ -24,3 +24,6 @@ public function search(Request $request)
         
         return view('welcome', compact('posts'));
     }
+    
+    //use searching in multiple column
+    Post::whereLike(['name', 'text', 'author.name', 'tags.name'], $searchTerm)->get();
