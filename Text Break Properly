@@ -1,0 +1,4 @@
+p.test1 {
+  width: 140px; 
+  word-break: keep-all;
+}
