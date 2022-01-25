@@ -1,0 +1,10 @@
+Go to  'expire_on_close' existing in 'config/session.php'   and Do below task
+'expire_on_close' => true (in config/session.php) 
+
+if you want users session to expire or destroy only 
+when the entire browser is closed not the tab. 
+If only the tab is closed it wont destroy the 
+session except the entire browser is closed.
+
+After changing any config, you have to run: 
+    php artisan config:clear and php artisan cache:clear
