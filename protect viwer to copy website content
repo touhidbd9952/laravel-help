@@ -1,0 +1,22 @@
+//to protect simple user to copy wesite content
+//do the below task
+
+//add below script at the bottom of master page
+<script language="javascript">
+document.onmousedown=disableclick;
+status="Right Click Disabled";
+Function disableclick(event)
+{
+  if(event.button==2)
+   {
+     alert(status);
+     return false;    
+   }
+}
+</script>
+
+// add oncontextmenu in body
+
+<body oncontextmenu="return false">
+...
+</body>
