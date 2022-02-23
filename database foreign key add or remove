@@ -1,0 +1,11 @@
+//remove foreign key
+ALTER TABLE products DROP FOREIGN KEY products_ibfk_1;
+
+//create foreign key
+ALTER TABLE skproducts ADD FOREIGN KEY (productid) REFERENCES products(id);
+ALTER TABLE skbrands ADD FOREIGN KEY (brandid) REFERENCES brands(id);
+ALTER TABLE skcategories ADD FOREIGN KEY (categoryid) REFERENCES categories(id);
+ALTER TABLE skdelivery_places ADD FOREIGN KEY (deliveryplaceid) REFERENCES delivery_places(id);
+ALTER TABLE skproduct_woners ADD FOREIGN KEY (productwonersid) REFERENCES product_woners(id);
+ALTER TABLE skproduct_multiple_images ADD FOREIGN KEY (productimageid) REFERENCES product_multiple_images(id);
+ALTER TABLE skproduct_videos ADD FOREIGN KEY (productvideoid) REFERENCES product_videos(id);
