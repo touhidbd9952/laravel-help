@@ -1,0 +1,38 @@
+//////For Testing Purpose, Sold product need to set as Unsold////
+
+UPDATE products set auction_max_autobid_amount=0,
+            auction_max_bid_amount=0,
+            auction_max_bidder_id=0,
+            auction_2ndmax_bid_amount=0,
+            auction_2ndmax_bidder_id=0,
+            bid_start_price =0,
+            bid_increase_decrease_price=0,
+            higest_bidding_price = 0,
+            auction_date = NULL,
+            start_time_of_auction ="",
+            end_time_of_auction ="",
+            auction_start = NULL,
+            auction_end = NULL,
+            auction_product=0,
+            auction_charge = 0,
+            yard_charge = 0,
+            extra_charge = 0,
+            entry_fee = 0,
+            inspection_fee = 0,
+            other_fee = 0,
+            bid_system = "bid",
+            total_bids =0,
+            bidding_result = "",
+            final_result = "unsold";
+
+
+/////delete skauction_histories data/////
+TRUNCATE TABLE `skauction_histories`;
+
+/////delete auction_histories data/////
+
+1. Just uncheck Enable foreign key checks
+ 
+TRUNCATE TABLE `auction_histories`;
+
+
