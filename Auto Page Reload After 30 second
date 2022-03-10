@@ -1,0 +1,41 @@
+//reload or refresh page  start
+  $( document ).ready(function() {
+    check_bidderloginstatus();
+    check_bidderLogin_from_product_show();
+
+    function CheckSession() {
+            var session = '<%=Session["logger_id"] != null%>';
+            if (session == false) {
+                alert("Your Session has expired");
+                //window.location = "login.aspx";
+                location.reload();
+            }
+        }
+
+  setInterval(CheckSession(),500);
+
+
+        //reload or refresh page  start
+      let time = new Date().getTime();
+    const setActivityTime = (e) => {
+      time = new Date().getTime();
+    }
+    document.body.addEventListener("mousemove", setActivityTime);
+    document.body.addEventListener("keypress", setActivityTime);
+
+    const refresh = () => {
+      if (new Date().getTime() - time >= 30000) {
+        //window.location.reload(true);
+        //location.reload();
+        reload_page();
+
+      } else {
+        setTimeout(refresh, 10000);
+      }
+    }
+
+    setTimeout(refresh, 10000);
+    //reload or refresh page  end
+  
+
+   });
