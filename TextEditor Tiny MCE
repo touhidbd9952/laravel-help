@@ -22,3 +22,6 @@ https://adminlte.io/themes/v3/plugins/summernote/summernote-bs4.min.js
     });
   })
 </script>
+
+////////////View data////////////
+<p><?php echo $p->detail_des_jp ?></p>
