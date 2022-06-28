@@ -1,0 +1,85 @@
+<script>
+function auctionmonitoring()
+{
+    $.ajax({
+            type:'GET',
+            url: '/auction/monitor_forview',
+            dataType:'json',
+            success:function(data)
+            {    
+                $.each(data.products,function(key,aproduct){   //alert(Date.parse(aproduct.start_time_of_auction));
+            
+
+                    document.getElementById('totalbids'+aproduct.id).innerHTML = "Total Bid: "+aproduct.total_bids;
+                    document.getElementById('currentbidamount'+aproduct.id).innerHTML = "  C-Bid : "+parseInt(aproduct.auction_max_bid_amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    document.getElementById('autobidamount'+aproduct.id).innerHTML = "  A-Bid : "+parseInt(aproduct.auction_max_autobid_amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    
+                    //auction time calculation start 
+                    var auction_startdate = new Date(aproduct.start_time_of_auction);  
+                    auction_startdate = auction_startdate.getTime() / 1000;   
+                    var auction_enddate = new Date(aproduct.end_time_of_auction);
+                    auction_enddate = auction_enddate.getTime() / 1000; 
+                    var today_date = new Date(Date.now());   
+                    today_date = today_date.getTime() / 1000;
+
+                    var timeduration="";
+                    var day = 86400;
+                    var hour = 3600;
+                    var minute = 60;
+                    var daysout=0;
+                    var hoursout=0;
+                    var minutesout=0;
+                    var secondsout =0;
+                    var timeleft="";
+                    if(today_date < auction_startdate)
+                    {
+                        //start - end
+                        //alert('paisi-1');
+                        timeduration =  auction_enddate - auction_startdate;
+
+                        if(timeduration <=0){timeleft = 0;}
+                        else
+                        {
+                            daysout = Math.floor(timeduration / day);
+                            hoursout = Math.floor((timeduration - daysout * day)/hour);
+                            minutesout = Math.floor((timeduration - daysout * day - hoursout * hour)/minute);
+                            secondsout = Math.floor((timeduration - daysout * day - hoursout * hour - minutesout * minute)/60);
+                            if(daysout>0){timeleft=daysout+"d";}
+                            if(hoursout>0){timeleft +="/"+hoursout+"h/";}
+                            if(minutesout>0){timeleft += minutesout+"m";}
+                            //if(secondsout>0){$timeleft += $secondsout+" second";}
+                        }
+                    }
+                    else if(today_date >= auction_startdate && today_date <= auction_enddate)
+                    {
+                        //end - today
+                        //alert('paisi-2');
+                        timeduration =  auction_enddate - today_date;
+
+                        if(timeduration <=0){timeleft = 0;}
+                        else{
+                            daysout = Math.floor(timeduration / day);
+                            hoursout = Math.floor((timeduration - daysout * day)/hour);
+                            minutesout = Math.floor((timeduration - daysout * day - hoursout * hour)/minute);
+                            secondsout = Math.floor((timeduration - daysout * day - hoursout * hour - minutesout * minute)/60);
+                            if(daysout>0){timeleft=daysout+"d";}
+                            if(hoursout>0){timeleft +="/"+hoursout+"h/";}
+                            if(minutesout>0){timeleft += minutesout+"m";}
+                            if(secondsout>0){timeleft += secondsout+" second";}
+                        }
+                    }
+                    else {
+                        //old dated
+                        //alert('paisi-3');
+                        timeleft = 0;
+                    }
+                    document.getElementById('timeleft'+aproduct.id).innerHTML = "Time Left: "+timeleft;
+
+                    //auction time calculation end
+              });
+              
+            }
+        })
+        setTimeout(auctionmonitoring, 6000);
+}
+</script>
