@@ -1,0 +1,16 @@
+    foreign() – Pass field name which you want to foreign key constraint.
+    references() – Pass linking table field name.
+    on() – Linking table name.
+    onDelete(‘cascade’) – Enable deletion of attached data.
+
+public function up()
+{
+    Schema::create('states', function (Blueprint $table) {
+         $table->id();
+         $table->unsignedBigInteger('country_id');
+         $table->string('name');
+         $table->timestamps();
+         $table->foreign('country_id')
+              ->references('id')->on('countries')->onDelete('cascade');
+    });
+}
