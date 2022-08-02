@@ -1,0 +1,18 @@
+///// base url in css///
+//inner css
+#gnavi {background-image: url({{ asset('/') }}fontend/images/jpn/gnavi.png) !important;}
+//outer css
+#gnavi {
+  margin: 0px;
+  background-image: url(../fontend/images/gnavi.png);
+  background-repeat: no-repeat;
+  background-position: 0px 5px;
+  height: 267px;
+  width: 250px;
+  text-indent: -9999px;
+}
+
+///// base url in javascript //////
+let baseurl = '{{route('/')}}';
+window.open(baseurl+'/product/product_video?id='+pid,'newWindow2','toolbar=no,statusbar=no,status=no,scroll=yes,scrollbars=yes,location=no,directories=no,menubar=no,resizable=yes,width='+ w_size +',height='+h_size+',left='+l_position+',top='+t_position);
+      
