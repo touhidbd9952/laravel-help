@@ -1,0 +1,2 @@
+//clear config
+php artisan config:clear
