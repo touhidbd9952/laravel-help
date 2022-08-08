@@ -1,0 +1,53 @@
+////////419 Page Expired/////////
+
+ ////////CSRF and expired, go to login forms/////////
+ This below line will refresh the page when it gets to the end of the session. 
+The refreshed page will have a new session and a new csrf token. 
+This way, your login form is always valid.
+
+<meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
+
+
+or 
+you can do the below task
+
+
+
+app/Http/Middleware/VerifyCsrfToken.php
+-----------------------------------------------------------------------------------
+
+
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Illuminate\Support\Facades\Auth;
+
+class VerifyCsrfToken extends Middleware
+{
+    /**
+     * The URIs that should be excluded from CSRF verification.
+     *
+     * @var array
+     */
+    protected $except = [
+        //
+    ];
+    
+    public function handle($request, Closure $next)
+    {
+        if($request->route()->named('logout')) {
+
+            if (!Auth::check() || Auth::guard()->viaRemember()) {
+
+                $this->except[] = route('logout');
+                
+            }   
+
+        }
+
+        return parent::handle($request, $next);
+    }
+}
