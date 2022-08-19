@@ -1,0 +1,187 @@
+///////Redirecting To Route login//////
+return redirect()->route('login');
+
+/////// For a route : profile/{id} /////////
+return redirect()->route('profile', ['id' => 1]);
+
+////// For a route : profile/{id} ////////
+ 
+return redirect()->route('profile', [$user]);
+
+return redirect()->action([HomeController::class, 'index']);
+
+return redirect()->action([UserController::class, 'profile'], ['id' => 1]);
+
+return redirect('/dashboard')->with('status', 'Profile updated!');
+
+
+/////html form////////
+<form action="{{route('auction.store')}}" method="post" enctype="multipart/form-data" onsubmit="return convertnumber()">
+<form action="{{route('auction.update',[$product->id])}}" method="post" enctype="multipart/form-data" onsubmit="convertnumber()">
+
+<form action="{{ url('product/update/' . $products->id) }}" method="post" enctype="multipart/form-data">
+
+
+//////html page///////
+<a href="{{url('product/edit/'.$b->id)}}" class="btn btn-success">Edit</a>
+<a href="{{url('product/delete/'.$b->id)}}" class="btn btn-danger" onclick="return confirm('Are you shure want to delete')">Delete</a>
+
+
+//////web.php route file/////////
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AdminController;
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    Route::get('admin/addform', [AdminController::class,'add_form'])->name('admin.add_form');
+    Route::post('admin/store', [AdminController::class,'store'])->name('admin.store');	
+    Route::get('admin/view',[AdminController::class,'view'])->name('admin.view');
+    Route::get('admin/edit/{id}', [AdminController::class,'edit']);
+    Route::post('admin/update/{id}', [AdminController::class,'update']);
+    Route::get('admin/delete/{id}', [AdminController::class,'delete']);
+
+
+//////html/////////////
+@if (session('status'))
+    <div class="alert alert-success">
+        {{ session('status') }}
+    </div>
+@endif
+
+
+
+///////example of web.php route file///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductWonerController;
+use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\ActionProductController;
+use App\Http\Controllers\BidderRegisterController;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\DeliveryPlaceController;
+
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', [MainController::class, 'index'])->name('/');
+Route::get('/stocklist', [MainController::class, 'stocklist'])->name('/stocklist');
+Route::get('/guide', [MainController::class, 'guide'])->name('/guide');
+Route::get('/sellcars', [MainController::class, 'sellcars'])->name('/sellcars');
+Route::get('/contactus', [MainController::class, 'contactus'])->name('/contactus');
+Route::get('/company', [MainController::class, 'company'])->name('/company');
+Route::get('/faq', [MainController::class, 'faq'])->name('/faq');
+Route::get('/links', [MainController::class, 'links'])->name('/links');
+Route::get('/sitemap', [MainController::class, 'sitemap'])->name('/sitemap');
+Route::get('/recruit', [MainController::class, 'recruit'])->name('/recruit');
+Route::get('/change_language/{lan}', [MainController::class, 'change_language']);
+Route::get('/product/product_video', [MainController::class,'product_video']);
+Route::post('/contactmail/send', [MainController::class,'contactmail_send'])->name('contactmail.send');
+Route::get('/contact/mail_success_message', [MainController::class,'mail_success_message'])->name('contact.mail-success-message');
+
+
+
+
+Auth::routes();
+Route::any('/register', function(){
+    return view('auth.login');
+});
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/stocklist/cat/{cid}', [MainController::class,'stocklist_cat']); 
+Route::get('/stock_product/view_details/{pid}', [MainController::class,'stock_product_view_details']); 
+
+
+
+Route::group(['middleware'=>['Admin','auth']],function(){
+
+    //user tokenno
+    Route::post('admin/tokenno_check', [AdminController::class,'tokenno_check'])->name('admin.tokenno');
+
+    //admin account
+    Route::get('admin/addform', [AdminController::class,'add_form'])->name('admin.add_form');
+    Route::post('admin/store', [AdminController::class,'store'])->name('admin.store');	
+    Route::get('admin/view',[AdminController::class,'view'])->name('admin.view');
+    Route::get('admin/edit/{id}', [AdminController::class,'edit']);
+    Route::post('admin/update/{id}', [AdminController::class,'update']);
+    Route::get('admin/delete/{id}', [AdminController::class,'delete']);
+    Route::post('admin/change_pass/{id}', [AdminController::class,'change_pass'])->name('admin.change_pass');
+    Route::get('admin/edit_token/{id}', [AdminController::class,'edit_token']);
+    Route::post('admin/change_user_token/{id}', [AdminController::class,'change_user_token'])->name('admin.change_user_token');
+    //admin dashboard
+    Route::get('dashboard',[AdminController::class,'dashboard'])->name('dashboard');
+
+    //db backup download
+    Route::get('db/backupDatabase', [AdminController::class,'backupDatabase'])->name('db.backupDatabase');
+
+    //category
+    Route::get('category/addform', [CategoryController::class,'add_form'])->name('category.add_form');
+    Route::post('category/store', [CategoryController::class,'store'])->name('category.store');	
+    Route::get('category/edit/{id}', [CategoryController::class,'edit']);
+    Route::post('category/update/{id}', [CategoryController::class,'update']);
+    Route::get('category/view',[CategoryController::class,'view'])->name('category.view');
+    Route::get('category/delete/{id}', [CategoryController::class,'delete']);
+    //brand
+    Route::get('brand/addform', [BrandController::class,'add_form'])->name('brand.add_form');
+    Route::post('brand/store', [BrandController::class,'store'])->name('brand.store');	
+    Route::get('brand/edit/{id}', [BrandController::class,'edit']);
+    Route::post('brand/update/{id}', [BrandController::class,'update']);
+    Route::get('brand/view',[BrandController::class,'view'])->name('brand.view');
+    Route::get('brand/delete/{id}', [BrandController::class,'delete']);
+
+   //product 
+   Route::get('product/addform', [ProductController::class,'add_form'])->name('product.add_form');
+   Route::post('product/store', [ProductController::class,'store'])->name('product.store');	
+   Route::get('product/edit/{id}', [ProductController::class,'edit']);
+   Route::post('product/update/{id}', [ProductController::class,'update']);
+   Route::get('product/view',[ProductController::class,'view'])->name('product.view');
+   Route::get('product/delete/{id}', [ProductController::class,'delete']);
+   //product multiple image
+   Route::get('product/imageview/{id}', [ProductController::class,'imageview']);
+   //product Thumbnail Image
+   Route::get('productthumbnailimage/edit/{id}',[ProductController::class,'edit_productthumbnailimage']);
+   Route::post('product/change_thumbnail/{id}', [ProductController::class,'change_thumbnail']);
+
+   Route::get('productimage/addmore/{id}', [ProductController::class,'productimage_addmore']);
+   Route::post('productimage/addmoreupload', [ProductController::class,'productimage_addmore_upload']);
+   Route::get('productimage/edit/{id}',[ProductController::class,'edit_productimage']);
+   Route::post('productimage/update/{id}',[ProductController::class,'update_productimage']);
+   Route::get('productimage/delete/{id}',[ProductController::class,'delete_productimage']);
+
+    //notice
+    Route::get('notice/addform', [NoticeController::class,'add_form'])->name('notice.add_form');
+    Route::post('notice/store', [NoticeController::class,'store'])->name('notice.store');	
+    Route::get('notice/edit/{id}', [NoticeController::class,'edit']);
+    Route::post('notice/update/{id}', [NoticeController::class,'update'])->name('notice.update');
+    Route::get('notice/view',[NoticeController::class,'view'])->name('notice.view');
+    Route::get('notice/delete/{id}', [NoticeController::class,'delete']);
+    Route::get('notice/active_notice/{id}', [NoticeController::class,'active_notice']);
+    
+    
+
+});
+
+
+
+
+
+
