@@ -15,22 +15,148 @@ Step:4 Add facade in "config/app.php" in "alises"
 
 How to use
 --------------
+1. route
 
-1. Image show in PDF (if required)
-    
-	<img src="{{public_path($item->product->product_thumbnail)}}" height="60px;" with="60px;">
-
+	Route::post('/member_book/build_as_pdf', [MemberBookController::class,'build_as_pdf'])->name('member_book.build_as_pdf'); 
+	
 2. in controller
 
-	$pdf = PDF::loadView('user.order.invoice', compact('order','orderItems'))
-	       ->setPaper('a4')
-	       ->setoptions([
-			'tempDir'=>public_path(),
-			'chroot' =>public_path(),
-		]);
+	use PDF;
 
-	return $pdf->download('invoice.pdf');
+	$pdf = PDF::loadView('backend.member.book.book_pdf', compact('bookid','bookname'))
+                    ->setPaper('a4')
+                    ->setoptions([
+                    'tempDir'=>public_path(),
+                    'chroot' =>public_path(),
+                    ]);
+        return $pdf->download('book_pdf.pdf');
 
+3. in "book_pdf" page
 
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>{{$bookname}}</title>
+
+</head>
+
+<style>
+    /* body {
+    margin: 0;
+    padding: 0;
+    background-color: #FAFAFA;
+    font: 12pt "Tahoma";
+}
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+ */
+.page {
+    /* width: 21cm;
+    min-height: 29.7cm;
+    padding: 2cm; */
+    margin: 1cm auto;
+    /* border: 1px #D3D3D3 solid; */
+    border-radius: 5px;
+    background: white;
+    /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
+}
+.subpage {
+    padding: 1cm;
+    /* border: 5px red solid; */
+    height: 237mm;
+    /* outline: 2cm #FFEAEA solid; */
+}
+.canvasWrapper,.textLayer{width: 850px !important;}
+
+@page {
+    size: A4;
+    margin: 0;
+    /* margin: 1cm auto; */
+
+}
+@media print {
+    .page {
+        margin: 0;
+        /* margin: 1cm auto; */
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+    }
+}
+</style>    
+
+<body>
+    {{-- 'frontcover','bookMenulist','bookchapterlist','bookappendexcontent','booknotecontent','bookreferencecontent','bookcontributorlist','back_cover' --}}
+<div class="book">  
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $frontcover[0]->content ?>
+        </div>
+    </div>
+
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $bookMenulist[0]->content ?>
+        </div>
+    </div>
+
+    <div class="page">
+        @foreach($bookchapterlist as $b)
+        
+            <div class="subpage">
+                <table>  
+                <tr>
+                    <td><?php echo $b->content;?></td>
+                </tr>  
+            </table>
+            </div>
+        @endforeach
+    </div>
+    
+
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $bookappendexcontent[0]->content ?>
+        </div>
+    </div>
+
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $booknotecontent[0]->content ?>
+        </div>
+    </div>
+
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $bookreferencecontent[0]->content ?>
+        </div>
+    </div>
+
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $bookcontributorlist[0]->content ?>
+        </div>
+    </div>
+
+    <div class="page">  
+        <div class="subpage">
+            <?php echo $back_cover[0]->content ?>
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+</html>
 
 	
