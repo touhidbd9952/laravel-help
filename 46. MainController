@@ -1,0 +1,690 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Booker; 
+use App\Models\Product_woner;  
+use App\Models\Product_multiple_image;   
+use App\Models\Visitor;
+use App\Models\Bidder_request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\auctionBidLossMail;
+use App\Mail\auctionBidMail;
+use App\Mail\auctionBidOwnMail;
+use App\Mail\forgetpass;
+use App\Mail\registrationSuccessMail;
+use ZipArchive;
+use Illuminate\Support\Facades\File;
+
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
+
+class MainController extends Controller
+{
+    public function __construct()
+    {
+        //base url
+        $base_url = URL::to('/'); 
+        Session::put('base_url',$base_url) ;
+        //$base_url = Session::get('base_url');
+
+        //language
+        if (Session::has('language')) 
+        {
+            $language = "";
+            $language = Session::get('language');
+            if($language =="")
+            {
+                $language = "en";
+                Session::put('language',$language) ;
+            }
+        }
+        ///////////////////////////////////////////
+        
+
+    }
+    public function change_language($lan)
+    {
+        $pageurl ="";
+        if($lan =="en")
+        {
+            Session::put('language','en') ; 
+        }
+        else if($lan =="jp"){
+            Session::put('language','jp') ;
+        }
+        //return response()->json('changed');
+        return response()->json($lan);
+    }
+    
+    public function get_pageurl($en_url,$jp_url)
+    {
+        $pageurl ="";
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $language = "en";
+            Session::put('language',$language) ; 
+            $pageurl  = $en_url;
+        }
+        else if($language =="jp"){
+            $language = "jp";
+            Session::put('language',$language) ;
+            $pageurl  = $jp_url;
+        }
+
+        return $pageurl ;
+    }
+
+    public function set_visitor()
+    {
+        $visitor_ip = $_SERVER['REMOTE_ADDR'];
+        $visitorslist = Visitor::all();
+        $previous_visitor = 0;
+        if(count($visitorslist)>0)
+        {
+            for($i=0;$i<count($visitorslist);$i++)
+            {
+                if($visitor_ip == $visitorslist[$i]->visitor_ip)
+                {
+                    $previous_visitor = 1;
+                    //if exist, time update
+                    if(date("Y-m-d") != $visitorslist[$i]->updated_at)
+                    {
+                        Visitor::find($visitorslist[$i]->id)->update([
+                            'updated_at'=> Carbon::now(),
+                        ]);
+                    }
+                    
+                }
+                else{
+                    $previous_visitor = 0;
+                }
+            }
+        }
+        //if not exist, new insert
+        if($previous_visitor == 0)
+        {
+            Visitor::insert([
+                'visitor_ip'=> $_SERVER['REMOTE_ADDR'],
+                'visit_date'=> Carbon::now(),
+                'total_visit'=> 1,
+                'created_at'=> Carbon::now(),
+            ]);
+        }
+        //$visitorslist = Visitor::all();
+        //return $visitorslist;
+        
+    }
+
+    public function index()
+    {
+        $this->set_visitor();
+
+        $page =$this->get_pageurl('fontend.en.welcome','fontend.jp.welcome');   //dd('paisi');
+        $pagelanguage = $this->get_pagelanguage(); //dd($pagelanguage);
+        //$notice = Notice::where('status',1)->get(); 
+        
+        return view($page,compact('pagelanguage'));
+    }
+
+    public function get_pagelanguage()
+    {
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_language'] = "en";
+            $pagelanguage['LG_Login_ID'] = "Login ID";
+            $pagelanguage['LG_Password'] = "Password";
+            $pagelanguage['LG_Login'] = "Login";
+            
+            $pagelanguage['LG_Forgot_Your_Password'] = "Forgot Your Password";
+            $pagelanguage['LG_Auction_No'] = "Auction No";
+            $pagelanguage['LG_Maker'] = "Maker";
+            $pagelanguage['LG_Year'] = "Year";
+            $pagelanguage['LG_Hour'] = "Hour";
+            $pagelanguage['LG_Delivery_Yard'] = "Delivery Yard";
+            $pagelanguage['LG_Delivery_Place'] = "Delivery Place";
+            $pagelanguage['LG_Releasing_Charge'] = "Releasing Charge";
+            $pagelanguage['LG_Price'] = "Price";
+            $pagelanguage['LG_Model'] = "Model";
+            $pagelanguage['LG_Serial'] = "Serial";
+            $pagelanguage['LG_Current_Bid'] = "Current Bid";
+            $pagelanguage['LG_Bidder_No'] = "Bidder No";
+            $pagelanguage['LG_Bids'] = "Bid";
+            $pagelanguage['LG_Bid'] = "Bid";
+            $pagelanguage['LG_Time_Left'] = "Time Left";
+            $pagelanguage['LG_Feature'] = "Feature";
+            $pagelanguage['LG_Comment'] = "Comment";
+            $pagelanguage['LG_Bidding_Status'] = "Bidding Status";
+            $pagelanguage['LG_Category_List'] = "Category List";
+            $pagelanguage['LG_Item_Search'] = "Item Search";
+            $pagelanguage['LG_Search'] = "Search";
+            $pagelanguage['LG_Choice'] = "Choice";
+            $pagelanguage['LG_Sort'] = "Sort";
+            $pagelanguage['LG_ALL'] = "ALL";
+            $pagelanguage['LG_New_Today'] = "New Today";
+            $pagelanguage['LG_End_soon'] = "End soon";
+            $pagelanguage['LG_Reload'] = "Reload";
+            $pagelanguage['LG_Refresh'] = "Refresh";
+            $pagelanguage['LG_RemoveFromselection'] = "Remove from Watch list";
+            $pagelanguage['LG_AddToSelection'] = "Add to Watch list";
+            $pagelanguage['LG_JPY'] = "JPY";
+            $pagelanguage['LG_You_are_currently_the_highest_bidder'] = "You are currently the highest bidder";
+            $pagelanguage['LG_You_are_not_currently_the_highest_bidder'] = "You are not currently the highest bidder";
+            $pagelanguage['LG_You_lose_the_bid'] = "You lose the bid";
+            $pagelanguage['LG_Sorry_No_Auction_Data_Found'] = "";
+
+            $pagelanguage['LG_Product_details'] = "Product Details";
+            $pagelanguage['LG_Start_Price'] = "Start Price";
+            $pagelanguage['LG_Increment'] = "Increment";
+            $pagelanguage['LG_Logout'] = "Logout";
+            $pagelanguage['LG_Back_to_Previous_Page'] = "Back to Previous Page";
+            $pagelanguage['LG_Back_to_List'] = "Back to List";
+            $pagelanguage['LG_Back'] = "BACK";
+
+            $pagelanguage['LG_Bidding'] = "Bidding";
+            
+            $pagelanguage['LG_Smartphone_Access'] = "Smartphone Access";
+            $pagelanguage['LG_How_to_Bid_and_Deposit'] = "How to Bid & Deposit";
+            $pagelanguage['LG_Member_registration_for_Bidding'] = "Member registration for Bidding";
+            $pagelanguage['LG_Terms_and_Conditions_for_Bidding'] = "Terms and Conditions for Bidding";
+            $pagelanguage['LG_Security_Deposit'] = "Security Deposit";
+            $pagelanguage['LG_Winner_Bidding_to_Payment'] = "Winner Bidding to Payment";
+            $pagelanguage['LG_Carry_Out_of_Equipment'] = "Carry-Out of Equipment";
+            $pagelanguage['LG_Bidding_Style'] = "Bidding Style";
+            $pagelanguage['LG_Log_in_and_Bedding'] = "Log-in & Bedding";
+            $pagelanguage['LG_Auction_Entry_Application'] = "Auction Entry Application";
+            $pagelanguage['LG_Shipping_charge'] = "Shipping charge";
+            $pagelanguage['LG_auction_photo'] = "How to Take and set Auction Photos";
+            $pagelanguage['LG_autobid'] = "Auto Bid JPY";
+            $pagelanguage['LG_amount_sign'] = "";
+            $pagelanguage['LG_Next'] = "Next";
+            $pagelanguage['LG_Previous'] = "Previous";
+            $pagelanguage['LG_Download_Photos'] = "Download Photos";
+            $pagelanguage['LG_Condition_Report'] = "Condition Report";
+
+            $pagelanguage['LG_Consignor'] = "Consignor";
+            $pagelanguage['LG_AuctionResults'] = "Auction Results";
+            $pagelanguage['LG_WOODY_AUCTION_RESULT'] = "WOODY AUCTION RESULT";
+            $pagelanguage['LG_AUCTION_DATE'] = "AUCTION DATE";
+
+            $pagelanguage['LG_Auction_Information'] = "Auction Information";
+
+
+            return $pagelanguage;
+        }
+        else
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_language'] = "jp";
+            $pagelanguage['LG_Login_ID'] = "ログインID";
+            $pagelanguage['LG_Password'] = "パスワード";
+            $pagelanguage['LG_Login'] = "ログイン";
+            $pagelanguage['LG_Forgot_Your_Password'] = "パスワードをお忘れですか";
+            $pagelanguage['LG_Auction_No'] = "オークション番号";
+            $pagelanguage['LG_Maker'] = "メーカー";
+            $pagelanguage['LG_Year'] = "製造年";
+            $pagelanguage['LG_Hour'] = "時間";
+            $pagelanguage['LG_Delivery_Yard'] = "引渡場所";
+            $pagelanguage['LG_Delivery_Place'] = "引渡場所";
+            $pagelanguage['LG_Releasing_Charge'] = "出庫料";
+            $pagelanguage['LG_Price'] = "価格";
+            $pagelanguage['LG_Model'] = "モデル";
+            $pagelanguage['LG_Serial'] = "製造番号";
+            $pagelanguage['LG_Current_Bid'] = "現在価格";
+            $pagelanguage['LG_Bidder_No'] = "最高入札者番号";
+            $pagelanguage['LG_Bids'] = "入札数";
+            $pagelanguage['LG_Bid'] = "入札";
+            $pagelanguage['LG_Time_Left'] = "残り時間";
+            $pagelanguage['LG_Feature'] = "特徴";
+            $pagelanguage['LG_Comment'] = "コメント";
+            $pagelanguage['LG_Bidding_Status'] = "入札状況";
+            $pagelanguage['LG_Category_List'] = "カテゴリーリスト";
+            $pagelanguage['LG_Item_Search'] = "アイテム検索";
+            $pagelanguage['LG_Search'] = "検索";
+            $pagelanguage['LG_Choice'] = "選択";
+            $pagelanguage['LG_Sort'] = "並び順";
+            $pagelanguage['LG_ALL'] = "全て";
+            $pagelanguage['LG_New_Today'] = "今日の新機能";
+            $pagelanguage['LG_End_soon'] = "もうすぐ終了";
+            $pagelanguage['LG_Reload'] = "更新";
+            $pagelanguage['LG_Refresh'] = "更新";
+            $pagelanguage['LG_RemoveFromselection'] = "ウォッチリストから削除";
+            $pagelanguage['LG_AddToSelection'] = "ウォッチリストへ追加";
+            $pagelanguage['LG_JPY'] = "JPY";
+            $pagelanguage['LG_You_are_currently_the_highest_bidder'] = "あなたは現在最高入札者です";
+            $pagelanguage['LG_You_are_not_currently_the_highest_bidder'] = "あなたは現在、最高入札者ではありません";
+            $pagelanguage['LG_You_lose_the_bid'] = "あなたは入札を失います";
+            $pagelanguage['LG_Sorry_No_Auction_Data_Found'] = "";
+
+            $pagelanguage['LG_Product_details'] = "製品の詳細";
+            $pagelanguage['LG_Start_Price'] = "スタート価格";
+            $pagelanguage['LG_Increment'] = "入札単位";
+            $pagelanguage['LG_Logout'] = "ログアウト";
+            $pagelanguage['LG_Back_to_Previous_Page'] = "前のページに戻る";
+            $pagelanguage['LG_Back_to_List'] = "リストに戻る";
+            $pagelanguage['LG_Back'] = "戻る";
+
+            $pagelanguage['LG_Bidding'] = "入札";
+
+            $pagelanguage['LG_Smartphone_Access'] = "スマートフォンアクセス";
+            $pagelanguage['LG_How_to_Bid_and_Deposit'] = "入札と保証金の方法";
+            $pagelanguage['LG_Member_registration_for_Bidding'] = "入札会員登録";
+            $pagelanguage['LG_Terms_and_Conditions_for_Bidding'] = "入札条件";
+            $pagelanguage['LG_Security_Deposit'] = "保証金";
+            $pagelanguage['LG_Winner_Bidding_to_Payment'] = "支払いへの勝者の入札";
+            $pagelanguage['LG_Carry_Out_of_Equipment'] = "機器の持ち出し";
+            $pagelanguage['LG_Bidding_Style'] = "入札スタイル";
+            $pagelanguage['LG_Log_in_and_Bedding'] = "ログインと寝具";
+            $pagelanguage['LG_Auction_Entry_Application'] = "オークションエントリー申し込み";
+            $pagelanguage['LG_Shipping_charge'] = "送料料金";
+            $pagelanguage['LG_auction_photo'] = "オクタン写真を設定する方法";
+            $pagelanguage['LG_autobid'] = "自動入札額";
+            $pagelanguage['LG_amount_sign'] = "円";
+            $pagelanguage['LG_Next'] = "次";
+            $pagelanguage['LG_Previous'] = "前";
+            $pagelanguage['LG_Download_Photos'] = "写真のダウンロード";
+            $pagelanguage['LG_Condition_Report'] = "査定表";
+
+            $pagelanguage['LG_Consignor'] = "荷送人";
+            $pagelanguage['LG_AuctionResults'] = "オークション結果";
+            $pagelanguage['LG_WOODY_AUCTION_RESULT'] = "ウッディーオークション結果";
+            $pagelanguage['LG_AUCTION_DATE'] = "オークション日";
+
+            $pagelanguage['LG_Auction_Information'] = "オークション情報";
+
+            return $pagelanguage;
+        }
+    }
+
+    //bidder logout
+    public function bidder_logout()
+    {  
+        Session::forget('logger_id');
+        Session::forget('loggercodeno');
+        Session::forget('logger');
+        Session::forget('loginstatus');
+        Session::put('loginstatus',0) ;
+
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header('Content-Type: text/html');
+        
+        //dd('aaf');
+        return Redirect()->route('woody.auction');
+    }
+    
+    //check bidder_login
+    public function check_bidder_login()
+    {
+        if(session()->get('loginstatus')==1)
+        {
+            return response()->json(array(
+                'loginstatus' => 1,
+            ));
+        }
+        else if(session()->get('loginstatus')==2)
+        {
+            return response()->json(array(
+                'loginstatus' => 2,
+            ));
+        }
+        else if(session()->get('loginstatus')== '-1')
+        {
+            return response()->json(array(
+                'loginstatus' => '-1',
+            ));
+        }
+        else
+        {
+            return response()->json(array(
+                'loginstatus' => 0,
+            ));
+        }
+    }
+    
+    public function member_register()
+    {
+        $page =$this->get_pageurl('fontend.en.bidder_registration','fontend.jp.bidder_registration');
+        $pagelanguage = $this->get_pagelanguage();
+        return view($page,compact('pagelanguage'));
+    }
+    //forgetpass
+    public function forgetpass()
+    {
+        $page =$this->get_pageurl('fontend.en.forgetpassword','fontend.jp.forgetpassword');
+        $pagelanguage = $this->get_pagelanguage();
+        return view($page,compact('pagelanguage'));
+    }
+    public function member_request_store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+            'address' => 'required|max:255',
+            'postcode' => 'required|max:255',
+            'country' => 'required|max:255',
+            'email1' => 'required|max:255|unique:bidder_requests|unique:bidder_registers',
+            'email2' => 'max:255',
+            'phone1' => 'required|max:255|max:255|unique:bidder_requests|unique:bidder_registers',
+            'phone2' => 'max:255',
+            'fax' => 'required|max:255|unique:bidder_requests|unique:bidder_registers',
+            'company_name' => 'required|max:255',
+            'person_incharge' => 'required|max:255',
+            'other_auction' => 'max:255',
+        ]);
+
+        Bidder_request::insert([
+            "name" => $request->name,
+            "address" => $request->address,
+            "postcode" => $request->postcode,
+            "country" => $request->country,
+            "email1" => $request->email1,
+            "email2" => $request->email2,
+            "phone1" => $request->phone1,
+            "phone2" => $request->phone2,
+            "fax" => $request->fax,
+            "company_name" => $request->company_name,
+            "person_incharge" => $request->person_incharge,
+            "other_auction" => $request->other_auction,
+            'created_at'=>Carbon::now(),
+        ]);
+
+        $data = array();
+        $data["name"] = $request->name;
+        $data["address"] = $request->address;
+        $data["postcode"] = $request->postcode;
+        $data["country"] = $request->country;
+        $data["email1"] = $request->email1;
+        $data["email2"] = $request->email2;
+        $data["phone1"] = $request->phone1;
+        $data["phone2"] = $request->phone2;
+        $data["fax"] = $request->fax;
+        $data["company_name"] = $request->company_name;
+        $data["person_incharge"] = $request->person_incharge;
+        $data["other_auction"] = $request->other_auction;
+
+        Mail::to($request->email1)->send(new registrationSuccessMail($data));
+        return Redirect()->route('member.requestion-success-message');
+    }
+    public function requestion_success_message()
+    {
+        $page =$this->get_pageurl('fontend.en.bidder_registration_message','fontend.jp.bidder_registration_message');
+        return view($page);
+    }
+    //passwordretrieve
+    public function passwordretrieve(Request $request)
+    {
+        $request->validate([
+            "_token" => 'required',
+            "email" => 'required'
+        ]);
+        
+        $bidder_email = $request->email; 
+        $request->email = "";
+        $bidderdata = ""; 
+        $bidderdata = Bidder_register::where('email1',$bidder_email)->where('permission','approve')->where('status','active')->get(); 
+        $msg="";
+        $emsg="";
+
+        if(count($bidderdata) >0)
+        {
+            //dd($bidderdata);
+            $bidderid = $bidderdata[0]->id;  
+            $fakeserial1 = rand(1,10);
+            $fakeserial2 = rand(1,10);
+            $url = url('').'/bidder/password_retrieve_page/'.$fakeserial1.'/'.$bidderid.'/'.$fakeserial2; 
+
+            $data = [
+                'url'=>$url,
+            ];
+            
+            Mail::to($bidder_email)->send(new forgetpass($data));
+
+            
+            //return Redirect()->back()->with('success',"Password retrieve mail is sent. Please login to your mail account");
+            //$page =$this->get_pageurl('fontend.en.passwordretrieve_message','fontend.jp.passwordretrieve_message');
+            $pagelanguage = $this->get_pagelanguage();
+            if($pagelanguage == 'en')
+            {
+                $msg = "Password retrieve mail is sent. Please login to your mail account";
+            }
+            else
+            {
+                $msg = "パスワード変更メールをお送り致しました。メールをご確認下さい。";
+            }
+            
+            Session::put('retrieve',1) ;
+            //return view($page,compact('msg','pagelanguage'));
+        }
+        else
+        {
+            //return Redirect()->back()->with('err',"Invalid User...");
+            //$page =$this->get_pageurl('fontend.en.passwordretrieve_message','fontend.jp.passwordretrieve_message');
+            //$pagelanguage = $this->get_pagelanguage();
+            $emsg = "Invalid Email Address";
+            Session::put('retrieve',0) ;
+            //return view($page,compact('emsg','pagelanguage'));
+        }
+        //$this->password_retrieve_msg($msg,$emsg);
+        //return Redirect()->route('/bidder/password_retrieve_msg/'.$msg.'/'.$emsg); 
+        return redirect()->route('bidder.password_retrieve_msg');
+    }
+    public function password_retrieve_msg()
+    {
+        $pagelanguage = $this->get_pagelanguage();
+        $page =$this->get_pageurl('fontend.en.passwordretrieve_message','fontend.jp.passwordretrieve_message');
+        
+        $retrieve = session()->get('retrieve');
+        $msg = "";
+        $emsg ="";
+        if($retrieve == 1)
+        {
+            //$msg = "Password retrieve mail is sent. Please login to your mail account";
+            $pagelanguage = $this->get_pagelanguage();
+            if($pagelanguage == 'en')
+            {
+                $msg = "Password retrieve mail is sent. Please login to your mail account";
+            }
+            else
+            {
+                $msg = "パスワード変更メールをお送り致しました。メールをご確認下さい。";
+            }
+        }
+        else
+        {
+            //$emsg = "Invalid Email Address";
+            $pagelanguage = $this->get_pagelanguage();
+            if($pagelanguage == 'en')
+            {
+                $emsg = "Invalid Email Address";
+            }
+            else
+            {
+                $emsg = "無効な電子メールアドレス";
+            }
+        }
+        return view($page,compact('msg','emsg','pagelanguage'));
+    }
+    public function password_retrieve_page($fakeserial1,$bidderid,$fakeserial2)
+    { 
+        $page =$this->get_pageurl('fontend.en.change_password','fontend.jp.change_password');
+        $pagelanguage = $this->get_pagelanguage();
+        return view($page,compact('bidderid','pagelanguage'));
+    }
+    //changepass
+    public function changepassword(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|max:255',
+            'newpass' => 'min:6|required_with:confirmed|same:confirmed',
+        ]);
+
+        $bidderdata = ""; 
+        $bidderdata = Bidder_register::find($request->bidderid);  //dd($bidderdata->id);
+
+        if($bidderdata != "")
+        {
+            if($bidderdata->username == $request->username)
+            {
+                Bidder_register::find($request->bidderid)->update([
+                    'password'=> Hash::make($request->newpass),
+                    'user_id'=>$request->bidderid,
+                    'updated_at'=>Carbon::now(),
+                ]);
+    
+                $page =$this->get_pageurl('fontend.en.passwordretrieve_message','fontend.jp.passwordretrieve_message');
+                $pagelanguage = $this->get_pagelanguage();
+                $msg = "Password Changed Successfully, Please try to login by new password";
+                return view($page,compact('msg','pagelanguage'));
+            }
+            else
+            {
+                $page =$this->get_pageurl('fontend.en.passwordretrieve_message','fontend.jp.passwordretrieve_message');
+                $pagelanguage = $this->get_pagelanguage();
+                $msg = "Invalid User";
+                return view($page,compact('msg','pagelanguage'));
+            }
+        }
+        else
+        {
+            $page =$this->get_pageurl('fontend.en.passwordretrieve_message','fontend.jp.passwordretrieve_message');
+            $pagelanguage = $this->get_pagelanguage();
+            $msg = "Invalid User";
+            return view($page,compact('msg','pagelanguage'));
+        }
+        
+    }
+    //bidderblacklisted
+    public function bidderblacklisted()
+    {
+        $page =$this->get_pageurl('fontend.en.bidderblacklisted','fontend.jp.bidderblacklisted');
+        $pagelanguage = $this->get_pagelanguage();
+        $bidderdata = Bidder_register::where('permission','black listed')->get();
+        return view($page,compact('pagelanguage','bidderdata'));
+    }
+
+
+    //file download
+    public function downloadZip($id)
+    {
+        $imgarr = []; 
+        //image
+        $data = Product_multiple_image::where('product_id',$id)->get();
+        foreach($data as $key => $value)
+        {
+            if(file_exists($value->image_L))
+            {
+                $imgarr[] =  $value->image_L;
+            }
+        }
+
+        //conditional_report
+        $productdata = Product::where('id',$id)->get();
+        if(count($productdata)>0)
+        {
+            foreach($productdata as $key => $value)
+            {
+                if(file_exists($value->conditional_report))
+                {
+                    $imgarr[] =  $value->conditional_report;
+                }
+            }
+        }
+
+        $timeName = time();
+        $ziplink = $this->converToZip($imgarr,$timeName);
+        //return redirect($ziplink);
+
+        //$response = response()->download('./uploads/images/product/multipleimage/'. $timeName . '.zip');
+        $response = response()->download('./uploads/zipfiles/'. $timeName . '.zip');
+        return $response;
+    }
+    public function converToZip($imgarr,$timeName)
+    {   //dd($imgarr);
+        $zip = new ZipArchive;
+        //$storage_path = 'uploads/images/product/multipleimage';
+        $storage_path = 'uploads/zipfiles';
+        //$timeName = time();
+        $zipFileName = $storage_path . '/' . $timeName . '.zip';
+        $zipPath = asset($zipFileName);
+        $res = $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE); 
+        if ($res) 
+        {
+            foreach ($imgarr as $file) 
+            {
+                $file = (string)$file;
+                $zip->addFile($file,basename($file));
+            }
+            $zip->close();
+
+            if ($zip->open($zipFileName) === true) {
+                return $zipPath;
+            } else {
+                return false;
+            }
+        }
+    }
+    //clear memory
+    public function clear_memory()
+    {
+        //clear zip file from the directory
+        File::cleanDirectory('./uploads/zipfiles');
+        return response()->json(array(
+            'result' => "Memory clear",
+        ));
+    }
+    //member_login
+    public function member_login()
+    {
+        $page =$this->get_pageurl('fontend.en.member_login','fontend.jp.member_login');   //dd('paisi');
+        $pagelanguage = $this->get_pagelanguage();  
+        
+        return view($page,compact('pagelanguage'));
+    }
+    public function login_member_account(Request $request)
+    {
+        //dd($request->all());
+        $username = $request->username;
+        $password = $request->password;
+        $bookerdata = Booker::where('username',$username)->where('permission','approve')->where('status','active')->get();
+        if(count($bookerdata)>0)
+        {
+            if (Hash::check($password, $bookerdata[0]->password)) 
+            { 
+                $loginuser = $bookerdata[0]->name;
+                Session::put('booker_id',$bookerdata[0]->id) ;
+                Session::put('booker_name',$bookerdata[0]->name) ;
+                Session::put('booker_code',$bookerdata[0]->codeno) ;
+                return view('backend.member.home',compact('loginuser'));
+            }
+            else
+            {
+                return redirect()->back()->with('emsg','Wrong username or password');
+            }
+        }
+        else
+        {
+            return redirect()->back()->with('emsg','Wrong username or password');
+        }
+        
+    }
+    
+    
+
+    
+
+
+
+
+
+
+}
