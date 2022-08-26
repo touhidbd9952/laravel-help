@@ -1,0 +1,11 @@
+
+///////1. Hosting Server / Cpanel Server (get/copy name server)///////
+copy name server
+
+///////2. Domain Server (Set name server)////////
+change name server
+
+///////3. check name server added or not//////
+a. go to "whatsmydns.net"
+b. your domain name "xyz.com"  "NS"  search
+
