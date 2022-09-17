@@ -38,3 +38,23 @@ $request->validate([
             'fax' => 'max:255',
             'membership_with_other_auctioneers' => 'max:255',
         ]);
+  
+  
+  //////// HTML Form Validation by javascript//////////////////////////////////////////////////////
+  <script>
+  function validateForm() 
+  {
+              let x = document.forms["myForm"]["fname"].value;
+              if (x == "") 
+              {
+                alert("Name must be filled out");
+                return false;
+              }
+  } 
+  </script>
+  
+   <form name="myForm" action="/action_page.php" onsubmit="return validateForm()" method="post">
+            Name: <input type="text" name="fname">
+            <input type="submit" value="Submit">
+   </form> 
+
