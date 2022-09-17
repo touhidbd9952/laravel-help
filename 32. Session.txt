@@ -1,7 +1,13 @@
-////in Controllere
+////in Controllere//////////////////////////////////////////////////////////////////////////////////////
 use Illuminate\Support\Facades\Session;
 
 // Set data in Session
+
+$language = "en";
+Session::put('language',$language) ;
+
+$base_url = URL::to('/'); 
+Session::put('base_url',$base_url) ;
 
 Session::put('coupon',[
                     'coupon_name' => $coupon->coupon_name,
@@ -12,6 +18,7 @@ Session::put('coupon',[
 
 //get data from Session
 
+$language = Session::get('language');
 $coupon_name = Session::get('coupon')['coupon_name'];
 
 //delete data from Session
@@ -28,7 +35,8 @@ if (Session::has('coupon'))
 
 
 
-////in html page
+////in html page//////////////////////////////////////////////////////////////////////////////////////////////////////
+$language = Session::get('language');
 
 @if (Session::has('coupon'))
  	<strong>Subtotal: </strong> ${{ $cartTotal }} <br>
@@ -43,7 +51,7 @@ if (Session::has('coupon'))
 
 
 
-//////Here's a solution that will test every 500 milliseconds if the user session has expired.////////
+//////In Javascript, we can make a function that will test every 500 milliseconds if the user session has expired.////////
 
  function CheckSession() {
             var session = '<%=Session["username"] != null%>';
