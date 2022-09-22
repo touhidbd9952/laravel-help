@@ -1,0 +1,14 @@
+////////Database --> UserFactory.php////////////
+public function definition()
+    {
+        return [
+            'role_id' => 3,
+            'name' => 'Super Admin',
+            'email' => 'admin@abc.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make(11111111), // password
+            'remember_token' => Str::random(10),
+        ];
+    }
+  
+ 
