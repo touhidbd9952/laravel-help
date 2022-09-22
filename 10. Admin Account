@@ -10,5 +10,9 @@ public function definition()
             'remember_token' => Str::random(10),
         ];
     }
+
+Table create by migrate:
+-----------------------
+	php artisan migrate
   
  
