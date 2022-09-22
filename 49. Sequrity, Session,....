@@ -54,6 +54,23 @@ public function search_site_bidder_login(Request $request)
             return Redirect()->route('woody.search_site')->with('esuccess', 'Wrong username or password');
         }
     }
+  
+  public function search_site_logout()
+    {  
+        Session::forget('logger_id');
+        Session::forget('loggercodeno');
+        Session::forget('logger');
+        Session::forget('loginstatus');
+        Session::put('loginstatus',0) ;
+
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header('Content-Type: text/html');
+        //Artisan::call('cache:clear');
+        //dd('aaf');
+        return Redirect()->route('/');
+    }
     
     
 //Check session//////////////////////////////////////////////////////////////////////////////
