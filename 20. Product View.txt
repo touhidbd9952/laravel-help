@@ -58,6 +58,23 @@
                                     {{ $products->links() }}
 
                                 </div>
+ 
+ <script>
+    function request_for_approve(id)
+    {
+        $.ajax({
+            type:'GET',
+            url: '/member_product/request_for_approve/'+id,
+            dataType:'json',
+            success:function(data){
+                if(data == 'success')
+                {
+                    location.reload();
+                }
+            }
+        })
+    }
+</script>
 
 
 ////Route////
@@ -65,9 +82,22 @@
 Route::get('product/view','ProductController@view')->name('product.view');
 Route::get('product/delete/{id}', 'ProductController@delete');
 Route::get('product/imageview/{id}', 'ProductController@imageview');
+Route::get('member_product/request_for_approve/{id}', [MemberProductController::class,'request_for_approve'])->name('member_product.request_for_auction');
 
-////Controller////
+////Controller////////////////
 
+//request_for_approve
+    public function request_for_approve($id)
+    {
+        $memberid = $this->check_session(); if($memberid == 0){Session::flush();return Redirect()->route('/'); }
+        Product::find($id)->update([
+             	
+            'state'=> 1, 	
+            'updated_at'=>Carbon::now(),
+        ]);
+        return response()->json("success");
+    }
+    
  public function view()
     {
         $products = Product::latest()->paginate(5);
