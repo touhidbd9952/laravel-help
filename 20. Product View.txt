@@ -43,6 +43,7 @@
                                                 <td>
                                                     <a href="{{url('product/imageview/'.$b->id)}}" class="btn btn-success">Image view</a>
                                                     <a href="{{url('product/edit/'.$b->id)}}" class="btn btn-success">Edit</a>
+                                                    <a href="javascript:" onclick="confirm('Are you shure want to request to approve it') && request_for_approve({{$b->id}})" class="btn btn-success">Request For Approve</a>
                                                     <a href="{{url('product/delete/'.$b->id)}}" class="btn btn-danger" onclick="return confirm('Are you shure want to delete')">Delete</a>
 
                                                 </td>
