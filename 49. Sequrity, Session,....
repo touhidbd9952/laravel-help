@@ -1,0 +1,75 @@
+/////Controller////////////////////////////////////////
+public function __construct()
+    {
+        $this->middleware('auth');
+    }
+public function view()
+    {
+        $validuser = "";
+        $validuser = Session::get('validuser');  
+        if($validuser =="" || $validuser ==0)
+        { 
+            dd("Token Missing or Invalid");
+        }
+        $users = User::where('role_id','!=',2)->paginate(25);
+        return view('backend.admin.account.view',compact('users'));
+    } 
+public function search_site_bidder_login(Request $request) 
+    {
+        $username = $request->username;
+        $password = $request->password;  
+
+        $register = Bidder_register::where('username',$username)->orwhere('email1',$username)->where('permission','approve')->where('status','active')->get();  
+        if(count($register)==1)
+        {
+            //return response()->json($register[0]['password'] );
+            $dbpass = $register[0]['password'];  
+            if (Hash::check($password, $dbpass))
+            {
+                //login user data
+                if (Session::has('logger_id')) 
+                {
+                    Session::put('loggercodeno', $register[0]['usercodeno']);
+                    Session::put('logger', $register[0]['name_en']);
+                    Session::put('logger_id', $register[0]['id']);
+                    Session::put('loginstatus',1) ;  
+                    return Redirect()->route('woody.search_site');
+                }
+                else
+                {
+                    Session::put('loggercodeno', $register[0]['usercodeno']);
+                    Session::put('logger', $register[0]['name_en']);
+                    Session::put('logger_id', $register[0]['id']);
+                    Session::put('loginstatus',1) ; 
+                    return Redirect()->route('woody.search_site');
+                }
+            }
+            else
+            {
+                return Redirect()->route('woody.search_site')->with('esuccess', 'Wrong username or password');
+            }
+        }
+        else
+        {
+            return Redirect()->route('woody.search_site')->with('esuccess', 'Wrong username or password');
+        }
+    }
+    
+    
+//Check session//////////////////////////////////////////////////////////////////////////////
+public function check_session()
+    {
+        $memberid = 0;
+        $memberid = Session::get('loggermemberid') ;
+        return $memberid;
+    }
+public function member_dashboard()
+    {
+        $memberid = $this->check_session(); if($memberid == 0){Session::flush();return Redirect()->route('/'); }
+        //$memberid = $this->check_session();
+        
+        $userdata ="";
+        $userdata = Bidder_register::where('id',$memberid)->get(); 
+        
+        return view('backend.member.member_dashboard',compact('userdata'));
+    }
