@@ -83,7 +83,7 @@ public function __construct()
     {
         $this->set_visitor();
 
-        $page =$this->get_pageurl('fontend.en.welcome','fontend.jp.welcome');   //dd('paisi');
+        $page =$this->get_pageurl('fontend.en.welcome','fontend.jp.welcome');   //call page on the base of selected page language;
         $pagelanguage = $this->get_pagelanguage(); //dd($pagelanguage);
         $notice = Notice::where('status',1)->get(); 
         
