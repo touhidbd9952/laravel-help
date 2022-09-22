@@ -16,7 +16,19 @@ Table create by migrate:
 -----------------------
 	php artisan migrate:refresh --seed
 
+/////Create Middleware
 
+1. open command prompt
+2. command (create middleware)
+   -------
+	php artisan make:middleware Admin   //Admin is a name of new middleware
+
+3. (register middleware) go to kernel.php: (loc: app->Http->kernel)
+
+	protected $routeMiddleware =[
+		'Admin'=>\app\Http\Middleware\Admin,
+	];
+	
 App\Http\Middleware  --> Admin
 -----------------------
 public function handle(Request $request, Closure $next)
