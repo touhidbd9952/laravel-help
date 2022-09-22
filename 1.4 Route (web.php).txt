@@ -54,7 +54,13 @@ use App\Http\Controllers\Backend\ContactController;
 	});
 
 
+/////////Javascript////////////////////////////////////
+window.location.href = '/category/all';
+//page refresh
+location.reload();
+
 ////////In Controller//////////////////////////////////
+
 return view('backend.admin.product.add_product', compact('categories','brands','product_woners','deliveryplaces'));
 return response()->json(array(
             'successmsg' => "Save As Draft",
