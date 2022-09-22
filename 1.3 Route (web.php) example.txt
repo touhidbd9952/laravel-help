@@ -1,4 +1,12 @@
 ////////in controller ///////
+return view('backend.admin.product.add_product', compact('categories','brands','product_woners','deliveryplaces'));
+return response()->json(array(
+            'successmsg' => "Save As Draft",
+        ));
+
+return redirect('product/imageview/'.$id)->with('success','Saved Successfully. Please Add More Multiple Image');
+return Redirect()->back()->with('error','Data could not save, try agrain');
+return Redirect()->route('auction.product_owner_invoice',['id' =>$request->woner_id,'enddate' =>$request->enddate])->with('success','Product added in auction Successfully');
 
 
 
