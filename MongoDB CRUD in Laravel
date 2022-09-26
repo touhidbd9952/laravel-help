@@ -1,0 +1,472 @@
+//////////////////MongoDB CRUD in Laravel//////////////////////////////////////////////////////////////////////////////////////////
+
+In this section, we will learn how we can perform the CRUD operation. We will use Laravel and MongoDB databases to do this. 
+We usually store data by using MongoDB because it takes less memory. In today's market, Laravel is a very famous technology. 
+In this example, we will perform MongoDB CRUD operation by using the Laravel 5.6 application. We can use various versions of the Laravel
+applications, such as Laravel 5, 6, 7, and 8. In our Laravel application, we will create books, create, update, remove and view.
+
+To create CRUD (create, update, read, and delete), we will use the composer package "jenssegers/laravel-mongodb". We can use this method 
+to use the model's eloquent method, such as whereNull, whereIn, collection, oderBy, take, distinct, all, first, whereBetween, get, orWhere skip, etc.
+
+In our below example, we will create the database named MongoDB with the "books" collection. After that, we will use the env file to 
+configure the details of the MongoDB database. Then we will use the Laravel 5.6 application to create the CRUD module. The step by step 
+processes to create the CRUD is described as follows:
+
+//Step 1://////////////////////////////
+
+In this step, we are going to create a MongoDB database. In our example, we need to create our book collection and MongoDB database. 
+When we successfully install the MongoDB database, we will use our command prompt, connect to MongoDB. For connection, we will create 
+a database, and then we will create the collection. After that, we will insert the book by using the following command like this:
+
+    mongo  
+    > use hddatabaseep   
+    > db.books.insert( { "name": "laravel", "detail": "test" } )  
+
+//Step 2://////////////////////////////
+
+In this step, we are going to Install the Laravel 5.6 project. For this, we will use the fresh version of the Laravel 5.6 application. The following command will be useful to do this. To run the following command, we will use our terminal, which is described as follows:
+
+    composer create-project --prefer-dist laravel/laravel blog  
+
+//Step 3://////////////////////////////
+
+In this step, we are going to perform MongoDB Database Configuration. In our Laravel 5.6 application, we will set the name of the database, username, and password to perform the CRUD operation. For this, we will open the .env file, and then we will add all details, which is described as follows:
+
+.env
+
+    MONGO_DB_HOST=127.0.0.1  
+    MONGO_DB_PORT=27017  
+    MONGO_DB_DATABASE=hddatabase  
+    MONGO_DB_USERNAME=  
+    MONGO_DB_PASSWORD=  
+
+After that, we will use the database.php config file and add details of the array, which is described as follows:
+
+config/database.php
+
+    <?php  
+      
+    return [  
+      
+        ....  
+        'connections' => [  
+      
+            ......  
+      
+            'mongodb' => [  
+                'driver'   => 'mongodb',  
+                'host'     => env('MONGO_DB_HOST', 'localhost'),  
+                'port'     => env('MONGO_DB_PORT', 27017),  
+                'database' => env('MONGO_DB_DATABASE'),  
+                'username' => env('MONGO_DB_USERNAME'),  
+                'password' => env('MONGO_DB_PASSWORD'),  
+                'options'  => []  
+            ],  
+      
+        ]  
+      
+    ]  
+
+//Step 4://////////////////////////////
+
+In this step, we are going to Install laravel-mongodb Package. In our below example, we will use Composer package manage for its installation. For this, we will use our command prompt and run the following command like this:
+
+    composer require jenssegers/mongodb  
+
+When we successfully install the above package, we will use the app.php configuration file so that we can add the service provider, which is described as follows:
+
+config/app.php
+
+    <?php  
+      
+    return [  
+        ....  
+        'providers' => [  
+            ....  
+            Jenssegers\Mongodb\MongodbServiceProvider::class,  
+        ]  
+        .....  
+    ]  
+
+//Step 5://///////////////////////////////////////////////////////////////////////////////////////////
+
+In this step, we are going to Create a Books Model. In our application, we will provide a connection to Laravel Eloquent by using the Book model. The code to create a book model is described as follows:
+
+////app/Book.php///////////////////////
+
+    <?php  
+      
+    namespace App;  
+      
+    use Jenssegers\Mongodb\Eloquent\Model as Eloquent;  
+      
+    class Book extends Eloquent  
+    {  
+        protected $connection = 'mongodb';  
+        protected $collection = 'books';  
+      
+        /**  
+         * The attributes which are mass assigned will be used.  
+         *  
+         * It will return @var array  
+         */  
+        protected $fillable = [  
+            'name', 'detail'  
+        ];  
+    }  
+
+//Step 6://////////////////////////////
+
+In this step, we are going to Add Resource Route. We will do this for the book CRUD application. We will add our route by using the file named "routes/web.php" like this:
+
+routes/web.php
+
+    Route::resource('books','BookController');  
+
+//Step 7://////////////////////////////
+
+In this step, we are going to Create BookController. We will Create BookController as a new controller. Using this controller, we can create the resource controller. The code to create it is described as follows:
+
+    php artisan make:controller BookController --resource --model=Book  
+
+When we successfully execute this command, we will get a new file in "app/Http/Controllers/BookController.php" path. For this, we will create by default 7 methods in this controller, which is as follows:
+
+    index()
+    edit()
+    store()
+    destroy()
+    create()
+    update()
+    show()
+
+For this, we will use a file named BookController.php, and then we will put the following code into it:
+
+////app/Http/Controllers/BookController.php///////////////////////////////
+
+    <?php  
+      
+    namespace App\Http\Controllers;  
+      
+    use App\Book;  
+    use Illuminate\Http\Request;  
+      
+    class BookController extends Controller  
+    {  
+          
+        public function index()  
+        {  
+            $books = Book::all();  
+            return view('books.index',compact('books'))  
+                ->with('i', (request()->input('page', 1) - 1) * 5);  
+        }  
+      
+        
+        public function create()  
+        {  
+            return view('books.create');  
+        }  
+      
+        
+        public function store(Request $request)  
+        {  
+            request()->validate([  
+                'name' => 'required',  
+                'detail' => 'required',  
+            ]);  
+      
+            Book::create($request->all());  
+      
+            return redirect()->route('books.index')  
+                            ->with('success','Book created successfully.');  
+        }  
+      
+        /**  
+         * The specified resource will be shown by it.  
+         *  
+         * @param  \App\Book  $book  
+         * It is used to @return \Illuminate\Http\Response  
+         */  
+        public function show(Book $book)  
+        {  
+            return view('books.show',compact('book'));  
+        }  
+      
+        /**  
+         * It is used to edit the specified resource by displaying the form.  
+         *  
+         * @param  \App\Book  $book  
+         * It is used to @return \Illuminate\Http\Response  
+         */  
+        public function edit(Book $book)  
+        {  
+            return view('books.edit',compact('book'));  
+        }  
+      
+        /**  
+         * It uses storage to update the specified resource.  
+         *  
+         * @param  \Illuminate\Http\Request  $request  
+         * @param  \App\Book  $book  
+         * It is used to @return \Illuminate\Http\Response  
+         */  
+        public function update(Request $request, Book $book)  
+        {  
+             request()->validate([  
+                'name' => 'required',  
+                'detail' => 'required',  
+            ]);  
+      
+            $book->update($request->all());  
+      
+            return redirect()->route('books.index')  
+                            ->with('success','Book updated successfully');  
+        }  
+        /**  
+         * It uses storage and removes the specified resource from it.  
+         *  
+         * @param  \App\Book  $book  
+         * It is used to @return \Illuminate\Http\Response  
+         */  
+        public function destroy(Book $book)  
+        {  
+            $book->delete();  
+      
+            return redirect()->route('books.index')  
+                            ->with('success','Book deleted successfully');  
+        }  
+    }  
+
+//Step 8://////////////////////////////
+
+In this step, we are going to Create Blade Files. For this, we will firstly create the file of layout.
+ After that, we will create a new "books" folder. 
+Then we will create blade files for our CRUD operation. 
+The blade files which we finally create are described as follows:
+
+For this, we will add the following code by creating the below file.
+
+
+
+
+////resources/views/books/layout.blade.php/////////////////////////////////
+
+    <!DOCTYPE html>  
+    <html>  
+    <head>  
+        <title> MongoDB CRUD Application using Laravel</title>  
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css" rel="stylesheet">  
+    </head>  
+    <body>  
+      
+    <div class="container">  
+        @yield('content')  
+    </div>  
+      
+    </body>  
+    </html>  
+
+////resources/views/books/index.blade.php//////////////////////////////
+
+    @extends('books.layout')  
+      
+    @section('content')  
+        <div class="row">  
+            <div class="col-lg-12 margin-tb">  
+                <div class="pull-left">  
+                    <h2>Books</h2>  
+                </div>  
+                <div class="pull-right">  
+                    <a class="btn btn-success" href="{{ route('books.create') }}"> Create New Book</a>  
+                </div>  
+            </div>  
+        </div>  
+      
+        @if ($message = Session::get('success'))  
+            <div class="alert alert-success">  
+                <p>{{ $message }}</p>  
+            </div>  
+        @endif  
+      
+        <table class="table table-bordered">  
+            <tr>  
+                <th>No</th>  
+                <th>Name</th>  
+                <th>Details</th>  
+                <th width="280px">Action</th>  
+            </tr>  
+            @foreach ($books as $book)  
+            <tr>  
+                <td>{{ ++$i }}</td>  
+                <td>{{ $book->name }}</td>  
+                <td>{{ $book->detail }}</td>  
+                <td>  
+                    <form action="{{ route('books.destroy',$book->id) }}" method="POST">  
+                        <a class="btn btn-info" href="{{ route('books.show',$book->id) }}">Show</a>  
+                        <a class="btn btn-primary" href="{{ route('books.edit',$book->id) }}">Edit</a>  
+                        @csrf  
+                        @method('DELETE')  
+                        <button type="submit" class="btn btn-danger">Delete</button>  
+                    </form>  
+                </td>  
+            </tr>  
+            @endforeach  
+        </table>  
+      
+    @endsection  
+
+
+
+////resources/views/books/show.blade.php////////////////////////////////
+
+    @extends('books.layout')  
+      
+    @section('content')  
+        <div class="row">  
+            <div class="col-lg-12 margin-tb">  
+                <div class="pull-left">  
+                    <h2> Show Book</h2>  
+                </div>  
+                <div class="pull-right">  
+                    <a class="btn btn-primary" href="{{ route('books.index') }}"> Back</a>  
+                </div>  
+            </div>  
+        </div>  
+      
+        <div class="row">  
+            <div class="col-xs-12 col-sm-12 col-md-12">  
+                <div class="form-group">  
+                    <strong>Name:</strong>  
+                    {{ $book->name }}  
+                </div>  
+            </div>  
+            <div class="col-xs-12 col-sm-12 col-md-12">  
+                <div class="form-group">  
+                    <strong>Details:</strong>  
+                    {{ $book->detail }}  
+                </div>  
+            </div>  
+        </div>  
+    @endsection  
+
+
+/////resources/views/books/create.blade.php/////////////////////////////////
+
+    @extends('books.layout')  
+      
+    @section('content')  
+        <div class="row">  
+            <div class="col-lg-12 margin-tb">  
+                <div class="pull-left">  
+                    <h2>Add New Book</h2>  
+                </div>  
+                <div class="pull-right">  
+                    <a class="btn btn-primary" href="{{ route('books.index') }}"> Back</a>  
+                </div>  
+            </div>  
+        </div>  
+      
+        @if ($errors->any())  
+            <div class="alert alert-danger">  
+                <strong>Whoops!</strong> Your entered input has some problem. <br><br>  
+                <ul>  
+                    @foreach ($errors->all() as $error)  
+                        <li>{{ $error }}</li>  
+                    @endforeach  
+                </ul>  
+            </div>  
+        @endif  
+      
+        <form action="{{ route('books.store') }}" method="POST">  
+            @csrf  
+      
+             <div class="row">  
+                <div class="col-xs-12 col-sm-12 col-md-12">  
+                    <div class="form-group">  
+                        <strong>Name:</strong>  
+                        <input type="text" name="name" class="form-control" placeholder="Name">  
+                    </div>  
+                </div>  
+                <div class="col-xs-12 col-sm-12 col-md-12">  
+                    <div class="form-group">  
+                        <strong>Detail:</strong>  
+                        <textarea class="form-control" style="height:150px" name="detail" placeholder="Detail"></textarea>  
+                    </div>  
+                </div>  
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center">  
+                        <button type="submit" class="btn btn-primary">Submit</button>  
+                </div>  
+            </div>  
+      
+        </form>  
+      
+    @endsection  
+
+resources/views/books/edit.blade.php
+
+    @extends('books.layout')  
+      
+    @section('content')  
+        <div class="row">  
+            <div class="col-lg-12 margin-tb">  
+                <div class="pull-left">  
+                    <h2>Edit Book</h2>  
+                </div>  
+                <div class="pull-right">  
+                    <a class="btn btn-primary" href="{{ route('books.index') }}"> Back</a>  
+                </div>  
+            </div>  
+        </div>  
+      
+        @if ($errors->any())  
+            <div class="alert alert-danger">  
+                <strong>Whoops!</strong> Your entered input has some problem. <br><br>  
+                <ul>  
+                    @foreach ($errors->all() as $error)  
+                        <li>{{ $error }}</li>  
+                    @endforeach  
+                </ul>  
+            </div>  
+        @endif  
+      
+        <form action="{{ route('books.update',$book->id) }}" method="POST">  
+            @csrf  
+            @method('PUT')  
+      
+             <div class="row">  
+                <div class="col-xs-12 col-sm-12 col-md-12">  
+                    <div class="form-group">  
+                        <strong>Name:</strong>  
+                        <input type="text" name="name" value="{{ $book->name }}" class="form-control" placeholder="Name">  
+                    </div>  
+                </div>  
+                <div class="col-xs-12 col-sm-12 col-md-12">  
+                    <div class="form-group">  
+                        <strong>Detail:</strong>  
+                        <textarea class="form-control" style="height:150px" name="detail" placeholder="Detail">{{ $book->detail }}</textarea>  
+                    </div>  
+                </div>  
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center">  
+                  <button type="submit" class="btn btn-primary">Submit</button>  
+                </div>  
+            </div>  
+      
+        </form>  
+      
+    @endsection  
+
+
+
+//////////////////////run server///////////////////////////////////////////////////////////////////////////////////////////////
+
+Now our above code is ready to run. In order to run the above code quickly, we will use the following command:
+
+    php artisan serve  
+
+Now we can use our browser to open the bellow URL:
+
+    http://localhost:8000/books  
+
+After open this, we can see the following output:
+MongoDB CRUD in Laravel
+
+
