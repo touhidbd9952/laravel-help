@@ -1,0 +1,25 @@
+Type 		Storage 	Maximum number of characters 		
+--------------------------------------------------------------------------------------
+TINYTEXT 	255 	255 				 			
+TEXT 		64 kB 	65535 (text)		
+MEDIUMTEXT 	16 MB 	16777215 		
+LONGTEXT 	4 GB 	4294967295 	
+
+    TINYBLOB => 255 bytes + 1 byte
+    BLOB => 65535 + 2 bytes
+    MEDIUMBLOB => 16777215 + 3 bytes
+    LONGBLOB => 4294967295 + 4 bytes
+
+CHAR => (fixed length) max 255 characters
+VARCHAR => (variable length) max 65535 characters 
+
+TINYINT => 127 max number
+SMALLINT => 32767 max number
+MEDIUMINT => 8388607 max number
+INT => 2147483647 max ( int(11) )
+BIGINT => bigger than INT
+
+datetime => for date time, no need to set size
+timestamp => like datetime
+
+Decimal :  for money/amount (decimal(12,2) )  total 12 digit (10 digit before decimal point, 2 digit after point)	
