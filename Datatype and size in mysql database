@@ -27,7 +27,7 @@ Decimal :  for money/amount (decimal(12,2) )  total 12 digit (10 digit before de
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #	Name			Type	        Collation	            Attributes	Null	Default	    Comments		Extra
-1	id			    int(11)				                                        No		    None	        AUTO_INCREMENT
+1	id			    int(11)				                        No		    None	        AUTO_INCREMENT
 2	product_no		varchar(255)	utf8mb4_unicode_ci		    No	    None		
 3	name_en			varchar(255)	utf8mb4_unicode_ci		    Yes	    NULL		
 4	name_jp			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
