@@ -23,3 +23,74 @@ datetime => for date time, no need to set size
 timestamp => like datetime
 
 Decimal :  for money/amount (decimal(12,2) )  total 12 digit (10 digit before decimal point, 2 digit after point)	
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#	Name			Type	Collation	Attributes	Null	Default	Comments		Extra
+1	id			int(11)				No		None	AUTO_INCREMENT
+2	product_no		varchar(255)	utf8mb4_unicode_ci		No	None		
+3	name_en			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+4	name_jp			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+5	name_slag_en		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+6	name_slag_jp		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+7	category_id		int(11)					No	None		
+8	thumbnail_image		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+9	thumbnail_sm_image		varchar(255)	utf8mb4_unicode_ci		No	None		
+10	videourl			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+11	conditional_report		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+12	brand_id			int(11)					Yes	NULL		
+13	brand_name_en		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+14	brand_name_jp		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+15	model_no			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+16	serial_no			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+17	model_year		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+18	used_hour			varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+19	buy_price			decimal(12,2)			No	0		
+20	sale_price			decimal(12,2)			No	0		
+21	short_description		text		utf8mb4_unicode_ci		Yes	NULL		
+22	short_description_jp		text		utf8mb4_unicode_ci		Yes	NULL		
+23	long_description		text		utf8mb4_unicode_ci		Yes	NULL		
+24	long_description_jp		text		utf8mb4_unicode_ci		Yes	NULL		
+25	delivery_place_id		int(11)					Yes	NULL		
+26	delivery_status		varchar(255)	utf8mb4_unicode_ci		Yes	Arrived		
+27	releasing_charge		decimal(12,2)			No	0		
+28	auction_charge		decimal(12,2)			No	0		
+29	yard_charge		decimal(12,2)			No	0		
+30	extra_charge		decimal(12,2)			No	0		
+31	commission_fee		decimal(12,2)			No	0		
+32	entry_fee			decimal(12,2)			No	0		
+33	inspection_fee		decimal(12,2)			No	0		
+34	other_fee			decimal(12,2)			No	0		
+35	allow_comment		varchar(255)	utf8mb4_unicode_ci		No	no		
+36	woner_id			int(11)				No	None		
+37	user_id			int(11)				No	None		
+38	stock			varchar(255)	utf8mb4_unicode_ci		No	available		
+39	status			varchar(255)	utf8mb4_unicode_ci		No	active		
+40	auction_id			int(11)				Yes	NULL		
+41	auction_date		datetime				Yes	NULL		
+42	auction_product		int(1)				No	0		
+43	bid_start_price		decimal(12,2)			No	0		
+44	bid_increase_decrease_price	decimal(12,2)			No	0		
+45	higest_bidding_price		decimal(12,2)			No	0		
+46	start_time_of_auction		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+47	end_time_of_auction		varchar(255)	utf8mb4_unicode_ci		Yes	NULL		
+48	auction_start		datetime				Yes	NULL		
+49	auction_end		datetime				Yes	NULL		
+50	auction_max_autobid_amount	decimal(12,2)			No	0		
+51	auction_max_bid_amount	decimal(12,2)			No	0		
+52	auction_max_bidder_id	int(11)				No	0		
+53	bid_system		varchar(255)	utf8mb4_unicode_ci		No	bid		
+54	auction_2ndmax_bid_amount	decimal(12,2)			No	0		
+55	auction_2ndmax_bidder_id	int(11)				No	0		
+56	bidders			text		utf8mb4_unicode_ci		Yes	NULL		
+57	total_bids	int(11)						Yes	0		
+58	timecount	int(1)						No	0		
+59	need_to_pay		decimal(12,2)				No	0		
+60	bidding_result		varchar(255)		utf8mb4_unicode_ci	Yes	NULL		
+61	final_result		varchar(255)		utf8mb4_unicode_ci	No	unsold		
+62	product_return_note		varchar(255)		utf8mb4_unicode_ci	Yes	NULL		
+63	state	int(1)						No	0		
+64	whoadd	int(1)						No	0		
+65	created_at			timestamp					Yes	NULL		
+66	updated_at		timestamp					Yes	NULL		
+
