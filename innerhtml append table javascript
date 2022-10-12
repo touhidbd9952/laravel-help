@@ -1,0 +1,43 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+<div id="add_to_me">
+        <h1>GeeksforGeeks</h1>
+        <p>This is the text which has already been typed into the div</p>
+    </div>
+  
+    <button onclick="addCode()">Add Stuff</button>
+    <script>
+        function addCode() {
+            document.getElementById("add_to_me").innerHTML += 
+              "<h3>This is the text which has been inserted by JS</h3>";
+        }
+    </script>
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var menuStarters = [
+  ["chicken", "5.00"],
+  ["salad", "4.11"],
+  ["soup", "3.88"]
+];
+
+var thtml = '<table>';
+for (var i = 0; i < menuStarters.length; i++) {
+  thtml += '<tr><td>' + menuStarters[i][0] + '</td><td>' + menuStarters[i][1] + '</td></tr>';
+}
+thtml += '</table>';
+
+document.getElementById("menu").innerHTML += thtml
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var menuStarters = [["chicken", "5.00"], ["salad", "4.11"], ["soup", "3.88"]];
+var html = '<table>';
+menuStarters.forEach(function(item, index){
+html += '<tr><td>' + item[0] + '</td><td>' + item[1] + '</td></tr>';
+});
+html += '</table>';
+document.getElementById("menu").innerHTML = html;
+
+////////////////////////////////////////////////////////////////////////////////////////////////
