@@ -1,6 +1,8 @@
 $request->validate([
             'name_en' => 'required|max:255',
             'name_jp' => 'max:255',
+            'email' => 'required|max:255|email|required_with:confirm_email|same:confirm_email',
+            'confirm_email' => 'max:255',
             'email1' => 'required|max:255|email|unique:bidder_registers',
             'email2' => 'max:255|email|unique:bidder_registers',
             'password' => 'min:6|required_with:confirm_password|same:confirm_password',   
