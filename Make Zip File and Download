@@ -1,23 +1,59 @@
 use ZipArchive;
 
 //file download
-    public function downloadZip($id)
+    public function downloadphotoZip($id)
     {
-        $data = Product_multiple_image::where('product_id',$id)->get();
+        $imgarr = []; 
+        //image
+        $data = Product_multiple_images::where('product_id',$id)->get();
+        $productinfo = Product::find($id);
+        $model_no = $productinfo->model_no;
+        $serial_no = $productinfo->serial_no;
+
         foreach($data as $key => $value)
         {
-            $imgarr[] =  $value->image;
+            if(file_exists($value->image_l))
+            {
+                $imgarr[] =  $value->image_l;
+            }
         }
 
         $timeName = time();
-        $ziplink = $this->converToZip($imgarr,$timeName);
+        $ziplink = $this->converToZip($imgarr,$timeName,$model_no,$serial_no);
         //return redirect($ziplink);
 
         //$response = response()->download('./uploads/images/product/multipleimage/'. $timeName . '.zip');
         $response = response()->download('./uploads/zipfiles/'. $timeName . '.zip');
         return $response;
     }
-    public function converToZip($imgarr,$timeName)
+    public function downloadZip($id)
+    {
+        $imgarr = []; 
+        
+        //conditional_report
+        $productdata = Product::where('id',$id)->get();
+        $model_no = $productdata[0]->model_no;
+        $serial_no = $productdata[0]->serial_no;
+        if(count($productdata)>0)
+        {
+            foreach($productdata as $key => $value)
+            {
+                if(file_exists($value->conditional_report))
+                {
+                    $imgarr[] =  $value->conditional_report;
+                }
+            }
+        }
+
+        $timeName = time();
+        $ziplink = $this->converToZip($imgarr,$timeName,$model_no,$serial_no);
+        //return redirect($ziplink);
+
+        //$response = response()->download('./uploads/images/product/multipleimage/'. $timeName . '.zip');
+        $response = response()->download('./uploads/zipfiles/'. $timeName . '.zip');
+        return $response;
+    }
+    public function converToZip($imgarr,$timeName,$model_no,$serial_no)
     {   //dd($imgarr);
         $zip = new ZipArchive;
         //$storage_path = 'uploads/images/product/multipleimage';
@@ -28,10 +64,21 @@ use ZipArchive;
         $res = $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE); 
         if ($res) 
         {
+            $sl = 0;
             foreach ($imgarr as $file) 
             {
                 $file = (string)$file;
-                $zip->addFile($file,basename($file));
+                $fileinfo = pathinfo($file);
+                $sl++;
+
+                $num = "";
+                if($sl < 10){$num = '00'.$sl;}
+                else if($sl >=10 && $sl <99){$num = '0'.$sl;}
+                else if($sl>100){$num = $sl;}
+
+                $newfilename = $model_no.'-'.$serial_no.'-'.$num.'.'.$fileinfo['extension'];
+                //$zip->addFile($file,basename($file));
+                $zip->addFile($file,$newfilename);
             }
             $zip->close();
 
@@ -52,7 +99,7 @@ use ZipArchive;
         ));
     }
     
-    ////////in view page////////
+    ////////in view page///////////////////////////////////////////////////////////////////////
     <a href="{{url('auction/downloadZip/'.$p->id)}}" class="btn download">
           Download Photos
     </a>
