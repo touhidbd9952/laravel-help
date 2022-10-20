@@ -9,6 +9,8 @@ use ZipArchive;
         $productinfo = Product::find($id);
         $model_no = $productinfo->model_no;
         $serial_no = $productinfo->serial_no;
+        $product_brand = Brand::where('id',$productinfo->brand_id)->get(); 
+        $brand = $product_brand[0]->name;
 
         foreach($data as $key => $value)
         {
@@ -19,7 +21,16 @@ use ZipArchive;
         }
 
         $timeName = time();
-        $ziplink = $this->converToZip($imgarr,$timeName,$model_no,$serial_no);
+        if($brand !="" && $model_no != "")
+        {
+            $timeName = $brand.'-'.$model_no.'-'.$serial_no;
+        }
+        else if($brand =="" && $model_no != "")
+        {
+            $timeName = $model_no.'-'.$serial_no;
+        }
+        
+        $ziplink = $this->converToZip($imgarr,$timeName,$model_no,$serial_no,$brand);
         //return redirect($ziplink);
 
         //$response = response()->download('./uploads/images/product/multipleimage/'. $timeName . '.zip');
@@ -34,6 +45,8 @@ use ZipArchive;
         $productdata = Product::where('id',$id)->get();
         $model_no = $productdata[0]->model_no;
         $serial_no = $productdata[0]->serial_no;
+        $product_brand = Brand::where('id',$productdata[0]->brand_id)->get(); 
+        $brand = $product_brand[0]->name;
         if(count($productdata)>0)
         {
             foreach($productdata as $key => $value)
@@ -46,14 +59,14 @@ use ZipArchive;
         }
 
         $timeName = time();
-        $ziplink = $this->converToZip($imgarr,$timeName,$model_no,$serial_no);
+        $ziplink = $this->converToZip($imgarr,$timeName,$model_no,$serial_no,$brand);
         //return redirect($ziplink);
 
         //$response = response()->download('./uploads/images/product/multipleimage/'. $timeName . '.zip');
         $response = response()->download('./uploads/zipfiles/'. $timeName . '.zip');
         return $response;
     }
-    public function converToZip($imgarr,$timeName,$model_no,$serial_no)
+    public function converToZip($imgarr,$timeName,$model_no,$serial_no,$brand)
     {   //dd($imgarr);
         $zip = new ZipArchive;
         //$storage_path = 'uploads/images/product/multipleimage';
@@ -76,7 +89,7 @@ use ZipArchive;
                 else if($sl >=10 && $sl <99){$num = '0'.$sl;}
                 else if($sl>100){$num = $sl;}
 
-                $newfilename = $model_no.'-'.$serial_no.'-'.$num.'.'.$fileinfo['extension'];
+                $newfilename = $brand.'-'.$model_no.'-'.$serial_no.'-'.$num.'.'.$fileinfo['extension'];
                 //$zip->addFile($file,basename($file));
                 $zip->addFile($file,$newfilename);
             }
