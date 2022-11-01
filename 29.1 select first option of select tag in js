@@ -1,0 +1,5 @@
+<script type="text/javascript">
+  (function () {
+    document.getElementById("worktypeid").selectedIndex = "-1";;
+})();
+</script>
