@@ -1,0 +1,4 @@
+  //call when page load
+  window.onload = function() {
+    getworkorder()
+};
