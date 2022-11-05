@@ -245,3 +245,37 @@ public function addform()
         Category::findOrFail($id)->delete();
         return response()->json('deleted');
     }
+    
+    
+  function getworkorder()
+  {
+    //get workorder list of this job provider
+    var logger_id ='';
+    logger_id = document.getElementById("logger_id").value;
+    $.ajax({
+            type:'GET',
+            url: '/job_provider/getworkorder/'+logger_id,
+            dataType:'json',
+            success:function(data){
+              //alert(data.workorderlist);
+               let res = '';
+
+               data.workorderlist.forEach(workorder => {
+                
+                var datetime = workorder.created_at;
+                datetime = new Date(datetime).toLocaleString();
+
+               // datetime = format(new Date(datetime,'yyyy-MM-dd'));
+                  res += `<tr><td>${workorder.id}</td>
+                              <td>${workorder.worktype.title}</td>
+                              <td>${workorder.work.work_title}</td>
+                              <td>${workorder.work_place}</td>
+                              <td>${workorder.workstart}</td>
+                              <td>${datetime}</td>
+                          </tr>`
+                })
+                $('#workorderlist').html(res)
+            }
+        })
+
+  }
