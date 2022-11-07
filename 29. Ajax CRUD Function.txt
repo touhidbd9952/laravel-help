@@ -1,190 +1,256 @@
-@extends('layouts.admin_master')
+@extends('layouts.fontend_master2')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Category Entry</div>
 
-                <div class="card-body">
-                   
+ <style>
+  form label{text-align: right;}
+ </style>
 
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">Categoy Name</label>
-
-                            <div class="col-md-6">
-                                <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror"  required  autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary" onclick="addcateogy()">
-                                    Save
-                                </button>
-
-                               
-                            </div>
-                        </div>
-                    
-                </div>
-            </div>
-
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>sl</th>
-                        <th>Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="categoryview">
-                    
-                </tbody>
-            </table>
-
-            <div class="card">
-                <div class="card-header">Category Edit</div>
-
-                <div class="card-body">
-                   
-
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">Categoy Name</label>
-
-                            <div class="col-md-6">
-                                <input type="text" name="categoryname" id="categoryname"  class="form-control @error('categoryname') is-invalid @enderror"  required  autofocus>
-
-                                @error('categoryname')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <input type="hidden" id="categoryid">
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary" onclick="categoryUpdate()">
-                                    Update
-                                </button>
-
-                            </div>
-                        </div>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<?php 
+$base_url = Session::get('base_url');
+?>
 <script>
-    $(document).ready(function(){
-        //call when page load
-        getcategory();
-    })
-    //Ajax POST for insert data
-    function addcateogy(){
-        var name = $('#name').val();
-        $.ajax({
-            type:'POST',
-            data: {
-                    "_token": "{{ csrf_token() }}",
-                    "categoryname":name,
-                },
-            url: '/category/add',
-            dataType:'json',
-            success:function(data){
-              //call after insert
-              getcategory();
+  $( function() {
+    $( "#datepicker" ).datepicker();
+  } );
+  </script>
 
-            }
-        })
-    }
+  <!-- Get in Touch-->
+  <section class="section section-lg bg-white">
+    <div class="shell">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-2">&nbsp;</div>
+          <div class="col-md-10" style="text-align: center;">
+            <h3  style="font-size: 20px;text-align: left;color:black;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+              Creat a Work Order
+            </h3>
 
-    // Ajax GET
-    function getcategory()
-    {
-        $.ajax({
+              <form>
+
+                <?php 
+                  $logger_provider_id = Session::get('logger_provider_id') ;
+                ?>
+
+                <input type="hidden" id="logger_id" value="{{$logger_provider_id}}">
+
+                <div class="form-group row">
+                  <label for="worktypeid"
+                      class="col-sm-3 text-end control-label col-form-label">Work Type &nbsp;<span id="eworktypeid" class="emsg"></span></label>
+                  <div class="col-sm-6">
+                      <select name="worktypeid" id="worktypeid" onchange="getworklist(this.value)" class="form-control">
+                        <option value="0" selected>Select Work Type</option>
+                        @foreach($worktypelist as $worktype)
+                           <option value="{{$worktype->id}}">{{ $worktype->title }}</option>
+                        @endforeach
+                      </select>
+                      
+                  </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="workid"
+                    class="col-sm-3 text-end control-label col-form-label">Work &nbsp;<span id="eworkid" class="emsg"></span></label>
+                <div class="col-sm-6">
+                    <select name="workid" id="workid" class="form-control">
+                      
+                    </select>
+                    @error('workid')
+                        <span class="text-danger"> {{$message}}  </span>
+                    @enderror
+                </div>
+            </div>
+
+              <div class="form-group row">
+                <label for="workplace"
+                    class="col-sm-3 text-end control-label col-form-label">Work Place &nbsp;<span id="eworkplace" class="emsg"></span></label>
+                <div class="col-sm-6">
+                    <input type="text"  name="workplace" id="workplace" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 text-end control-label col-form-label">Work Start &nbsp;<span id="eworkstart" class="emsg"></span></label>
+              <div id="workstart" class="col-sm-6">
+                  <input type="text"  name="workstart" id='datepicker'   class="form-control">
+                  
+              </div>
+          </div>
+
+                
+            </form>
+
+            <div class="form-group row mb-0" style="padding-bottom: 25px;">
+              <label class="col-md-3 col-form-label text-md-right"></label>
+              <div class="col-md-6">
+                  <button type="submit" id="createbtn" onclick="CreateNewWorkOrder()" class="btn btn-primary" style="min-width: 100px;float: left;">
+                      Create
+                  </button>
+
+                  <input type="hidden" id="updateid"> 
+                  <button type="submit" id="updatebtn" onclick="UpdateWorkOrder()" class="btn btn-primary" style="min-width: 100px;float: left;">
+                    Update
+                </button>
+                <button type="submit" id="cancelbtn" onclick="newWorkOrder()" class="btn btn-primary" style="min-width: 100px;float: left;margin-left:50px;">
+                  Cancel
+              </button>
+              </div>
+          </div>
+
+          
+          <div id="workorderlist" style="margin-bottom: 50px;"></div>
+
+          
+
+            
+          </div>
+      </div>
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </section>
+
+  
+<script>
+  function getworklist(worktypeid)
+  {
+    //alert(worktypeid);
+    $.ajax({
             type:'GET',
-            url: '/category/view',
+            url: '/get-worklist/'+worktypeid,
             dataType:'json',
-            success:function(data){
-                var tablerow ="";
-              $.each(data,function(key,value){
-                tablerow += `<tr>
-                        <td>${value.id}</td>
-                        <td>${value.name}</td>
-                        <td>
-                            <a href="javascript:" id="${value.id}" class="btn" onclick="categoryEdit(this.id)">Edit</a>
-                            <a href="javascript:" id="${value.id}" class="btn" onclick="categoryDelete(this.id)">Delete</a>
-                        </td>
-                    </tr>`  
-              });
-              $('#categoryview').html(tablerow);
-
+            success:function(data){    
+               //worklist
+               $('select[name="workid"]').empty(); 
+               $('select[name="workid"]').append('<option value=""></option>');
+               $.each(data.worklist,function(key,value){    
+                    $('select[name="workid"]').append('<option value="'+value['id']+'">'+value['work_title']+'</option>')
+               })
             }
         })
-    }
+  }
 
-    //Ajax GET for edit data
-    function categoryEdit(id)
+  function CreateNewWorkOrder()
+  {
+    var logger_id = '';
+    var worktypeid = '';
+    var workid = '';
+    var workplace = '';
+    var workstart = '';
+
+    logger_id = document.getElementById("logger_id").value;  
+    worktypeid = document.getElementById("worktypeid").value;
+    workid = document.getElementById("workid").value;           
+    workplace = document.getElementById("workplace").value;
+    workstart = document.getElementById("datepicker").value;  
+
+    document.getElementById("eworktypeid").innerHTML = ""; 
+    document.getElementById("eworkid").innerHTML = "";
+    document.getElementById("eworkplace").innerHTML = "";
+    document.getElementById("eworkstart").innerHTML = "";
+    var err=0;
+    if(logger_id == '')
     {
-        $.ajax({
-            type:'GET',
-            url: '/category/edit/'+id,
-            dataType:'json',
-            success:function(data){
-                $('#categoryid').val(data.id);
-                $('#categoryname').val(data.name);
-            }
-        })
+      err++;
     }
+    if(worktypeid == ''){ err++;document.getElementById("eworktypeid").innerHTML = "Required"; }
+    if(workid == ''){ err++;document.getElementById("eworkid").innerHTML = "Required"; }
+    if(workplace == ''){ err++;document.getElementById("eworkplace").innerHTML = "Required"; }
+    if(workstart == ''){ err++;document.getElementById("eworkstart").innerHTML = "Required"; }  
 
-    function categoryUpdate()
+    if(err == 0)
+    {   
+        $.ajax({
+                type:'POST',
+                data: {
+                        "_token": "{{ csrf_token() }}",
+                        "worktypeid":worktypeid,
+                        "workid":workid,
+                        "workplace":workplace,
+                        "workstart":workstart,
+                        "logger_id":logger_id,
+                    },
+                url: '/job_provider/create_new_Work_order',
+                dataType:'json',
+                success:function(data){  
+                  //alert(data);
+                  //call after insert
+                  getworkorder();
+                  document.getElementById("worktypeid").selectedIndex = "0";
+
+                }
+            });
+    }
+  }
+
+  /////update workorder/////////////////////////////////
+  function UpdateWorkOrder()
+  {
+    var logger_id = '';
+    var worktypeid = '';
+    var workid = '';
+    var workplace = '';
+    var workstart = '';
+
+    logger_id = document.getElementById("logger_id").value; 
+    updateid = document.getElementById("updateid").value;  
+    worktypeid = document.getElementById("worktypeid").value;
+    workid = document.getElementById("workid").value;           
+    workplace = document.getElementById("workplace").value;
+    workstart = document.getElementById("datepicker").value;  
+
+    document.getElementById("eworktypeid").innerHTML = ""; 
+    document.getElementById("eworkid").innerHTML = "";
+    document.getElementById("eworkplace").innerHTML = "";
+    document.getElementById("eworkstart").innerHTML = "";
+    var err=0;
+    if(logger_id == '')
     {
-        var id = $('#categoryid').val();
-        var name = $('#categoryname').val();
-        $.ajax({
-            type:'POST',
-            data: {
-                    "_token": "{{ csrf_token() }}",
-                    "categoryname":name,
-                },
-            url: '/category/update/'+id,
-            dataType:'json',
-            success:function(data){
-              //call after insert
-              getcategory();
-
-            }
-        })
+      err++;
     }
-    //Ajax GET for edit data
-    function categoryDelete(id)
-    {
+    if(worktypeid == ''){ err++;document.getElementById("eworktypeid").innerHTML = "Required"; }
+    if(workid == ''){ err++;document.getElementById("eworkid").innerHTML = "Required"; }
+    if(workplace == ''){ err++;document.getElementById("eworkplace").innerHTML = "Required"; }
+    if(workstart == ''){ err++;document.getElementById("eworkstart").innerHTML = "Required"; }  
+
+    if(err == 0)
+    {   
         $.ajax({
-            type:'GET',
-            url: '/category/delete/'+id,
-            dataType:'json',
-            success:function(data){
-                getcategory();
-            }
-        })
+                type:'POST',
+                data: {
+                        "_token": "{{ csrf_token() }}",
+                        "worktypeid":worktypeid,
+                        "workid":workid,
+                        "workplace":workplace,
+                        "workstart":workstart,
+                        "updateid":updateid,
+                    },
+                url: '/job_provider/update_Work_order',
+                dataType:'json',
+                success:function(data){  
+                  //alert(data);
+                  //call after insert
+                  getworkorder();
+                  newWorkOrder();
+
+                }
+            });
     }
+  }
+  
+  //call when page load/////////////////////////
+  window.onload = function() {
+    getworkorder()
+};
 
-
-function getworkorder()
+//////edit_workorder///////////////////////////
+  function getworkorder()
   {
     //get workorder list of this job provider
     var logger_id ='';
@@ -194,6 +260,7 @@ function getworkorder()
             url: '/job_provider/getworkorder/'+logger_id,
             dataType:'json',
             success:function(data){
+              $('#workorderlist').empty();
               //alert(data.workorderlist);
                let res = '';
 
@@ -207,6 +274,7 @@ function getworkorder()
                             <th>Work Place</th>
                             <th>Work Start</th>
                             <th>created_at</th>
+                            <th></th>
                           </tr>
                         </thead>
                         <tbody>`;
@@ -221,6 +289,10 @@ function getworkorder()
                               <td>${workorder.work_place}</td>
                               <td>${workorder.workstart}</td>
                               <td>${datetime}</td>
+                              <td>
+                                <a href="javascript:" onclick="edit_workorder(${workorder.id})">Edit</a><br>
+                                <a href="javascript:" onclick="offer_workorder(${workorder.id})">Offer</a>
+                              </td>
                           </tr>`
                 })
 
@@ -232,71 +304,309 @@ function getworkorder()
         })
 
   }
-  
-  
 
+//////edit_workorder///////////////////////////
+  function edit_workorder(workorderid){
+    //alert('Edit function call '+orderid);
+    
+    document.getElementById("updateid").value = workorderid;;
+    $.ajax({
+            type:'GET',
+            url: '/job_provider/get-workorderinfo/'+workorderid,
+            dataType:'json',
+            success:function(data){    
+               //worklist
+               $('select[name="workid"]').empty(); 
+               $.each(data.workorderinfo,function(key,value){   
 
+                    var worktypeid = document.getElementById("worktypeid");
+                    for(var i=0; i < worktypeid.options.length; i++)
+                    {
+                      if(worktypeid.options[i].value == value['worktypeid']) 
+                      {
+                        worktypeid.options[i].selected = 'selected';
+                        getworklist(worktypeid.options[i].value);
+                          var delayInMilliseconds = 500; //1 second
+                          setTimeout(function() {
+                            //code to be executed after 1 second
+                            var workid = document.getElementById("workid"); 
+                            if(workid.options.length >0)
+                            {
+                              for(var j=0; j < workid.options.length; j++)
+                              {
+                                if(workid.options[j].value == value['workid']) 
+                                {
+                                  document.getElementById("workid").options[j].selected = 'selected';
+                                }
+                              }
+                            }
+                          }, delayInMilliseconds);
+                      }
+                    }
+                    
+                    
+                    document.getElementById("workplace").value = value['work_place'];
+                    document.getElementById("datepicker").value = value['workstart'];
+                    document.getElementById("eworkid").innerHTML = "";
+                    document.getElementById("eworkplace").innerHTML = "";
+                    document.getElementById("eworkstart").innerHTML = "";
+                    eworkid
+
+                    //button 
+                    document.getElementById("createbtn").style.display = "none";
+                    document.getElementById("updatebtn").style.display = "block";
+                    document.getElementById("cancelbtn").style.display = "block";
+
+               })
+            }
+        });
+  }
+//////offer_workorder/////////////////////////////
+function offer_workorder(orderid){
+  alert('Offer function call '+orderid);
+}
+</script>
+
+<script type="text/javascript">
+  (function () {
+    document.getElementById("worktypeid").selectedIndex = "0";
+    document.getElementById("workplace").value = "";
+    document.getElementById("datepicker").value = "";
+
+    document.getElementById("createbtn").style.display = "block";
+    document.getElementById("updatebtn").style.display = "none";
+    document.getElementById("cancelbtn").style.display = "none";
+    //document.getElementById("workstart").value = '';
+})();
+
+function newWorkOrder()
+{
+    document.getElementById("worktypeid").selectedIndex = "0";
+    $('select[name="workid"]').empty(); 
+    document.getElementById("workplace").value = "";
+    document.getElementById("datepicker").value = "";
+
+    document.getElementById("createbtn").style.display = "block";
+    document.getElementById("updatebtn").style.display = "none";
+    document.getElementById("cancelbtn").style.display = "none";
+}
 </script>
 
 
 
 
-@endsection
+  @endsection
 
 
 
-//////////Controller////////////////
 
-public function addform()
+
+
+
+//////////Controller/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\Worktype;
+use App\Models\Work;
+use App\Models\Workorder;
+
+
+use Illuminate\Support\Facades\File;
+
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
+use Intervention\Image\Facades\Image;
+
+class CustomerController extends Controller
+{
+    public function __construct()
     {
-        return view('backend.admin.category.addform');
+        //base url
+        $base_url = URL::to('/'); 
+        Session::put('base_url',$base_url) ;
+        
+        //default value
+        Session::put('registration_success',0) ; 
+        
+
+        //language
+        if (Session::has('language')) 
+        {
+            $language = "";
+            $language = Session::get('language');
+            if($language =="")
+            {
+                $language = "en";
+                Session::put('language',$language) ;
+            }
+        }
+        ///////////////////////////////////////////
+        
+
+    }
+    //language
+    public function get_pagelanguage()
+    {
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_Login_ID'] = "Login ID";
+            $pagelanguage['LG_Password'] = "Password";
+            $pagelanguage['LG_Login'] = "Login";
+            
+            
+
+            return $pagelanguage;
+        }
+        else
+        {
+            $pagelanguage = array();
+            $pagelanguage['LG_Login_ID'] = "ログインID";
+            $pagelanguage['LG_Password'] = "パスワード";
+            $pagelanguage['LG_Login'] = "ログイン";
+            
+
+
+            return $pagelanguage;
+        }
+    }
+    public function change_language($lan)
+    {
+        $pageurl ="";
+        if($lan =="en")
+        {
+            Session::put('language','en') ; 
+        }
+        else if($lan =="jp"){
+            Session::put('language','jp') ;
+        }
+        //return response()->json('changed');
+        return response()->json($lan);
+    }
+    
+    public function get_pageurl($en_url,$jp_url)
+    {
+        $pageurl ="";
+        $language = "";
+        $language = Session::get('language'); 
+        if($language =="" || $language =="en")
+        {
+            $language = "en";
+            Session::put('language',$language) ; 
+            $pageurl  = $en_url;
+        }
+        else if($language =="jp"){
+            $language = "jp";
+            Session::put('language',$language) ;
+            $pageurl  = $jp_url;
+        }
+
+        return $pageurl ;
     }
 
-    //insert category by ajax
-    public function addcategory(Request $request)
+    //job_provider_panel////////////////////////////////////////////////
+    public function job_provider_panel()
     {
-        Category::insert([
-            'name'=>$request->categoryname
-        ]);
-        //return response('saved');
+        $logger_provider_id = ""; $logger_provider_code = ""; $logger_provider_title = "";
 
+        $logger_provider_id = Session::get('logger_provider_id') ;
+        $logger_provider_code = Session::get('logger_provider_code') ;
+        $logger_provider_title = Session::get('logger_provider_title') ;
+        if($logger_provider_id != "")
+        {
+            $page =$this->get_pageurl('fontend.en.job_provider_panel','fontend.jp.job_provider_panel');
+            $pagelanguage = $this->get_pagelanguage();
+            $worktypelist = Worktype::all(); 
+            $worklist = Work::where('work_type_id',$worktypelist[0]->id)->get();
+            return view($page,compact('pagelanguage','worktypelist','worklist'));
+        }
+        else
+        {
+            //go to index()
+            return Redirect()->route('/');
+        }
+    }
+    //logout from panel
+    public function job_provider_logout()
+    {  
+        Session::forget('logger_provider_id');
+        Session::forget('logger_provider_code');
+        Session::forget('logger_provider_title');
+
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header('Content-Type: text/html');
+        
+        //dd('aaf');
+        return Redirect()->route('/');
+    }
+    //get_worklist
+    public function get_worklist($worktypeid)
+    {
+        $worklist = Work::where('work_type_id',$worktypeid)->get();
+        return response()->json(array(
+            'worklist' => $worklist,
+        ));
+    }
+    //create_new_Work_order
+    public function create_new_Work_order(Request $request)
+    {
+        $id = Workorder::insertGetId([
+            'cusid'=>$request->logger_id,
+            'worktypeid'=>$request->worktypeid,
+            'workid'=>$request->workid,
+            'work_place'=>$request->workplace,
+            'workstart'=>$request->workstart,
+            'created_at'=>Carbon::now(),
+        ]);
         return response()->json('saved');
 
-        // return response()->json(array(
-        //     'product' => $product,
-        //     'color' => $product_color,
-        //     'size' => $produt_size,
-        // ));
+        
     }
-    //view category by ajax
-    public function viewcategory()
+    //getworkorder
+    public function getworkorderlist($logger_id)
     {
-        $categories = Category::latest()->get();
-        return response()->json($categories);
+        //getworkorder of job provider
+        $workorderlist = Workorder::with('customer','worktype','work')->where('cusid',$logger_id)->get();
+        return response()->json(array(
+                'workorderlist' => $workorderlist,
+            ));
     }
-
-    //edit category by ajax
-    public function editcategory($id)
+    //get_workorderinfo
+    public function get_workorderinfo($workorderid)
     {
-        $category = Category::findOrFail($id);
-        return response()->json($category);
+        //getworkorder of job provider
+        $workorderinfo = Workorder::with('customer','worktype','work')->where('id',$workorderid)->get();
+        return response()->json(array(
+                'workorderinfo' => $workorderinfo,
+            ));
     }
-
-    //update category by ajax
-    public function updatecategory(Request $request,$id)
+    //update_Work_order////////////////////
+    public function update_Work_order(Request $request)
     {
-        Category::findOrFail($id)->update([
-            'name'=>$request->categoryname,
+        //return response()->json('paisi'); 
+        $id = Workorder::find($request->updateid)->update([
+            'worktypeid'=>$request->worktypeid,
+            'workid'=>$request->workid,
+            'work_place'=>$request->workplace,
+            'workstart'=>$request->workstart,
+            'created_at'=>Carbon::now(),
         ]);
-        return response()->json('updated');
+        return response()->json('Updated');  
     }
 
-    //delete category by ajax
-    public function deletecategory($id)
-    {
-        Category::findOrFail($id)->delete();
-        return response()->json('deleted');
-    }
-    
-    
-  
+
+
+
+
+}
