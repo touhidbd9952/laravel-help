@@ -259,6 +259,13 @@ Orders
 24.	Product_category
 25.	Product_profile
 
+Comments
+1. id
+2. rating (integer)
+3. comment (varchar)
+4. author (varchar)
+5. date (datetime)
+
 
 Schema::create('users', function (Blueprint $table) {
      $table->increments('id');
