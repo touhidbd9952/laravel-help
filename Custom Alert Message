@@ -1,0 +1,52 @@
+<div id="jAlRem" style="display: none;">
+  <div id="jAlert">
+      <div id="jAlert_table">
+          <div id="jAlert_tr" style="padding:10px;border: 2px solid #fbc502;">
+              <span id="jAlert_td">  <p id="jAlert_content" ></p>  </span>
+              <span id="jAlert_td">  <button id='jAlert_ok'  onclick="jAlertagree()" style="float:right;"></button>  </span>
+          </div>
+      </div>
+  </div>
+</div>
+
+<style>
+  #jAlert_table, #jAlert_th, #jAlert_td{
+     /* border: 2px solid blue;*/
+      background-color:#ededed;
+      border-collapse: collapse;
+      width=300px;
+  }
+  
+  #jAlert_th, #jAlert_td{
+      /*padding:50px;*/
+      padding-right:100px;
+      padding-left:100px;
+  }
+  #jAlert_content{font-size: 16px;font-weight: 900;}
+  
+  #jAlert{
+      /* Position fixed */
+      position:fixed;
+      /* Center it! */
+      top: 18%;
+      left: 40%;
+      margin-top: -50px;
+      margin-left: -100px;
+  }
+  </style>
+  <script>
+    function jAlert(text, customokay){
+      document.getElementById('jAlert_content').innerHTML = text;
+        document.getElementById('jAlert_ok').innerHTML = customokay;
+    }
+    
+    function jAlertagree(){
+        var parent = document.getElementById('jAlRem');
+        var child = document.getElementById('jAlert');
+        parent.removeChild(child);
+    }
+    
+    //add below 2 line where need to use in javascript
+    jAlert(data, "<b>Ok</b>");
+    document.getElementById('jAlRem').style.display="block";
+    </script>
