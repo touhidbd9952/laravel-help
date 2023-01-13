@@ -9,44 +9,114 @@
   </div>
 </div>
 
+<div id="jAlRem_Confirm" style="display: none;">
+  <div id="jAlert_Confirm">
+      <div id="jAlert_table_Confirm">
+          <div id="jAlert_tr_Confirm" style="padding:10px;border: 2px solid #fbc502;">
+              <span id="jAlert_td_Confirm">  <p id="jAlert_content_Confirm"></p>  </span>
+              <span id="jAlert_td_Confirm">  
+              <button id='jAlert_confirm_cancel'  style="float:right;"></button>
+              <button id='jAlert_confirm_ok'  style="float:right;margin-right:5px;"></button>
+              </span>
+          </div>
+      </div>
+  </div>
+</div>
+
 <style>
-  #jAlert_table, #jAlert_th, #jAlert_td{
+  #jAlert_table, #jAlert_th, #jAlert_td, #jAlert_table_Confirm, #jAlert_th_Confirm, #jAlert_td_Confirm{
      /* border: 2px solid blue;*/
       background-color:#ededed;
       border-collapse: collapse;
       width=300px;
   }
   
-  #jAlert_th, #jAlert_td{
+  #jAlert_th, #jAlert_td, #jAlert_th_Confirm, #jAlert_td_Confirm{
       /*padding:50px;*/
       padding-right:100px;
       padding-left:100px;
   }
-  #jAlert_content{font-size: 16px;font-weight: 900;}
+  
+  #jAlert_content, #jAlert_content_Confirm{font-size: 16px;font-weight: 900;}
   
   #jAlert{
       /* Position fixed */
       position:fixed;
       /* Center it! */
-      top: 18%;
-      left: 40%;
+      top: 50%;
+      left: 45%;
       margin-top: -50px;
       margin-left: -100px;
   }
+  #jAlert_Confirm{
+      /* Position fixed */
+      position:fixed;
+      /* Center it! */
+      top: 50%;
+      left: 45%;
+      margin-top: -50px;
+      margin-left: -100px;
+  }
+  #jAlert_ok:hover, #jAlert_confirm_ok:hover{background:#F93;border-color:#F93}
+  #jAlert_cancel:hover, #jAlert_confirm_cancel:hover{background:#F93;border-color:#F93}
   </style>
-  <script>
-    function jAlert(text, customokay){
-      document.getElementById('jAlert_content').innerHTML = text;
-        document.getElementById('jAlert_ok').innerHTML = customokay;
-    }
+
+<script>
+  function jAlert(text, customokay)
+  {
+    document.getElementById('jAlert_content').innerHTML = text;
+      document.getElementById('jAlert_ok').innerHTML = customokay;
+  }
+  function jAlertconfirm(text,myfunction)
+  { 
+    document.getElementById('jAlert_content_Confirm').innerHTML = text;  
+      document.getElementById('jAlert_confirm_ok').innerHTML = '<b>Yes</b>';
+    document.getElementById('jAlert_confirm_cancel').innerHTML = '<b>No</b>';
     
-    function jAlertagree(){
-        var parent = document.getElementById('jAlRem');
-        var child = document.getElementById('jAlert');
-        parent.removeChild(child);
+    document.getElementById('jAlRem_Confirm').style.display="block";
+    var result = 'no';
+    document.getElementById('jAlert_confirm_ok').onclick = function() {
+      //result = 'yes';
+      document.getElementById('jAlRem_Confirm').style.display="none";   
+      //myfunction; 
+      var myfun = new Function(myfunction);
+      myfun();
     }
-    
-    //add below 2 line where need to use in javascript
-    jAlert(data, "<b>Ok</b>");
-    document.getElementById('jAlRem').style.display="block";
-    </script>
+    document.getElementById('jAlert_confirm_cancel').onclick = function() {
+      //result = 'no';
+      document.getElementById('jAlRem_Confirm').style.display="none";  
+      return false;
+    }
+  }
+  
+  //jAlert("Your Message Here", "<b>Ok</b>");
+  //jAlertconfirm("Your Message Here", "<b>Yes</b>", "<b>Cancel</b>");
+  
+  function jAlertagree()
+  {
+    document.getElementById('jAlRem').style.display="none";
+      //var parent = document.getElementById('jAlRem');
+      //var child = document.getElementById('jAlert');
+      //parent.removeChild(child);
+  }
+  function jAlertconfirmagree()
+  {
+    document.getElementById('jAlRem_Confirm').style.display="none";
+    //var parent = document.getElementById('jAlRem_Confirm');
+      //var child = document.getElementById('jAlert_Confirm');
+      //parent.removeChild(child);
+      document.getElementById('jAlert_confirm_ok').innerHTML = 'yes';
+  }
+  function jAlertcancel()
+  {
+      document.getElementById('jAlRem_Confirm').style.display="none";
+      //var parent = document.getElementById('jAlRem_Confirm');
+      //var child = document.getElementById('jAlert_Confirm');
+      //parent.removeChild(child);
+  }
+  </script>
+  
+  
+  
+  ////////use custom confirm message /////////////////////////
+  res +=`<a href="javascript:" onclick="jAlertconfirm('Are you shure want to cancel this offer?', 'offer_cancel(${workorder.id})')" class="btncancel">Cancel Offer?</a>`
