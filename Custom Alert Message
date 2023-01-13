@@ -1,3 +1,5 @@
+///////////put below code in master page ////////////////////////////////////
+
 <div id="jAlRem" style="display: none;">
   <div id="jAlert">
       <div id="jAlert_table">
@@ -118,5 +120,6 @@
   
   
   
-  ////////use custom confirm message /////////////////////////
+  ////////use custom confirm message in javascript ajax /////////////////////////
+  
   res +=`<a href="javascript:" onclick="jAlertconfirm('Are you shure want to cancel this offer?', 'offer_cancel(${workorder.id})')" class="btncancel">Cancel Offer?</a>`
