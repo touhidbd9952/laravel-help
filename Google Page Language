@@ -1,0 +1,52 @@
+
+<!-- google translate api start for login page ---->
+<div id="google_translate_element"><b style="color: #fff;">Language:</b></div>
+ 
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {pageLanguage: 'en'},
+                'google_translate_element'
+            );
+        }
+    </script>
+ 
+<script type="text/javascript"src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<style>
+  .goog-te-banner, .goog-te-banner-frame{display: none !important;}
+  body{top:0 !important}
+  #google_translate_element{position: absolute;top: 5px;right: 70px;}
+  .goog-te-gadget{color: #e19504;border: none;}
+  #google_translate_element span{display: none;}
+  #google_translate_element select{width: 100px;}
+  .lan{display: none;}
+</style>
+<!-- google translate api end---->
+
+
+
+
+<!-- google translate api start for inner dashboard panel---->
+<div id="google_translate_element"></div>
+ 
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {pageLanguage: 'en'},
+                'google_translate_element'
+            );
+        }
+    </script>
+ 
+    <script type="text/javascript"src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+      .goog-te-banner, .goog-te-banner-frame{display: none !important;}
+      body{top:0 !important}
+      #google_translate_element{position: absolute;top: 20px;right: 70px;}
+      .goog-te-gadget{color: #e19504;}
+      #google_translate_element span{display: none;}
+      #google_translate_element select{width: 90px;border: none;background:#e19504;color: #fff; color: #fff;height: 20px;}
+      #google_translate_element select option {background: #fdf579;color: #e19504;}
+      #google_translate_element select option:hover{background:#e19504 !important;color: #fff;}
+    </style>
+<!-- google translate api end---->
