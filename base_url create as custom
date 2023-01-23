@@ -1,0 +1,21 @@
+/////add below line in master page to set base_url as custom////////////
+
+<script>
+    var base_url = 'https://woodyengineering.com/freeman';  
+  </script>
+  
+///// use base_url////////////////////////////////////////////////////
+
+function cancel_this_booking(freemanid,workorderid)
+  { 
+    $.ajax({
+            type:'GET',
+            url: base_url+'/job_provider/cancel_this_booking/'+freemanid+'/'+workorderid,
+            dataType:'json',
+            success:function(data){     
+              getworkorder();
+              newWorkOrder();
+              show_interested_freemanlist(workorderid)
+            }
+        });
+  }
