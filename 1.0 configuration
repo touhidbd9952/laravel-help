@@ -1,0 +1,6 @@
+//////how to change "asset" in laravel/////////////////////
+
+go to config(folder) --> app.php
+    
+     //'asset_url' => "https://amphibious.woodyengineering.com/",    //server settings in cpanel
+    'asset_url' => env('ASSET_URL', null),    //by default settings
