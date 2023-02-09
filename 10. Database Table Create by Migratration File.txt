@@ -24,6 +24,45 @@ php artisan make:migration create_products_table --create=products
 	$table->string('category_name');
 	$table->timestamps();
 	$table->softDeletes();
+	
+	
+	////////////////////////////////////////////////////////////
+	Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('lotno'); //use for auction no
+            $table->string('name_en')->nullable();
+            $table->string('name_jp')->nullable(); //product name
+            $table->string('name_slag_en')->nullable();
+            $table->string('name_slag_jp')->nullable();
+            $table->integer('category_id'); //category id seperated by commas like 1,2,3
+            $table->string('thumbnail_image')->nullable();
+            $table->string('thumbnail_sm_image')->nullable();
+            $table->string('conditional_report')->nullable();
+            $table->integer('brand_id')->nullable();
+            $table->string('model_no')->nullable();
+            $table->string('serial_no')->nullable();
+            $table->string('model_year')->nullable();
+            $table->string('used_hour')->nullable();
+            $table->decimal('buy_price',12,2)->default(0.00);
+            $table->decimal('sale_price',12,2)->default(0.00);
+            $table->text('short_description')->nullable();
+            $table->text('short_description_jp')->nullable();
+            $table->text('long_description')->nullable();
+            $table->text('long_description_jp')->nullable();
+            $table->string('delivery_place')->nullable();
+            $table->string('delivery_status')->nullable();
+            $table->decimal('releasing_charge',12,2)->default(0.00);
+            $table->string('allow_comment')->default('no'); //yes,no
+            $table->integer('woner_id')->nullable();
+            $table->integer('user_id');
+            $table->string('stock')->default('available'); // available,negotiating,sold out
+            $table->string('price')->nullable(); 
+            $table->string('status')->default('active'); //active,inactive
+
+            $table->timestamps();
+        });
+	
+	////////////////////////////////////////////////////////////
 
 
 3. go to "Cateogy" Model Folder (App\Http\Model) and add fillable or guard
