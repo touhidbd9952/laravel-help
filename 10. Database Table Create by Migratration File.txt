@@ -95,3 +95,26 @@ php artisan make:migration create_products_table --create=products
 //if database particular table has data but you need to change column name or add new column then
 you can add column in particular table manually and add column in particular migration file
 
+
+////Create a Admin Account/////////////////////
+database --> UserFactory.php
+--------------------------------------------
+
+public function definition()
+    {
+        return [
+            'role_id' => 3,
+            'name' => 'Super Admin',
+            'email' => 'admin@yourdomainname.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make(123456789), // password
+            'remember_token' => Str::random(10),
+        ];
+    }
+
+
+//when need to update database with seed data
+
+	php artisan migrate:refresh --seed
+
+
