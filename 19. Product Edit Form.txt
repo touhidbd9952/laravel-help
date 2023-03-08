@@ -235,6 +235,25 @@
                                 </div>
 
                                 
+                                <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Video Link (youtube)</label>
+                            <div class="col-sm-6">
+                                <input type="text"  name="video_link" id="video_link" value="{{$products->video_link}}"  onkeyup="loadvideo();" onchange="loadvideo();"  class="form-control @error('video_link') is-invalid @enderror" >
+                                <?php 
+                                if($products->video_link !="")
+                                {
+                                ?>
+                                <iframe width="300" height="225" id="videourl_pre" src="{{$products->video_link}}">
+                                </iframe>
+                                <?php 
+                                }
+                                 ?>
+                                 <iframe width="300" height="225" id="videourl" src="">
+                                </iframe>
+                            </div>
+                        </div>
+                        
 
                                 <div class="form-group row">
                                     <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
@@ -313,6 +332,66 @@
                         </form>
 
                     </div>
+                    
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script>
+    //$("#subcat_id").val("");
+    //$("#subsubcat_id").val("");
+    $('#categoryList').on('change', function () {
+    $("#subcat_id").attr('disabled', false); //enable subcategory select
+    $("#subcat_id").val("");
+    $("#subsubcat_id").val("");
+    $(".subcategory").attr('disabled', true); //disable all category option
+    $(".subsubcategory").attr('disabled', true);
+    $(".subcategory").hide(); //hide all subcategory option
+    $(".subsubcategory").hide();
+    $(".parent-" + $(this).val()).attr('disabled', false); //enable subcategory of selected category/parent
+    $(".parent-" + $(this).val()).show(); 
+});
+</script>
+
+<script>
+    var loadFile = function(event) {
+      var output = document.getElementById('output');
+      output.src = URL.createObjectURL(event.target.files[0]);
+      output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+    };
+  </script>
+
+<script>
+    var videoplayer = document.getElementById('videourl');
+    var videourl_pre = document.getElementById("videourl_pre");
+    videoplayer.style.display="none";
+    if(videourl_pre)
+    { 
+        var linksrc = videourl_pre.src.replace("https://youtu.be/", "https://www.youtube.com/embed/");
+        videourl_pre.src = linksrc;
+        videourl_pre.play();
+    }
+    
+    function loadvideo()
+    {
+        if(videourl_pre)
+        {
+            videourl_pre.style.display="none";
+        }
+        var youtubevideolink = document.getElementById('video_link').value;  //alert(youtubevideolink);
+        if(youtubevideolink != "")
+        {
+            youtubevideolink = youtubevideolink.replace("https://youtu.be/", "https://www.youtube.com/embed/");  //alert(youtubevideolink);
+            videoplayer.style.display="block";
+            //var videoplayer = document.getElementById('videourl');
+            videoplayer.src = youtubevideolink;
+            videoplayer.play();
+        }
+    }
+    
+</script>
+
+
 
 ////Route////
 
