@@ -271,7 +271,18 @@
                                         </div> 
                                     </div>
 
-
+                                  
+                          <div class="form-group row">
+                            <label for="fname"
+                                class="col-sm-3 text-end control-label col-form-label">Video Link (youtube)</label>
+                            <div class="col-sm-6">
+                                <input type="text"  name="video_link" id="video_link" onkeyup="loadvideo();" onchange="loadvideo();"   class="form-control @error('video_link') is-invalid @enderror" >
+                                <iframe width="300" height="225" id="videourl" src="">
+                                </iframe>
+                            </div>
+                        </div>
+                        
+                        
                                     
                                     
                                    
@@ -286,6 +297,22 @@
                             </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script>
+    var videoplayer = document.getElementById('videourl');
+    videoplayer.style.display="none";
+    function loadvideo()
+    {
+        var youtubevideolink = document.getElementById('video_link').value;  //alert(youtubevideolink);
+        if(youtubevideolink != "")
+        {
+            youtubevideolink = youtubevideolink.replace("https://youtu.be/", "https://www.youtube.com/embed/");  //alert(youtubevideolink);
+            videoplayer.style.display="block";
+            //var videoplayer = document.getElementById('videourl');
+            videoplayer.src = youtubevideolink;
+            videoplayer.play();
+        }
+    }
+</script>
 <script>
     $("#subcat_id").val("");
     $("#subsubcat_id").val("");
