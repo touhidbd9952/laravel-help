@@ -124,24 +124,23 @@
                                 
 
                                 <div class="form-group row">
-                                    <label for="fname" class="col-sm-3 text-end control-label col-form-label">Sub
-                                        Subcategory</label>
-                                    <div class="col-sm-9">
-                                        <select name="subsubcatid" id="subsubcategoryList" autocomplete="off"
-                                            class="form-control @error('subsubcatid') is-invalid @enderror" required
-                                            disabled>
-                                            @foreach ($subsubcategories as $subsubcat)
-                                                <option value="{{ $subsubcat->id }}"
-                                                    class='parent-{{ $subsubcat->subcatid }} subsubcategory'>
-                                                    {{ $subsubcat->subsubcategory_name }}</option>
-                                            @endforeach
-                                        </select>
+                            <label for="fname" class="col-sm-3 text-end control-label col-form-label">Sub
+                                Subcategory</label>
+                            <div class="col-sm-6">
+                                <select name="subsubcatid" id="subsubcategoryList" autocomplete="off"
+                                    class="form-control @error('subsubcatid') is-invalid @enderror" required>
+                                    @foreach ($subsubcategories as $subsubcat)
+                                        <option value="{{ $subsubcat->id }}"
+                                            class='parent-{{ $subsubcat->subcat_id }} subsubcategory'>
+                                            {{ $subsubcat->title }}</option>
+                                    @endforeach
+                                </select>
 
-                                        @error('subsubcatid')
-                                            <span class="text-danger"> {{ $message }} </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                @error('subsubcatid')
+                                    <span class="text-danger"> {{ $message }} </span>
+                                @enderror
+                            </div>
+                        </div>
 
                                 <div class="form-group row">
                                     <label for="fname" class="col-sm-3 text-end control-label col-form-label">Product
@@ -349,6 +348,16 @@
     $(".parent-" + $(this).val()).attr('disabled', false); //enable subcategory of selected category/parent
     $(".parent-" + $(this).val()).show(); 
 });
+
+$('#subcat_id').on('change', function () {   
+    $("#subsubcategoryList").attr('disabled', false); //enable subcategory select
+    $(".subsubcategoryList").attr('disabled', true); //enable subcategory select
+    $("#subsubcategoryList").val("");
+    $(".subsubcategory").hide();
+    $(".parent-" + $(this).val()).attr('disabled', false); //enable subcategory of selected category/parent
+    $(".parent-" + $(this).val()).show(); 
+});
+
 </script>
 
 <script>
