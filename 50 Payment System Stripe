@@ -1,0 +1,259 @@
+//How to use stripe-payment-gateway in-laravel-8
+https://techsolutionstuff.com/post/how-to-integrate-stripe-payment-gateway-in-laravel-8
+
+
+
+How To Integrate Stripe Payment Gateway In Laravel 8
+------------------------------------------------------------------
+
+
+In this tutorial, we will see how to integrate stripe payment gateway in laravel 8. Stripe is online payment processing for internet businesses. Stripe is a suite of payment APIs that powers commerce for online businesses of all sizes, including fraud prevention, and subscription management. Stripe’s payment platform to accept and process payments online for easy-to-use commerce solutions.
+
+Stripe payment gateway is integrated into many websites for payment collection from clients. In this time many e-commerce websites and other shopping websites are use stripe payment gateway. So, here we will learn stripe payment gateway integration in laravel 8 or laravel 8 stripe payment gateway integration and payment gateway integration in laravel 8. And In this stripe payment gateway example, we are use stripe/stripe-php package.
+
+So, let's see how to integrate stripe payment gateway in laravel 8 step by step.
+
+Step 1 : Create Laravel 8 Application
+
+Step 2 : Install Stripe Payment Gateway Package In Laravel
+
+Step 3 : Configure Stripe Payment Gateway
+
+Step 4 : Create Route
+
+Step 5 : Add Controller
+
+Step 6 : Create a Blade File for View
+
+Step 7 : Run Example
+
+ 
+Step 1 :  Create Laravel 8 Application
+
+In this step, we will install laravel 8 for this stripe payment gateway integration example.
+
+composer create-project --prefer-dist laravel/laravel laravel_8_stripe_payment_gateway
+
+ 
+Read Also : How To Toggle Dark And Light Mode Using jQuery
+
+ 
+Step 2 : Install Stripe Payment Gateway Package In Laravel
+
+Now, we are installing a stripe package in laravel 8 using the composer command.
+
+composer require stripe/stripe-php
+
+ 
+Step 3 : Configure Stripe Payment Gateway
+
+Now, we are configuring the stripe payment gateway as below images and code. If you do not have a stripe account then Create an Account on Stripe.
+
+And you can see the stripe dashboard like the below image, in this image you can see the key and secret key of the stripe.
+
+stripe_payment_gateway_api_key
+
+ 
+
+Now, open the ".env" file and set the STRIPE_KEY and STRIPE_SECRET.
+
+STRIPE_KEY=pk_test_xxxxxx
+STRIPE_SECRET=sk_test_xxxxxx
+
+After that, we need to set up the stripe API key. So, open the "config/services.php" file and add the below code.
+
+'stripe' => [
+     'secret' => env('STRIPE_SECRET'),
+],
+
+ 
+Read Also : Laravel 8 Database Seeder Example
+
+ 
+Step 4: Create Route
+
+In this step, create a route as below.  
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StripeController;
+
+Route::get('stripe', [StripeController::class, 'stripe']);
+Route::post('stripe', [StripeController::class, 'stripePost'])->name('stripe.post');
+
+ 
+Step 5 : Add Controller
+
+I have created StripeController for this example. So, copy the below code in your controller.
+
+<?php
+
+namespace App\Http\Controllers;
+use Session;
+use Stripe;
+
+use Illuminate\Http\Request;
+
+class StripeController extends Controller
+{
+    public function stripe()
+    {
+        return view('stripe');
+    }
+
+    public function stripePost(Request $request)
+    {
+        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe\Charge::create ([
+                "amount" => 100*100,
+                "currency" => "INR",
+                "source" => $request->stripeToken,
+                "description" => "This is test payment",
+        ]);
+   
+        Session::flash('success', 'Payment Successful !');
+           
+        return back();
+    }
+}
+
+ 
+
+
+ 
+Step 6 : Create Blade File for View "stripe.blade.php"
+
+In this step, I have created stripe.blade.php for view purposes. So, add the below code to your file.
+
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>How To Integrate Stripe Payment Gateway In Laravel 8 - Techsolutionstuff</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>      
+   </head>
+   <body>
+      <div class="container">         
+         <div class="row">
+          <h3 style="text-align: center;margin-top: 40px;margin-bottom: 40px;">How To Integrate Stripe Payment Gateway In Laravel 8 - Techsolutionstuff</h3>
+            <div class="col-md-6 col-md-offset-3">
+               <div class="panel panel-default credit-card-box">
+                  <div class="panel-heading" >
+                     <div class="row">
+                        <h3>Payment Details</h3>                        
+                     </div>
+                  </div>
+                  <div class="panel-body">
+                     @if (Session::has('success'))
+                     <div class="alert alert-success text-center">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                        <p>{{ Session::get('success') }}</p><br>
+                     </div>
+                     @endif
+                     <br>
+                     <form role="form" action="{{ route('stripe.post') }}" method="post" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="{{ env('STRIPE_KEY') }}" id="payment-form">
+                        @csrf
+                        <div class='form-row row'>
+                           <div class='col-xs-12 col-md-6 form-group required'>
+                              <label class='control-label'>Name on Card</label> 
+                              <input class='form-control' size='4' type='text'>
+                           </div>
+                           <div class='col-xs-12 col-md-6 form-group required'>
+                              <label class='control-label'>Card Number</label> 
+                              <input autocomplete='off' class='form-control card-number' size='20' type='text'>
+                           </div>                           
+                        </div>                        
+                        <div class='form-row row'>
+                           <div class='col-xs-12 col-md-4 form-group cvc required'>
+                              <label class='control-label'>CVC</label> 
+                              <input autocomplete='off' class='form-control card-cvc' placeholder='ex. 311' size='4' type='text'>
+                           </div>
+                           <div class='col-xs-12 col-md-4 form-group expiration required'>
+                              <label class='control-label'>Expiration Month</label> 
+                              <input class='form-control card-expiry-month' placeholder='MM' size='2' type='text'>
+                           </div>
+                           <div class='col-xs-12 col-md-4 form-group expiration required'>
+                              <label class='control-label'>Expiration Year</label> 
+                              <input class='form-control card-expiry-year' placeholder='YYYY' size='4' type='text'>
+                           </div>
+                        </div>                     
+                        <div class="form-row row">
+                           <div class="col-xs-12">
+                              <button class="btn btn-primary btn-lg btn-block" type="submit">Pay Now</button>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>   
+</html>
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript">
+$(function() {
+    var $form = $(".require-validation");
+    $('form.require-validation').bind('submit', function(e) {
+        var $form = $(".require-validation"),
+        inputSelector = ['input[type=email]', 'input[type=password]', 'input[type=text]', 'input[type=file]', 'textarea'].join(', '),
+        $inputs = $form.find('.required').find(inputSelector),
+        $errorMessage = $form.find('div.error'),
+        valid = true;
+        $errorMessage.addClass('hide');
+        $('.has-error').removeClass('has-error');
+        $inputs.each(function(i, el) {
+            var $input = $(el);
+            if ($input.val() === '') {
+                $input.parent().addClass('has-error');
+                $errorMessage.removeClass('hide');
+                e.preventDefault();
+            }
+        });
+        if (!$form.data('cc-on-file')) {
+          e.preventDefault();
+          Stripe.setPublishableKey($form.data('stripe-publishable-key'));
+          Stripe.createToken({
+              number: $('.card-number').val(),
+              cvc: $('.card-cvc').val(),
+              exp_month: $('.card-expiry-month').val(),
+              exp_year: $('.card-expiry-year').val()
+          }, stripeResponseHandler);
+        }
+    });
+
+    function stripeResponseHandler(status, response) {
+        if(response.error) {
+            $('.error')
+            .removeClass('hide')
+            .find('.alert')
+            .text(response.error.message);
+        }else {
+          /* token contains id, last4, and card type */
+          var token = response['id'];
+          $form.find('input[type=text]').empty();
+          $form.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+          $form.get(0).submit();
+        }
+    }
+});
+</script>
+
+///////////For Testing Card///////////////////////////////////////////////////////////
+And you will get below output for same.
+Testing Card Credential
+Card Name: Test // any other name you can use here
+Card Number: 4242424242424242
+Month: Any Future Month
+Year: Any Future Year
+CVV: 123
+///////////For Testing Card///////////////////////////////////////////////////////////
+ 
+ 
+
+how_to_integrate_stripe_payment_gateway_in_laravel_8_home_page
+
+Now, run the project. after successful payment, you can see the dashboard of a stripe payment like the below image.
+
+stripe_payment_gateway_dashboard
