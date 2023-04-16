@@ -1,0 +1,222 @@
+    1 Steps to Create REST API in Laravel 8:
+        1.1 Step 1: Install Laravel 8
+        1.2 Step 2: Database configuration
+        1.3 Step 3: Create a table
+        1.4 Step 4:  Add Resource Route
+        1.5 Step 5: Add Controller and Model
+        1.6 Step 6: Run the CRUD application
+        1.7 Step 7: Testing
+            1.7.1 1. Create Blog
+            1.7.2 2. Update Blog
+            1.7.3 3. Get All Blogs
+            1.7.4 4. Get Single Blog
+            1.7.5 5. Delete Blog
+    2 Final Words:
+
+
+/////////Steps to Create REST API in Laravel 8//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Step 1: Install Laravel 8
+
+	composer create-project laravel/laravel:^8.0 Laravel
+
+Step 2: Database configuration
+
+//in the .env file
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=here your database name
+DB_USERNAME=here database username
+DB_PASSWORD=here database password
+
+Step 3: Create a table
+
+	php artisan make:migration create_blogs_table
+
+<?php
+ 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+ 
+class CreateBlogsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('blogs', function (Blueprint $table) {
+            $table->id();
+            $table->string('title', 255)->nullable();
+            $table->text('body')->nullable();
+            $table->timestamps();
+        });
+    }
+ 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('blogs');
+    }
+}
+
+//run migration
+
+	php artisan migrate
+
+Step 4:  Add Resource Route
+
+“routes/api.php”
+-----------------------
+use App\Http\Controllers\BlogController;
+Route::resource('blogs', BlogController::class);
+
+Step 5: Add Controller and Model
+
+//add controller and model
+-----------------------------------
+	php artisan make:controller BlogController --resource –model=Blog
+
+
+In this controller will create seven methods by default as given below:
+
+    index()
+    create()
+    store()
+    show()
+    edit()
+    update()
+    destroy()
+
+in BlogController.php
+-------------------------------
+
+<?php
+ 
+namespace App\Http\Controllers;
+ 
+use App\Models\Blog;
+use Illuminate\Http\Request;
+ 
+class BlogController extends Controller
+{
+    public function index()
+    {
+        $blogs = Blog::latest()->paginate(10);
+        return [
+            "status" => 1,
+            "data" => $blogs
+        ];
+    }
+ 
+    public function create()
+    {
+        //
+    }
+ 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ]);
+ 
+        $blog = Blog::create($request->all());
+        return [
+            "status" => 1,
+            "data" => $blog
+        ];
+    }
+ 
+    public function show(Blog $blog)
+    {
+        return [
+            "status" => 1,
+            "data" =>$blog
+        ];
+    }
+ 
+    public function edit(Blog $blog)
+    {
+        //
+    }
+ 
+    public function update(Request $request, Blog $blog)
+    {
+        $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ]);
+ 
+        $blog->update($request->all());
+ 
+        return [
+            "status" => 1,
+            "data" => $blog,
+            "msg" => "Blog updated successfully"
+        ];
+    }
+ 
+    public function destroy(Blog $blog)
+    {
+        $blog->delete();
+        return [
+            "status" => 1,
+            "data" => $blog,
+            "msg" => "Blog deleted successfully"
+        ];
+    }
+}
+
+
+
+Step 6: Run the CRUD application
+
+	php artisan serve
+
+Step 7: Testing
+
+1. Create Blog
+
+	url: http://127.0.0.1:8000/api/blogs
+
+	method: POST
+
+	data: { title: “Title”, body: “Body here..” }
+
+2. Update Blog
+
+	url: http://127.0.0.1:8000/api/blogs/{id}
+
+	method: PUT/PATCH
+
+	data: { title: “Update Title”, body: “Update Body here..” }
+
+3. Get All Blogs
+
+	url: http://127.0.0.1:8000/api/blogs/
+
+	method: GET
+
+4. Get Single Blog
+
+	url: http://127.0.0.1:8000/api/blogs/{id}
+
+	method: GET
+
+5. Delete Blog
+
+	url: http://127.0.0.1:8000/api/blogs/{id}
+
+	method: DELETE
+
+
+
