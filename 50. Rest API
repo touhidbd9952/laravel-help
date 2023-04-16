@@ -83,7 +83,7 @@ Step 5: Add Controller and Model
 
 //add controller and model
 -----------------------------------
-	php artisan make:controller BlogController --resource –model=Blog
+	php artisan make:controller BlogController --model=Blog
 
 
 In this controller will create seven methods by default as given below:
