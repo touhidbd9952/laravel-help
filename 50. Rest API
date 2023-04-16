@@ -18,7 +18,7 @@
 
 Step 1: Install Laravel 8
 
-	composer create-project laravel/laravel:^8.0 Blog
+	composer create-project laravel/laravel:^8.0 blog
 
 Step 2: Database configuration
 
