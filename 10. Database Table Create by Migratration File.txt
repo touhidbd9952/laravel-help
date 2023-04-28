@@ -58,6 +58,10 @@ php artisan make:migration create_products_table --create=products
             $table->string('stock')->default('available'); // available,negotiating,sold out
             $table->string('price')->nullable(); 
             $table->string('status')->default('active'); //active,inactive
+	    $table->date('birth_date');
+	    $table->time('sunrise'); //00:00:00
+            $table->time('start_time', $precision = 5); //00:00:00.00000
+	    $table->dateTime('delivery', $precision = 0);
 
             $table->timestamps();
         });
