@@ -1,0 +1,65 @@
+Step-1: Create Blog Modal with migration
+
+	php artisan make:model Blog -m
+
+Step-2: Create Blog Factory
+
+	php artisan make:factory BlogFactory --model=Blog
+
+                  or
+
+	php artisan make:model Blog -mf
+
+
+Step-3: 2022_02_16_075505_create_blogs_table.php   
+
+	Schema::create('blogs', function (Blueprint $table) {
+            	$table->id();
+            	$table->string('title');
+            	$table->string('image');
+            	$table->text('description');
+            	$table->timestamps();
+             });
+
+Step-4: app/database/factories/BlogFactory.php
+
+    public function definition()
+    {
+        return [
+            'title' => $this->faker->sentence(),
+            'image' => $this->faker->imageUrl(640,480),
+            'description' => $this->faker->text(),
+        ];
+    }
+
+
+Step-5: app/database/seeders/DatabaseSeeder.php
+
+   public function run()
+    {
+        \App\Models\User::factory(10)->create();
+        \App\Models\Blog::factory(10)->create();
+    }
+
+
+Step-6: Run command in your terminal
+
+	php artisan db:seed
+
+	or 
+
+	php artisan migrate:fresh --seed
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Create Fake Data using Tinker
+----------------------------------------------
+
+we can create fake dummy data using tinker. just follow above 1 to 4 step. 
+then start tinker and run below commad.
+
+php artisan ti
+
+>>> App\Models\Blog::factory(10)->create();
