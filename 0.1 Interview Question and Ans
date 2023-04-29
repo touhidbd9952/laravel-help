@@ -1,0 +1,226 @@
+1) What is Laravel?
+
+	Laravel is an open-source PHP framework
+	creator: Taylor Otwell 
+	use for  web application developmen.
+	use MVC architecture.
+	Laravel source code is hosted on GitHub.
+
+2) What is the latest Laravel version?
+
+	latest Laravel version is version 8
+
+3) What is composer?
+
+	composer is package manager for PHP.
+	use for managing PHP software dependencies and libraries.
+
+4) What is HTTP middleware?
+
+	it is a technique for filtering HTTP requests.
+	middleware checks whether application user is authenticated or not.
+
+5)tell me about  Aggregates methods of query builder
+
+	There are some method use for aggregation 
+	1) max()
+	2) min()
+	3) sum()
+	4) avg()
+	5) count()
+
+6) What is a Route?
+
+	A route is an endpoint specified by a URI. 
+	It works as a pointer in Laravel application.
+	a route simply points to a method on a controller 
+	and dictates which HTTP methods are able to hit that URI.
+
+7) What is bundles?
+
+	In Laravel, bundles are referred to as packages.
+	A package can have views, configuration, migrations, routes, and tasks.
+
+9) Directories used in a Laravel application
+
+	
+    	App/:  All controllers, policies, and models are need to create inside this folder.
+    	Config/: Holds the app’s configuration files. 
+    	Database/: store database files, including migrations, seeds, and test factories.
+    	Public/: use for to put image file, javascript file, css file, font
+
+10) What is a Controller?
+
+	Controller is a php file. in Model-View-Controller  architecture, we create all the business function inside controller.
+
+11) reverse routing
+
+ 	is a method of generating URL based on name.
+12) traits 
+
+	traits are a group of functions like an abstract class.
+
+14) How will you register service providers?
+
+	You can register service providers in  config/app.php configuration file that contains an array where you can mention the service provider class name.
+
+15) Facades?
+
+	All facades of Laravel have defined in Illuminate\Support\Facades namespace.
+
+16) What is the difference between get and post method?
+
+	Get method allows you to send a limited amount of data in the header. 
+	Post method allows you to send a large amount of data in the body.
+
+17) List default packages of Laravel 5.6.
+
+	Default packages of Laravel 5.6 are: 
+	1) Envoy
+	2) Passport
+	3) Socialite
+	4) Cashier
+	5) Horizon
+	6) Scout
+
+18) service container?
+
+	Service container is a tool used for performing dependency injection.
+
+19) Templating engine used in Laravel?
+
+	Blade templating engine  that allows to easily create templates with a syntax
+
+20) databases supported by Laravel?
+
+	MySQL, Postgres, SQLite, and SQL Server.
+
+21) What is an artisan?
+
+	artisan  is a command-line tools. 
+	php artisan serv
+
+22) environment variables?
+
+	.env file use to holds env variables
+	.env file holds sensitive information like API keys or database credentials, smtp credentials
+
+23) How to put Laravel applications in maintenance mode?
+
+	# enable maintenance mode
+
+	     php artisan down
+
+	# disable maintenance mode
+
+	    php artisan up
+
+	# if you want the client to refresh page after a specified number of seconds
+
+	    php artisan down --retry=60 
+
+24) What are the default route files in Laravel?
+
+	for web application, we use "web.php" in "route" folder as default route file
+
+25) What are migrations in Laravel?
+
+	migrations  allows us to modify and share the application's database schema.
+	it provide support  for creating and manipulating database tables.
+
+26) seeders in Laravel?
+
+	it allows us to quickly insert data into  database.
+
+27) factories in Laravel?
+
+	factories  allows us to build fake data for our models.
+
+28) soft delete in Laravel?
+
+	soft delete is a feature of laravel. if we add soft delete property in a model, then when delete operation
+	execute on that model, data aren't removed from our database, just it set a datetime a deleted_at timestamp on the record.
+
+	You don't delete data in soft delete but add a deleted tag. This way, you can quickly restore data when needed. 
+
+29) What are Models? 
+
+	Models interact with  database and recover objects’ information
+
+30) What is Middleware in Laravel?
+
+	Middleware works as a bridge between request and the response.
+	it helps to handle a request from a user who has already been authenticated
+
+31) What is a Service container?
+
+	A Service container is a tools used to manage dependencies over the class 
+	and perform dependency injections.
+
+32) What is Auth?
+
+	Auth is an in-built functionality provided by Laravel to identify the user credentials 
+	with the database. It takes input parameters like username and password for user 
+	identification. If the settings match, then the user is said to be authenticated.
+
+33) What is Dependency injection in Laravel?
+
+	dependency injection is a term used for the activity of injecting components into the user application.
+	in Laravel, "Service container" is used manages all class dependencies to performs dependency injection.
+
+34) What are the advantages of Queue?
+
+	queues are a great way to handle time-consuming tasks.
+	it allow to offload work from web server
+	so, users don't have to wait for a response from your API before getting the next page.
+	
+35) How do I stop Artisan service in Laravel?
+
+       in local pc, to stop server we can use "ctrl + c"
+
+36) What is validation in Laravel?
+
+	Laravel provides several different ways to validate your application's incoming data. 
+	The most common way is by creating a Form Request.
+
+
+37) ORM in Laravel.
+
+	ORM (Object-Relational Mapping). It is a programming technique that is used to convert data between 
+	incompatible type systems in object-oriented programming languages.
+	
+	ORM is used to map objects in the application's domain model to relational database tables
+
+38) What are some common Artisan commands in Laravel?  
+
+                  php artisan serv    //Run server
+
+	php artisan make:controller  ControllerName    // Creates a new Controller file in App/Http/Controllers folder
+
+	php artisan make:model  ModelName -m    // Creates a new Eloquent model class
+
+	php artisan make middleware Admin
+
+	php artisan make:migration  tablename  //Creates a new migration file
+
+	php artisan make:seeder  //Creates a new database seeder class
+
+	php artisan make:request   //Creates a new form request class in App/Http/Requests folder
+
+	php artisan make:command  //Creates a new Artisan command
+
+	php artisan make:mail   //Creates a new email class
+
+	php artisan make:channel  //Creates a new channel class for broadcasting 
+
+39. localization in Laravel?
+
+	Serving content according to the client's language preference is localization.
+
+
+40) What are Laravel's registries?
+
+	You use Requests to interact with HTTP requests and session cookies.
+
+
+
