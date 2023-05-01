@@ -1,0 +1,547 @@
+//////BS Typography////////////////////////////////////
+
+default font-size is 14px
+default line-height of 1.428
+<p> bottom margin (10px by default)
+
+Font Size
+------------
+h1 Bootstrap heading (36px)
+h2 Bootstrap heading (30px)
+h3 Bootstrap heading (24px)
+h4 Bootstrap heading (18px)
+h5 Bootstrap heading (14px)
+h6 Bootstrap heading (12px)
+<small> lighter text
+<mark> highlight text
+
+Document
+-----------------
+<abbr> abbreviation/meaning of a word
+
+Blog Comment
+-------------------
+<blockquote> comment with commentor  (.blockquote-reverse)
+
+Text
+----------------
+<code> defines a "section" in a document
+<kbd> keyboard tag 
+<pre> show the content as it is
+.pre-scrollable : Makes a <pre> element scrollable
+Text Color: .text-muted, .text-primary, .text-success, .text-info, .text-warning, and .text-danger
+background colors: .bg-primary, .bg-success, .bg-info, .bg-warning, .bg-danger
+Text Alignment: .text-left, .text-center, .text-right, .text-justify
+Text Break: .text-nowrap
+Text Small Case: .text-lowercase   //word
+Text Upper Case: .text-uppercase  //WORD
+Text Capitalized : .text-capitalize  //Word
+
+List
+-------
+<dl>  description list work like <ul>
+<dt> description title header  work like <th>
+<dd> description  data
+
+.list-unstyled : list style type none
+.list-inline : list display in line
+
+Table
+---------
+Table: .table, .table-striped, .table-bordered, .table-hover, .table-condensed, 
+<tr class="success"> : background color ( .success, .danger, .info, .warning, .active)
+.table-responsive : Responsive Tables
+
+Image
+------------
+.img-rounded
+.img-circle
+.img-thumbnail
+.img-responsive    //display: block; and max-width: 100%; and height: auto;
+.caption
+
+video
+------------
+.embed-responsive
+.embed-responsive-16by9
+.embed-responsive-item
+
+ <div class="embed-responsive embed-responsive-16by9">
+  <iframe class="embed-responsive-item" src="..."></iframe>
+</div> 
+
+Banner
+------------
+.jumbotron
+
+Page Header
+----------------------
+.page-header
+
+Well
+-----------
+.well :  adds a rounded border around an element with a gray background color
+.well-sm
+.well-lg
+
+alert message
+---------------------
+.alert
+.alert-success
+.alert-info
+.alert-warning
+.alert-danger
+.close
+
+<div class="alert alert-success alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>Success!</strong> Indicates a successful or positive action.
+</div>
+
+Button
+-------------------
+    .btn                  //<button type="button" class="btn">Basic</button>
+    .btn-default     //<button type="button" class="btn btn-default">Default</button>
+    .btn-primary    //<button type="button" class="btn btn-primary">Primary</button>
+    .btn-success    //<button type="button" class="btn btn-success">Success</button>
+    .btn-info           //<button type="submit" class="btn btn-info">Submit</button>
+    .btn-warning    //<button type="button" class="btn btn-warning">Warning</button>
+    .btn-danger      //<button type="button" class="btn btn-danger">Danger</button>
+    .btn-link           //<button type="button" class="btn btn-link">Link</button>
+
+    .btn-lg
+    .btn-sm
+    .btn-xs
+
+.btn-block
+.active
+.disabled
+
+Button Groups : to group a series of buttons together
+-----------------------
+ <div class="btn-group">
+  <button type="button" class="btn btn-primary">Apple</button>
+  <button type="button" class="btn btn-primary">Samsung</button>
+  <button type="button" class="btn btn-primary">Sony</button>
+</div> 
+
+Vertical Button Groups
+-----------------------------
+ <div class="btn-group-vertical">
+  <button type="button" class="btn btn-primary">Apple</button>
+  <button type="button" class="btn btn-primary">Samsung</button>
+  <button type="button" class="btn btn-primary">Sony</button>
+</div> 
+
+Dropdown Menus
+----------------------------
+ <div class="btn-group">
+  <button type="button" class="btn btn-primary">Apple</button>
+  <button type="button" class="btn btn-primary">Samsung</button>
+  <div class="btn-group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+    Sony <span class="caret"></span></button>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#">Tablet</a></li>
+      <li><a href="#">Smartphone</a></li>
+    </ul>
+  </div>
+</div> 
+
+icon
+--------------------------
+<p>Envelope icon: <span class="glyphicon glyphicon-envelope"></span></p>
+<p>Search icon: <span class="glyphicon glyphicon-search"></span></p>
+
+Badges : Badges are numerical indicators of how many items are associated with a link
+--------------------------
+<a href="#">Comments <span class="badge">10</span></a>
+
+Basic Progress Bar: 
+------------------------------
+ <div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="70"
+  aria-valuemin="0" aria-valuemax="100" style="width:70%">
+    70%
+  </div>
+</div> 
+
+Background Color:
+    .progress-bar-success
+    .progress-bar-info
+    .progress-bar-warning
+    .progress-bar-danger
+
+Pagination
+---------------------------
+ <ul class="pagination">
+  <li><a href="#">1</a></li>
+  <li class="active"><a href="#">2</a></li>
+  <li><a href="#">3</a></li>
+  <li><a href="#">4</a></li>
+  <li><a href="#">5</a></li>
+</ul> 
+
+.pagination-lg
+pagination-sm
+
+Pager : a form of pagination
+----------------------------
+ <ul class="pager">
+  <li class="previous"><a href="#">Previous</a></li>
+  <li class="next"><a href="#">Next</a></li>
+</ul> 
+
+List Groups: is an unordered list with list items
+--------------------------
+<ul class="list-group">
+  <li class="list-group-item">First item</li>
+  <li class="list-group-item">Second item</li>
+  <li class="list-group-item">Third item</li>
+</ul> 
+
+Panels : is a bordered box with some padding around its content
+------------------------
+
+<div class="panel panel-default">
+  <div class="panel-body">A Basic Panel</div>
+</div>
+
+.panel-heading
+.panel-body
+.panel-footer
+
+.panel-default, 
+.panel-primary, 
+.panel-success, 
+.panel-info, 
+.panel-warning, 
+.panel-danger
+
+Dropdown
+----------------------------
+ <div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+      <span class="caret"></span>
+   </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">HTML</a></li>
+    <li><a href="#">CSS</a></li>
+    <li><a href="#">JavaScript</a></li>
+  </ul>
+</div> 
+
+Collapse : Collapsibles are useful when you want to hide and show large amount of content
+----------------
+ <button data-toggle="collapse" data-target="#demo">Collapsible</button>
+
+<div id="demo" class="collapse">
+   Lorem ipsum dolor text....
+</div> 
+
+
+Tabs and Pills
+-------------------------
+a menu is often defined in an unordered list
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#">Home</a></li>
+  <li><a href="#">Menu 1</a></li>
+  <li><a href="#">Menu 2</a></li>
+  <li><a href="#">Menu 3</a></li>
+</ul>
+
+
+Navigation Bar
+------------------------
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">WebSiteName</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#">Page 1</a></li>
+      <li><a href="#">Page 2</a></li>
+      <li><a href="#">Page 3</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+Forms
+-----------------------
+ <form action="/action_page.php">
+  <div class="form-group">
+    <label for="email">Email address:</label>
+    <input type="email" class="form-control" id="email">
+  </div>
+  <div class="form-group">
+    <label for="pwd">Password:</label>
+    <input type="password" class="form-control" id="pwd">
+  </div>
+  <div class="checkbox">
+    <label><input type="checkbox"> Remember me</label>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form> 
+
+
+Media Objects: images or videos
+---------------------------
+<!-- Left-aligned -->
+<div class="media">
+  <div class="media-left">
+    <img src="img_avatar1.png" class="media-object" style="width:60px">
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading">John Doe</h4>
+    <p>Lorem ipsum...</p>
+  </div>
+</div>
+
+<!-- Right-aligned -->
+<div class="media">
+  <div class="media-body">
+    <h4 class="media-heading">John Doe</h4>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </div>
+  <div class="media-right">
+    <img src="img_avatar1.png" class="media-object" style="width:60px">
+  </div>
+</div>
+
+
+Carousel/Slider
+----------------------------
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+  </ol>
+
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner">
+    <div class="item active">
+      <img src="la.jpg" alt="Los Angeles">
+    </div>
+
+    <div class="item">
+      <img src="chicago.jpg" alt="Chicago">
+    </div>
+
+    <div class="item">
+      <img src="ny.jpg" alt="New York">
+    </div>
+  </div>
+
+  <!-- Left and right controls -->
+  <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
+
+Modal: dialog box/popup window
+-----------------------------
+
+<!-- Trigger the modal with a button -->
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+Tooltip: small pop-up box that appears when the user mouse over on an element
+-------------------------
+
+<div class="container">
+  <h3>Tooltip Example</h3>
+  <a href="#" data-toggle="tooltip" title="Hooray!">Hover over me</a>
+</div>
+
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();   
+});
+</script>
+
+
+Popover: small pop-up box that appears when the user clicks on an element
+-------------------------
+<div class="container">
+  <h3>Popover Example</h3>
+  <a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>
+</div>
+
+<script>
+$(document).ready(function(){
+  $('[data-toggle="popover"]').popover();   
+});
+</script>
+
+
+Scrollspy : automatically select nav menu based on scroll position (one page website)
+------------------------
+
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">WebSiteName</a>
+    </div>
+    <div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="#section1">Section 1</a></li>
+          <li><a href="#section2">Section 2</a></li>
+          <li><a href="#section3">Section 3</a></li>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Section 4 <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#section41">Section 4-1</a></li>
+              <li><a href="#section42">Section 4-2</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>    
+
+<div id="section1" class="container-fluid">
+  <h1>Section 1</h1>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+</div>
+<div id="section2" class="container-fluid">
+  <h1>Section 2</h1>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+</div>
+<div id="section3" class="container-fluid">
+  <h1>Section 3</h1>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+</div>
+<div id="section41" class="container-fluid">
+  <h1>Section 4 Submenu 1</h1>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+</div>
+<div id="section42" class="container-fluid">
+  <h1>Section 4 Submenu 2</h1>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+</div>
+
+</body>
+
+
+
+Affix/ Fixed Navbar. Navbar will not hide
+-----------------------------------------------------------
+
+ <body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+<nav class="navbar navbar-inverse" data-spy="affix" data-offset-top="197">
+...
+</nav>
+
+</body> 
+
+
+Filters/search box : search data from a table, it find then only show particular record
+----------------------------------------------
+<div class="container">
+  <h2>Filterable Table</h2>
+  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <br>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Firstname</th>
+        <th>Lastname</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="myTable">
+      <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>john@example.com</td>
+      </tr>
+      <tr>
+        <td>Mary</td>
+        <td>Moe</td>
+        <td>mary@mail.com</td>
+      </tr>
+      <tr>
+        <td>July</td>
+        <td>Dooley</td>
+        <td>july@greatstuff.com</td>
+      </tr>
+      <tr>
+        <td>Anja</td>
+        <td>Ravendale</td>
+        <td>a_r@test.com</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <p>Note that we start the search in tbody, to prevent filtering the table headers.</p>
+</div>
+
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
