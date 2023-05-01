@@ -1,0 +1,40 @@
+use Illuminate\Support\Facades\DB;
+
+
+$users = DB::select('select * from student');
+
+$users = DB::table('users')->get();  //fetch users
+
+$user = DB::table('users')->where('name', 'John')->first();  //fetch a single row
+
+$user_id = DB::table('users')->where('name', 'John')->pluck('id');  //To fetch John and his ID
+
+$users = DB::table('users')->select('name', 'email')->get();  //fetch a few columns
+
+$users = DB::table('users')->where(id, '<', 10)->get(); //fetch user ids which are less than 10
+
+$users = DB::table('users')->whereBetween('id', array(10, 20))->get() //fetch ids which are numbered between 10 and 20
+
+$students = DB::table('students')->distinct()->get(["name"]);
+
+$students = DB::table('students')
+->join('contacts', 'students.id', '=', 'contacts.student_id')
+->join('course_choice', 'students.id', '=', 'course_choice.student_id')
+->join('courses', 'students.id', '=', 'course_choice.student_id')
+->select('students.id','students.name','courses.course_name','contacts.phone','contacts.email')
+->get();
+
+$students=DB::table('students')
+->join('contacts', function ($join) {
+$join->on('students.id', '=', 'contacts.student_id')
+->where('contacts.student_id', '>', 3);
+
+$first = DB::table('contacts')->whereNull('phone');
+
+$students = DB::table('contacts')
+->whereNull('email')
+->union($first)
+->get();
+
+
+
