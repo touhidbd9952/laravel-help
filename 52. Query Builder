@@ -37,4 +37,10 @@ $students = DB::table('contacts')
 ->get();
 
 
+$users = DB::select('select * from student');
+$users = DB::select('select * from student where id = ?',[$id]);
+
+$name = $request->input('stud_name');
+DB::update('update student set name = ? where id = ?',[$name,$id]);
+
 
