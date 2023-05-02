@@ -1,0 +1,263 @@
+// Retrieve the currently authenticated user...
+$user = Auth::user();
+$user = $request->user();
+Auth::login($user);  //if user is valid, laravel put user information in session
+if(Auth::user()->role_id !=3){return Redirect()->route('logout'); }
+
+// Retrieve the currently authenticated user's ID...
+$id = Auth::id();
+$id = Auth::user()->id
+
+//check current user is authenticated or not
+if (Auth::check()) {
+    // The user is logged in...
+}
+else
+{
+   return route('login');
+}
+
+//
+if( Auth::user()->role_id == 2)
+{
+
+}
+
+
+
+//Protecting Routes
+Route::get('/flights', function () {
+    // Only authenticated users may access this route...
+})->middleware('auth');
+
+
+
+protected function redirectTo(Request $request): string
+{
+    return route('login');
+}
+
+//Specifying A Guard
+Route::get('/flights', function () {
+    // Only authenticated users may access this route...
+})->middleware('auth:admin');
+
+
+//admin dashboard
+    Route::get('dashboard',[AdminController::class,'dashboard'])->name('dashboard');
+
+
+
+
+
+
+////////////////////////////////////////////////////////LoginController/////////////////////////////////////
+
+namespace App\Http\Controllers;
+ 
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+ 
+class LoginController extends Controller
+{
+    /**
+     * Handle an authentication attempt.
+     */
+    public function authenticate(Request $request): RedirectResponse
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+ 
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+ 
+            return redirect()->intended('dashboard');
+        }
+ 
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
+}
+
+
+/////////////////////login.blade.php/////////////////////////////////////////////////////
+
+@extends('layouts.fontend_master')
+
+@section('content')
+
+<style>
+.page{background: #fbfafa;}
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="card" style="padding-top:50px;padding-bottom:50px;">
+                <div class="card-header" style="background: #f4f3f3;padding:10px;font-size: 16px;font-weight: bold;color: #151515;">Login</div>
+
+                <div class="card-body" style="background: #f4f3f3;">
+
+
+                    <form method="POST" action="{{ route('login') }}">
+
+                        @csrf
+
+                        <div class="form-group row">
+                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right"></label>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+
+                                    <label class="form-check-label" for="remember">
+                                        {{ __('Remember Me') }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-0" style="padding-bottom: 25px;">
+                            <label class="col-md-4 col-form-label text-md-right"></label>
+                            <div class="col-md-8">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Login') }}
+                                </button>
+
+                                @if (Route::has('password.request'))
+                                    <a class="btn btn-link" href="{{ route('password.request') }}">
+                                        {{ __('Forgot Your Password?') }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                    @isset($customer_user)
+                    <center>Don't you have account, please <a href="{{route('customerregister_page')}}" style="color: #FF9600">create register</a></center>
+                    @endisset
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+//////////////////////////////register.blade.php////////////////////////////////////
+
+
+@extends('layouts.fontend_master')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Register</div>
+
+                <div class="card-body">
+
+                    <form method="POST" action="{{ route('register') }}">
+
+                        @csrf
+
+                        <input type="hidden" name="name" id="name" value="Customer">
+                        
+
+                        <div class="form-group row">
+                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-0">
+                            <div class="col-md-6 offset-md-4">
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Register') }}
+                                </button>
+                                
+                            </div>
+                        </div>
+
+                    </form>
+
+                    <br>
+                    @isset($customer_user)
+                    <center>If you have account, please <a href="{{route('customerlogin_page')}}" style="color: #FF9600">login</a></center>
+                    @endisset
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+
+
+
+
+
