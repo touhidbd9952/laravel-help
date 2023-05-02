@@ -1,0 +1,80 @@
+
+Comment
+--------------
+// This is a single-line comment
+# This is also a single-line comment
+
+Variable
+----------------
+$txt = "Hello world!";
+$x = 5;
+$y = 10.5;
+
+Display output
+---------------------
+echo "Hello world";
+$x = 5;
+echo $x;
+echo "<h2>" . $x . "</h2>";
+
+Data Types
+--------------------
+$x = "Hello world!"; //String
+$x = 5985;  //integer
+$x = 10.365;  //Float
+$x = null;
+$x = true;  //Boolean
+$cars = array("Volvo","BMW","Toyota");  //Array
+echo $cars[0];
+$cars[0] = "Volvo";
+$age = array("Peter"=>"35", "Ben"=>"37", "Joe"=>"43");
+$str = explode(" ",$x) //String to Array
+$y = implode(" ",$x); //Array to String
+
+Multidimensional Arrays:
+$cars = array (
+  array("Volvo",22,18),
+  array("BMW",15,13),
+  array("Saab",5,2),
+  array("Land Rover",17,15)
+);
+sort($cars);   //Assending Order (A-Z, 0-9)
+rsort($cars); //Dessending Order (Z-A, 9-0)
+asort($age); //Ascending Order
+ksort($age); //Ascending Order, According to Key
+arsort($age); //Descending Order, According to Value
+krsort($age); //Descending Order, According to Key
+
+$cars = array(); //Blank Array
+
+Object:
+
+ <?php
+class Car {
+  public $color;
+  public $model;
+  public function __construct($color, $model) {
+    $this->color = $color;
+    $this->model = $model;
+  }
+  public function message() {
+    return "My car is a " . $this->color . " " . $this->model . "!";
+  }
+}
+
+$myCar = new Car("black", "Volvo");
+echo $myCar -> message();
+echo "<br>";
+$myCar = new Car("red", "Toyota");
+echo $myCar -> message();
+?> 
+
+Date() Function
+----------------------------------
+date("Y")  //
+date("Y-m-d") //2020-11-03
+date("l") //Tuesday
+
+date("Y/m/d")
+
+
