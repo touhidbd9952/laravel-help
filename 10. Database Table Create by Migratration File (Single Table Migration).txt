@@ -66,3 +66,6 @@ $table->rememberToken(); 			Adds remember_token as VARCHAR(100) NULL
 ->nullable() 					Designate that the column allows NULL values
 ->default($value) 				Declare a default value for a column
 ->unsigned() 					Set INTEGER to UNSIGNED
+$table->decimal('tax',4,2)->default(0.00)->comment('tax percent, default =0 percent');      //comment
+
+
