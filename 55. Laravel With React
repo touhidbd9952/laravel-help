@@ -1,0 +1,359 @@
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////Creating a Modern Application: Using Laravel With React.js/////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///Step-1: Create New Project in Laravel and Installing the Dependencies//////////////////////////
+
+laravel new guide-to-laravel-and-react
+
+
+Once the project is ready, open it in your favorite IDE or text editor. 
+If you look inside the "package.json" file present in every new Laravel project, 
+you'll see the following list of packages under the "devDependencies" section:
+
+    1. axios - promise-based HTTP client
+    2. laravel-mix - an elegant wrapper over webpack
+    3. lodash - popular functional programming library
+    4. postcss - utility tool for automating routine CSS operations
+
+In this article, you'll be working with all of these libraries except for Lodash.
+
+///Step-2: Install npm(node package manager)//////////////////////////
+
+    npm install
+
+//After the installation finishes, execute the following command to test if everything's functional or not.
+
+    npm run dev
+
+//If everything works fine, you should see something as follows on your terminal:
+
+//   Laravel and React
+
+//When you executed the "npm run dev" command, Laravel Mix compiled the resources/js/app.js file 
+//and the resources/css/app.css file into public/js/app.js and public/css/app.css files.
+//Installing React and Writing Your First Component
+
+Now, you'll have to install two new JavaScript libraries for React:
+-------------------------------------------------------------------
+
+  npm install --save-dev react react-dom
+
+//It'll install the libraries as development dependencies. 
+
+Create a new file resources/js/components/HelloReact.js 
+--------------------------------------------------------
+
+// resources/js/components/HelloReact.js
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+export default function HelloReact() {
+    return (
+        <h1>Hello React!</h1>
+    );
+}
+
+if (document.getElementById('hello-react')) {
+    ReactDOM.render(<HelloReact />, document.getElementById('hello-react'));
+}
+
+
+
+Connect "HelloReact" in resoureces/js/app.js file:
+-----------------------------------------------------
+
+// resoureces/js/app.js
+
+require('./bootstrap');
+
+// React Components
+require('./components/HelloReact')      //connect
+
+
+
+To compile the React component properly, open the "webpack.mix.js" file from the project root and update its code as follows:
+---------------------------------------------------------------------------------------------------------------------------
+
+// webpack.mix.js
+
+const mix = require('laravel-mix');
+
+mix.js('resources/js/app.js', 'public/js')
+    .react()    //add react()
+    .postCss('resources/css/app.css', 'public/css', [
+        //
+    ]);
+
+
+
+//By default, the configuration file doesn't call the react() function. Calling this function will tell Laravel Mix 
+//to install the babel-preset-react plugin required for compiling React components. 
+
+
+After updating the Laravel Mix configuration, execute the "npm run dev" command 2 time. 
+-------------------------------------------------------------------------------------------
+
+  npm run dev
+  npm run dev
+
+
+//Now that the component is ready to use, you'll have to prepare a blade template. 
+//Open the "resources/views/welcome.blade.php" file and update its content as follows:
+-------------------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Laravel React</title>
+
+    <script src="{{ asset('js/app.js') }}" defer></script>
+</head>
+<body>
+
+    <div id="hello-react"></div>
+    
+</body>
+</html>
+
+
+
+//Now run server by executing "php artisan serve" 
+//and visit http://localhost:8000 using your favorite browser. 
+----------------------------------------------------------------------
+
+php artisan serve
+
+
+//If you see nothing on the screen, check the browser console for any errors. If you find something, resolve them and try again. Let's move on to the next Laravel Reactjs part, creating a counter component using React hooks.
+
+
+Create a file "resources/js/Counter.js" and put the following content in it:
+-----------------------------------------------------------------------------
+
+// resources/js/components/Counter.js
+
+import React, { useState } from "react";
+import ReactDOM from 'react-dom';
+
+export default function Counter() {
+  // Set the initial count state to zero, 0
+  const [count, setCount] = useState(0);
+
+  // Create handleIncrement event handler
+  const handleIncrement = () => {
+    setCount(prevCount => prevCount + 1);
+  };
+
+  // Create handleDecrement event handler
+  const handleDecrement = () => {
+    setCount(prevCount => prevCount - 1);
+  };
+  return (
+    <div>
+        <button onClick={handleDecrement}>-</button>
+        <span> {count} </span>
+        <button onClick={handleIncrement}>+</button>
+    </div>
+  );
+}
+
+if (document.getElementById('counter')) {
+    ReactDOM.render(<Counter />, document.getElementById('counter'));
+}
+
+if (document.getElementById('counter')) {
+    ReactDOM.render(<Counter />, document.getElementById('counter'));
+}
+
+
+Open the "resources/js/app.js" file and connect "counter.js"
+--------------------------------------------------------------------------
+require('./bootstrap');
+
+// React Components
+require('./components/HelloReact');
+require('./Counter');
+
+
+
+open the "resources/views/welcome.blade.php" and update its content as follows:
+---------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Laravel React</title>
+
+    <script src="{{ asset('js/app.js') }}" defer></script>
+</head>
+<body>
+
+    <div id="hello-react"></div>
+    <div id="counter"></div>    <==
+    
+</body>
+</html>
+
+
+
+Refresh the page if it's still open in your browser, and you should see something as follows:
+----------------------------------------------------------------------------------------------
+
+
+open "web.php" from "routes/web.php" file and update its content as follows:
+-------------------------------------------------------------------
+
+<?php
+
+// routes/web.php
+
+use Illuminate\Http\Request;       <====
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::post('count', function (Request $request) {        <=====
+    return response()->json([
+        'message' => $request->message,
+    ]);
+});
+
+
+
+Open the "resources/js/Counter.js" file and update its content as follows:
+----------------------------------------------------------------------------
+
+// resources/js/Counter.js
+
+import axios from "axios";
+import React, { useState } from "react";
+import ReactDOM from 'react-dom';
+
+export default function Counter() {
+  // Set the initial count state to zero, 0
+  const [count, setCount] = useState(0);
+
+  // Create handleIncrement event handler
+  const handleIncrement = () => {
+    setCount(prevCount => prevCount + 1);
+    notifyServer();       <=====
+  };
+
+  // Create handleDecrement event handler
+  const handleDecrement = () => {
+    setCount(prevCount => prevCount - 1);
+    notifyServer();     <======
+  };
+
+  // Notifies the server about the change
+  const notifyServer = () => {     <=====
+      axios.post('/count', {
+          message: 'Counter Updated!',
+      })
+  }
+
+  return (
+    <div>
+        <button onClick={handleDecrement}>-</button>
+        <span> {count} </span>
+        <button onClick={handleIncrement}>+</button>
+    </div>
+  );
+}
+
+if (document.getElementById('counter')) {
+    ReactDOM.render(<Counter />, document.getElementById('counter'));
+}
+
+
+------------------------------------------------------------------------------------------------
+//The notifyServer() function sends a POST request to the /count endpoint with a message. 
+//Make sure to call it inside both the handleDecrement() and handleIncrement() functions. 
+
+
+//As you can see, the Laravel React js server has received the request and responded with the message. 
+//You can send any request to the server this way. The Axios library also handles the CSRF token by 
+//sending the XSRF-TOKEN cookie with every request, so you should be able to connect to any of the "web" routes.
+
+//You can also use API routes here, but then, you'll have to implement a stateless authentication system. 
+//In my opinion, if you're using React components within blade templates, work with web routes. It'll give 
+//you much less hassle and allow you to do almost anything that the API routes allow you to do.
+//Vendor Extraction
+----------------------------------------------------------------------------------------------
+
+
+To solve caching difficult is by extracting the vendor library code in a separate file. 
+open the "webpack.mix.js" file and update its code as follows:
+------------------------------------------------------------------
+
+// webpack.mix.js
+
+const mix = require('laravel-mix');
+
+mix.js('resources/js/app.js', 'public/js')
+    .react()
+    .extract(['react'])     <=====
+    .postCss('resources/css/app.css', 'public/css', [
+        //
+    ]);
+
+
+//run "npm run dev" to below libraries
+-------------------------------------------
+
+    public/js/manifest.js: The Webpack manifest runtime
+    public/js/vendor.js: Your vendor libraries
+    public/js/app.js: Your application code
+
+
+Open the "resources/views/welcome.blade.php" file and update its content as follows:
+-------------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Laravel React</title>
+</head>
+<body>
+    <div id="hello-react"></div>
+    <div id="counter"></div>
+
+    <script src="{{ asset('js/manifest.js') }}"></script>      <============
+    <script src="{{ asset('js/vendor.js') }}"></script>        <============
+    <script src="{{ asset('js/app.js') }}"></script>           <============
+    
+</body>
+</html>
+
+-----------------------------------------------------------------------------------------------------------------------
+//////////////////Note///////////////////////////////////
+Instead of deferring code execution, I've moved the scripts to the bottom of the file. Also, 
+make sure to load the files in this exact order. 
+
+If there are multiple application-centric JavaScript files, they should come after the vendor script. 
+The manifest will always be the first one. Reload your browser, and you should see no change in results whatsoever.
+-----------------------------------------------------------------------------------------------------------------------
+
+
+for any help: https://adevait.com/laravel/using-laravel-with-react-js
+--------------------------------------------------------------------------
+
+
+
+ 
