@@ -3,11 +3,30 @@
 /////////////////////Creating a Modern Application: Using Laravel With React.js/////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Working Process
+---------------------
+1. Install Laravel Project
+2. Install npm "npm install"
+3. Run npm div "npm run dev"
+4. Install react, react-dom "npm install --save-dev react react-dom"
+5. Create component and connect with particular div id
+6. Connect component in "app.js"
+7. in "webpack.mix.js" add ".react()"
+8. Update dependencies of "package.json" file 
+    npm run dev
+    npm run dev
+9. in "resource/views/welcome.php" add div id
+10. Run server "php artisan serv"
+
+For next time (5. create component, 6. connect component)
+
+
 
 
 ///Step-1: Create New Project in Laravel and Installing the Dependencies//////////////////////////
+----------------------------------------------------------------------------------------------------------
 
-laravel new guide-to-laravel-and-react
+    composer create-project --prefer-dist laravel/laravel guide-to-laravel-and-react
 
 
 Once the project is ready, open it in your favorite IDE or text editor. 
@@ -21,15 +40,19 @@ you'll see the following list of packages under the "devDependencies" section:
 
 In this article, you'll be working with all of these libraries except for Lodash.
 
+
 ///Step-2: Install npm(node package manager)//////////////////////////
+---------------------------------------------------------------------------------------------
 
     npm install
 
 //After the installation finishes, execute the following command to test if everything's functional or not.
+---------------------------------------------------------------------------------------------------------------
 
     npm run dev
 
 //If everything works fine, you should see something as follows on your terminal:
+------------------------------------------------------------------------------------
 
 //   Laravel and React
 
@@ -44,8 +67,12 @@ Now, you'll have to install two new JavaScript libraries for React:
 
 //It'll install the libraries as development dependencies. 
 
-Create a new file resources/js/components/HelloReact.js 
---------------------------------------------------------
+
+
+Create "components" folder in "resources/js"
+-----------------------------------------------------------
+Create a new file "HelloReact.js" in "resources/js/components/" 
+-----------------------------------------------------------
 
 // resources/js/components/HelloReact.js
 
@@ -72,7 +99,7 @@ Connect "HelloReact" in resoureces/js/app.js file:
 require('./bootstrap');
 
 // React Components
-require('./components/HelloReact')      //connect
+require('./components/HelloReact')      <==== connect
 
 
 
@@ -84,7 +111,7 @@ To compile the React component properly, open the "webpack.mix.js" file from the
 const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
-    .react()    //add react()
+    .react()    <=== add react()
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);
@@ -129,7 +156,7 @@ After updating the Laravel Mix configuration, execute the "npm run dev" command 
 //and visit http://localhost:8000 using your favorite browser. 
 ----------------------------------------------------------------------
 
-php artisan serve
+php artisan serv
 
 
 //If you see nothing on the screen, check the browser console for any errors. If you find something, resolve them and try again. Let's move on to the next Laravel Reactjs part, creating a counter component using React hooks.
