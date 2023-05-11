@@ -1,0 +1,239 @@
+////////Create API using Laravel////////////////////////////////////////////////
+
+1. Install Laravel Project
+
+	composer create-project --prefer-dist laravel/laravel crud-react-laravel
+
+2. Configure Database Details:  open .env file
+
+	DB_CONNECTION=mysql 
+	DB_HOST=127.0.0.1 
+	DB_PORT=3306 
+	DB_DATABASE=<DATABASE NAME>
+	DB_USERNAME=<DATABASE USERNAME>
+	DB_PASSWORD=<DATABASE PASSWORD>
+
+3. Create Migration, Model, and Controller
+
+	php artisan make:model Product -mcr
+
+public function up()
+{
+    Schema::create('products', function (Blueprint $table) {
+        $table->bigIncrements('id');
+        $table->string('title');
+        $table->text('description');
+        $table->text('image');
+        $table->timestamps();
+    });
+}
+
+
+Migrate the database using the following command:
+
+	php artisan migrate
+
+
+Now, Open Category.php model from app / Models  and update code into Product.php Model:
+
+	<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model {
+
+   use HasFactory;
+
+   protected $fillable = ['title', 'description', 'image'];
+}
+
+?>
+
+
+Open ProductController.php and add code in index, store, show, update, and delete functions as a following:
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+
+class ProductController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return Product::select('id','title','description','image')->get();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title'=>'required',
+            'description'=>'required',
+            'image'=>'required|image'
+        ]);
+
+        try{
+            $imageName = Str::random().'.'.$request->image->getClientOriginalExtension();
+            Storage::disk('public')->putFileAs('product/image', $request->image,$imageName);
+            Product::create($request->post()+['image'=>$imageName]);
+
+            return response()->json([
+                'message'=>'Product Created Successfully!!'
+            ]);
+        }catch(\Exception $e){
+            \Log::error($e->getMessage());
+            return response()->json([
+                'message'=>'Something goes wrong while creating a product!!'
+            ],500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Product $product)
+    {
+        return response()->json([
+            'product'=>$product
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Product $product)
+    {
+        $request->validate([
+            'title'=>'required',
+            'description'=>'required',
+            'image'=>'nullable'
+        ]);
+
+        try{
+
+            $product->fill($request->post())->update();
+
+            if($request->hasFile('image')){
+
+                // remove old image
+                if($product->image){
+                    $exists = Storage::disk('public')->exists("product/image/{$product->image}");
+                    if($exists){
+                        Storage::disk('public')->delete("product/image/{$product->image}");
+                    }
+                }
+
+                $imageName = Str::random().'.'.$request->image->getClientOriginalExtension();
+                Storage::disk('public')->putFileAs('product/image', $request->image,$imageName);
+                $product->image = $imageName;
+                $product->save();
+            }
+
+            return response()->json([
+                'message'=>'Product Updated Successfully!!'
+            ]);
+
+        }catch(\Exception $e){
+            \Log::error($e->getMessage());
+            return response()->json([
+                'message'=>'Something goes wrong while updating a product!!'
+            ],500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Product $product)
+    {
+        try {
+
+            if($product->image){
+                $exists = Storage::disk('public')->exists("product/image/{$product->image}");
+                if($exists){
+                    Storage::disk('public')->delete("product/image/{$product->image}");
+                }
+            }
+
+            $product->delete();
+
+            return response()->json([
+                'message'=>'Product Deleted Successfully!!'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return response()->json([
+                'message'=>'Something goes wrong while deleting a product!!'
+            ]);
+        }
+    }
+}
+
+
+4. Define Routes in "api.php"
+
+use App\Http\Controllers\ProductController;
+
+Route::resource('products',ProductController::class);
+
+
+
+
+Before starting the application you need to run this command to access all uploaded images.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	php artisan storage:link
+
+
+--------------------------------------------------------------------------------------------------------
+The public the disk is intended for files that are going to be publicly accessible. 
+By default, the public disk uses the local driver and stores these files in 
+"storage/app/public". To make them accessible from the web, you should create 
+a symbolic link from public/storage to "storage/app/public".
+--------------------------------------------------------------------------------------------------------
+
+
+Start the application
+---------------------------
+
+	php artisan serv          //now you can  access API is by using Postman or any other REST client
+
+
+
+
+
+
+
+
