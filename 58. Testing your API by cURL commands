@@ -1,0 +1,133 @@
+////////Testing your API by cURL commands/////////////////////////////////////
+
+
+We can confirm that our API works correctly by using a tool such as "Postman" or "testing from your terminal with cURL". 
+
+
+As a reminder, here are the API endpoints that were created:
+
+GET https://localhost:8000/api/comments — Return all comments
+GET https://localhost:8000/api/comments/{id} — Return the comment with the specified id
+POST https://localhost:8000/api/comments — Add a new comment
+PUT https://localhost:8000/api/comments/{id} — Update the comment with the specified id
+DELETE https://localhost:8000/api/comments/{id} — Delete the comment with the specified id
+
+//////cURL commands//////////////////////////////////////////////////////
+Get all comments:
+
+	curl http://localhost:8000/api/comments -i
+
+
+Response:
+
+[
+    {
+        "id": 1,
+        "created_at": "2021-03-03T21:31:36.000000Z",
+        "updated_at": "2021-03-03T21:31:36.000000Z",
+        "name": "Dee Sporer",
+        "text": "Quod nam qui modi sunt. Illum ut delectus minima nisi corporis assumenda voluptate. Quaerat voluptate omnis vitae ex."
+    },
+    {
+        "id": 2,
+        "created_at": "2021-03-03T21:31:36.000000Z",
+        "updated_at": "2021-03-03T21:31:36.000000Z",
+        "name": "Lurline Schinner",
+        "text": "Culpa blanditiis nihil quisquam minima nam. Rerum placeat vero corrupti nobis reiciendis accusantium necessitatibus. Maiores vel nesciunt voluptatum ex. Eveniet quidem aut neque."
+    },
+    {
+        "id": 3,
+        "created_at": "2021-03-03T21:31:36.000000Z",
+        "updated_at": "2021-03-03T21:31:36.000000Z",
+        "name": "Pete McClure MD",
+        "text": "Amet impedit mollitia consectetur eveniet natus. Cumque perspiciatis debitis ratione est. Dolor expedita vitae recusandae ut quos earum."
+    }
+]
+
+----------------------------------------------------------------------------------------------------------
+
+Get a single comment:
+
+	curl http://localhost:8000/api/comments/1 -i
+
+
+Response:
+
+{
+    "id": 1,
+    "created_at": "2021-03-03T21:31:36.000000Z",
+    "updated_at": "2021-03-03T21:31:36.000000Z",
+    "name": "Dee Sporer",
+    "text": "Quod nam qui modi sunt. Illum ut delectus minima nisi corporis assumenda voluptate. Quaerat voluptate omnis vitae ex."
+}
+
+------------------------------------------------------------------------------------------------------
+
+Create a comment:
+
+curl -X POST -H 'Content-Type: application/json' -d '{
+    "name": "Holly",
+    "text": "You are the best!"
+}' http://localhost:8000/api/comments -i
+
+
+Response:
+
+{
+  "name": "Holly",
+  "text": "You are the best!",
+  "updated_at": "2021-03-03T23:16:31.000000Z",
+  "created_at": "2021-03-03T23:16:31.000000Z",
+  "id": 4
+}
+Update a comment:
+
+curl -X PUT -H 'Content-Type: application/json' -d '{
+  "name": "Holly",
+  "text": "My updated comment"
+}' http://localhost:8000/api/comments/4 -i
+Response:
+
+{
+  "id": 4,
+  "created_at": "2021-03-05T13:41:17.000000Z",
+  "updated_at": "2021-03-05T13:51:40.000000Z",
+  "name": "Holly",
+  "text": "My updated comment"
+}
+
+--------------------------------------------------------------------------------
+
+Delete a comment:
+
+curl -X DELETE http://localhost:8000/api/comments/4 -i
+
+
+Response:
+
+[
+  {
+    "id": 1,
+    "created_at": "2021-03-05T14:27:49.000000Z",
+    "updated_at": "2021-03-05T14:27:49.000000Z",
+    "name": "Burdette Medhurst",
+    "text": "Hic dolores minus illum modi consectetur. Qui est officia distinctio voluptatem at aut non. Sapiente perspiciatis nesciunt ea eos. Perferendis dolorem harum rerum magnam totam."
+  },
+  {
+    "id": 2,
+    "created_at": "2021-03-05T14:27:49.000000Z",
+    "updated_at": "2021-03-05T14:27:49.000000Z",
+    "name": "Keaton Wuckert",
+    "text": "Id distinctio rerum tenetur et. Molestias excepturi aut labore enim. Vitae aperiam aut odit sed. Qui est sit cupiditate ut placeat sint nam."
+  },
+  {
+    "id": 3,
+    "created_at": "2021-03-05T14:27:49.000000Z",
+    "updated_at": "2021-03-05T14:27:49.000000Z",
+    "name": "Violet Kulas",
+    "text": "Nostrum adipisci tempora tempore ad et. Quia minus odit rem. Non nihil maiores quidem eum molestiae voluptatem cum."
+  }
+]
+
+
+
