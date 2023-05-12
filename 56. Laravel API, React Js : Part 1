@@ -30,13 +30,15 @@ public function up()
 
 
 Migrate the database using the following command:
+--------------------------------------------------
 
 	php artisan migrate
 
 
-Now, Open Category.php model from app / Models  and update code into Product.php Model:
+in app/Models/Product.php Model:
+-----------------------------------
 
-	<?php
+<?php
 
 namespace App\Models;
 
@@ -47,13 +49,13 @@ class Product extends Model {
 
    use HasFactory;
 
-   protected $fillable = ['title', 'description', 'image'];
+   protected $fillable = ['title', 'description', 'image'];      <=====
 }
 
 ?>
 
 
-Open ProductController.php and add code in index, store, show, update, and delete functions as a following:
+Open ProductController.php and add code in "index", "store", "show", "update", and "delete" functions as a following:
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 <?php
@@ -74,7 +76,7 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index()    <====
     {
         return Product::select('id','title','description','image')->get();
     }
@@ -85,7 +87,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request)   <====
     {
         $request->validate([
             'title'=>'required',
@@ -115,7 +117,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Product $product)   <====
     {
         return response()->json([
             'product'=>$product
@@ -129,7 +131,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product)   <====
     {
         $request->validate([
             'title'=>'required',
@@ -175,7 +177,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Product $product)  <====
     {
         try {
 
@@ -203,10 +205,11 @@ class ProductController extends Controller
 
 
 4. Define Routes in "api.php"
+---------------------------------
 
-use App\Http\Controllers\ProductController;
+	use App\Http\Controllers\ProductController;
 
-Route::resource('products',ProductController::class);
+	Route::resource('products',ProductController::class);
 
 
 
