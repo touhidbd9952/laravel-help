@@ -37,12 +37,12 @@ Line			:	L
 Layout grid:
 -------------------
 type: column 
-	count:12  
+	count:12     //number of column
 	color:FF000
 	type: Strech
 	Width: auto
 	Margin: 135   //left and right
-	Gutter: 20      //distance between column
+	Gutter: 20    //distance between column
 
 
   
