@@ -34,7 +34,7 @@ Ractangle box		:	R
 Line			:	L
 
 
-Layout grid:
+Layout grid (frame desktop width:1440px, height 1024px):
 -------------------
 type: column 
 	count:12     //number of column
