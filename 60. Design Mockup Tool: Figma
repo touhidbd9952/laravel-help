@@ -32,3 +32,17 @@ Move			:	V
 Scale/Ratio		:	K     
 Ractangle box		:	R
 Line			:	L
+
+
+Layout grid:
+-------------------
+type: column 
+	count:12  
+	color:FF000
+	type: Strech
+	Width: auto
+	Margin: 135   //left and right
+	Gutter: 20      //distance between column
+
+
+  
