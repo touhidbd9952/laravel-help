@@ -27,6 +27,7 @@ ObjectGroup Selection: 	Ctrl+G
 ObjectBring Forward	:	Ctrl+]
 ObjectSend Backward:	Ctrl+[
 ObjectSend Back	:	[
+Copy object and Paste     : press mouse right button + Alt and move some where              
 Move			:	V
 Scale/Ratio		:	K     
 Ractangle box		:	R
