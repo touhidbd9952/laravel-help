@@ -1,0 +1,33 @@
+https://www.youtube.com/watch?v=7mMN9oKfFAs
+
+Why mockup desing tools we will use?
+------------------------------------
+After software requirement analysis, we need to create demo design of each pages to show client to confirmation before
+start coding. Figma is a mockup tool (there are some other mockup tools of different company) use to create demo design.
+
+www.figma.com
+-------------------
+
+FilePlace Image 	:  	ctrl + shift + k
+FileSave local copy
+EditUndo		: 	ctrl+Z
+EditRedo		: 	ctrl+Y
+EditFind		: 	Ctrl+F
+EditPick Color	:	 I
+EditSelect All		: 	Ctrl+A
+ViewPixel Grid	: 	Shift+’
+ViewLayout Grid 	: 	Shift + G
+ViewRulers 		: 	Shift + R
+ViewComments 	: 	Shift + C
+ViewShow/Hide UI	: 	Ctrl+\
+ViewZoom in		:	Ctrl++
+ViewZoom out	:	Ctrl+-
+ViewZoom to 100%	:	Ctrl+0
+ObjectGroup Selection: 	Ctrl+G
+ObjectBring Forward	:	Ctrl+]
+ObjectSend Backward:	Ctrl+[
+ObjectSend Back	:	[
+Move			:	V
+Scale/Ratio		:	K     
+Ractangle box		:	R
+Line			:	L
