@@ -31,6 +31,10 @@ Category::insert([
   
   BookingDates::where('email', Input::get('email'))->orWhere('name', 'like', '%' . Input::get('name') . '%')->get();
   
+  $product_list = Product::where('publish_status',1)->where('bestsetting',1)->inRandomOrder()->limit(10)->get();
+  
+  
+  
   
   
   
