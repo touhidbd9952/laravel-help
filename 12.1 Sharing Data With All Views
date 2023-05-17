@@ -1,0 +1,51 @@
+To share data with all views follow the below step. 
+
+Go to "App\Providers\AppServiceProvider" class 
+
+
+in "AppServiceProvider" class
+------------------------------
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+//1. add library and model
+use Illuminate\Support\Facades\View;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\Subsubcategory;
+
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        //2. Query and share
+        $categories = Category::where('publish_status',1)->orderby('indexing','asc')->get();
+        $subcategorylist = SubCategory::where('publish_status',1)->get();
+        $subsubcategorylist = Subsubcategory::where('publish_status',1)->get();
+        $product_list = Product::where('publish_status',1)->get();
+        View::share('categories', $categories);
+        View::share('subcategorylist', $subcategorylist);
+        View::share('subsubcategorylist', $subsubcategorylist);
+        View::share('product_list', $product_list);
+    }
+}
