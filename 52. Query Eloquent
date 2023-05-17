@@ -1,3 +1,38 @@
 
 $product_list = Product::where('publish_status',1)->where('bestsetting',1)->orderByRandom()->limit(10)->get();
 $product_list = Product::where('publish_status',1)->where('topreviewed','>',0)->orderby('topreviewed','desc')->take(10)->get();
+
+Category::insert([
+            'title'=>$request->title,
+            'title_slag'=>str_replace(" ","-",$request->title)."-".uniqid(),
+            'indexing'=>$request->sl==""?0:$request->sl,
+            'publish_status'=>$request->publish_status,
+            'user_id'=>Auth::user()->id,
+            'vendor_id'=>Auth::user()->id,
+            'created_at'=>Carbon::now(),
+        ]);
+ 
+ $categories = Category::where('user_id',Auth::user()->id)->orderby('publish_status','desc')->orderby('indexing','asc')->paginate(25); 
+ 
+ $categories = Category::where('user_id',Auth::user()->id)->where('id',$id)->get();
+ 
+ Category::find($id)->update([
+            'title'=>$request->title,
+            'title_slag'=>str_replace(" ","-",$request->title)."-".uniqid(),
+            'indexing'=>$request->sl==""?0:$request->sl,
+            'publish_status'=>$request->publish_status,
+            'user_id'=>Auth::user()->id,
+            'updated_at'=>Carbon::now(),
+        ]);
+   
+  $product = Product::where('cat_id',$id)->get(); 
+  
+  Category::find($id)->delete();
+  
+  BookingDates::where('email', Input::get('email'))->orWhere('name', 'like', '%' . Input::get('name') . '%')->get();
+  
+  
+  
+  
+  
+  
