@@ -1,0 +1,3 @@
+
+$product_list = Product::where('publish_status',1)->where('bestsetting',1)->orderByRandom()->limit(10)->get();
+$product_list = Product::where('publish_status',1)->where('topreviewed','>',0)->orderby('topreviewed','desc')->take(10)->get();
