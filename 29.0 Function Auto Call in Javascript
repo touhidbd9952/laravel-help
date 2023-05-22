@@ -2,3 +2,14 @@
   window.onload = function() {
     getworkorder()
 };
+
+
+<script>
+    window.onload = function() {  
+    // execute function if exist
+    if (typeof show_product === 'function') { show_product('tab_featured'); }
+    if (typeof cart_product_view_content === 'function') { cart_product_view_content(); }
+    
+}
+
+</script>
