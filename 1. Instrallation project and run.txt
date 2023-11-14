@@ -4,7 +4,8 @@ What are the requirement to setup laravel project
 -------------------------------------------------
 1. Xampp Server
 2. Composer (https://getcomposer.org/)
-3. git (https://git-scm.com)
+3. NodeJS
+4. git (https://git-scm.com)
 
 
 New Project Create:
