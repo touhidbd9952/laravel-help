@@ -40,3 +40,13 @@ Run Project:
   Run project
   -----------
   cod:	php artisan serve
+
+
+Open Project in VS Code
+----------------------
+1. open command prompt from run "cmd"
+2. c:/xmpp/htdocs/yourProject/Name
+
+	code .
+
+
