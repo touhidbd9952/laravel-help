@@ -18,7 +18,7 @@ New Project Create:
    cod:	  composer create-project --prefer-dist laravel/laravel yourProjectName
    cod:	  composer create-project --prefer-dist laravel/laravel 8.0 yourProjectName
 
-Othentication : install ui package
+Athentication : install ui package
 -----------------------
 go to https://laravel.com/docs/7.x/frontend and copy below code
 
