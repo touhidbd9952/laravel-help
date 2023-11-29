@@ -200,8 +200,39 @@ Multiple Authentication
         }
     }
 
+16. create controller
+
+	php artisan make:controller Admin/AdminController	<====|    
+	php artisan make:controller User/UserController		<====|
+
+17. add route in web.php: go to yourprojectname\routes and open "web.php"
+
+	Route::group(['prefix'=>'admin', 'middleware'=>['admin','auth']], 'namespace'=>'Admin',  function(){
+		Route::get('dashboard', [AdminController::class,'index'])->name('admin.dashboard');
+
+	});
+
+	Route::group(['prefix'=>'user', 'middleware'=>['user','auth']], 'namespace'=>'User',  function(){
+		Route::get('dashboard', [AdminController::class,'index'])->name('admin.dashboard');
+
+	});
 
 
+18. add below function in LoginController.php : go to yourprojectname\app\Http\Controllers\Auth and open "LoginController.php"
+
+	//after  $redirectTo = RouteServiceProvider::HOME
+
+	protected function redirectTo()
+	{
+		if(Auth()->user()->role_id == 1)
+		{
+			return route('admin.dashboard');
+		}
+		if(Auth()->user()->role_id == 2)
+		{
+			return route('user.dashboard');
+		}
+	}
 
 
 
