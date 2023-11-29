@@ -54,4 +54,57 @@ Open Project in VS Code
 
 	code .
 
+------------------------Second Step-----------------------------------------------------
+
+*****Before migrate to create table, do the below task************
+
+Multiple Authentication
+----------------------------
+1. create a database name in php-myadmin and configure in .env
+2. add below field in "user" table : go to yourprojectname\database\migrations and open "....create_users_table.php"
+
+	$table->integer('role_id')->default(2);
+
+3. add field "role_id" in user model: go to yourprojectname\app\Models and open "User.php"
+
+	protected $fillable = [
+        'role_id',
+        'name',
+        'email',
+        'password',
+    ];
+
+4. create a table "Role" in database and for this run below command
+
+	php artisan make:model Role -m
+
+5. add "name" field in role table: go to yourprojectname\database\migrations and open "....create_roles_table.php"
+
+            $table->string('name');     //add name field
+
+6. add field "role_id" in role model: go to yourprojectname\app\Models and open "Role.php"
+
+	protected $fillable = [
+        'name',
+    ]; 
+
+7. add a relationship between role table and user table: go to yourprojectname\app\Models and open "Role.php"
+
+	public function user()
+    {
+        return $this->hasMany("App\Models\User");
+    }
+
+8. add a relationship between user table and role table: go to yourprojectname\app\Models and open "User.php"
+
+	public function role()
+    {
+        return $this->belongsTo("App\Models\Role");
+    }
+
+9. make middleware: 
+
+	php artisan make:middleware AdminMiddleware		<=====|
+	php artisan make:middleware UserMiddleware		<=====|
+
 
