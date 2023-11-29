@@ -234,10 +234,56 @@ Multiple Authentication
 		}
 	}
 
+19. add below function in RegisterController.php : go to yourprojectname\app\Http\Controllers\Auth and open "RegisterController.php"
 
+	//after  $redirectTo = RouteServiceProvider::HOME
 
+	protected function redirectTo()
+	{
+		if(Auth()->user()->role_id == 1)
+		{
+			return route('admin.dashboard');
+		}
+		if(Auth()->user()->role_id == 2)
+		{
+			return route('user.dashboard');
+		}
+	}
 
+     //add 'role_id' => 2  in create()
 
+	protected function create(array $data)
+    	{
+        return User::create([
+            'role_id' => 2,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+    	}
+
+20. open AdminController: app\Http\Controllers and open "AdminController.php"
+
+	class AdminController extends Controller
+	{
+    		public function index()
+    		{
+        		return view('admin.home');
+    		}
+	}
+
+21. open UserController: app\Http\Controllers and open "UserController.php"
+
+	class UserController extends Controller
+	{
+    		public function index()
+    		{
+        		return view('user.home');
+    		}
+	}
+
+22. open view folder :  go to yourprojectname\resources\views and create a folder "admin" and create a file "home.blade.php"
+23. open view folder : go to yourprojectname\resources\views and create a folder "user" and create a file "home.blade.php"
 
 
 
