@@ -107,4 +107,116 @@ Multiple Authentication
 	php artisan make:middleware AdminMiddleware		<=====|
 	php artisan make:middleware UserMiddleware		<=====|
 
+10. config middleware:  go to yourproject\app\Http and open "Kernel.php" and config middleware in "protected $routeMiddleware"
+
+	protected $routeMiddleware = [
+        	:
+        	:
+        	'Admin'=>\App\Http\Middleware\AdminMiddleware::class,
+        	'User'=>\App\Http\Middleware\UserMiddleware::class,
+    	];
+
+11. open AdminMiddleware: go to yourproject\app\Http\Middleware and open "AdminMiddleware.php" and below way code
+
+	<?php
+
+	namespace App\Http\Middleware;
+
+	use Closure;
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Auth;  //add
+
+	class AdminMiddleware
+	{
+    		public function handle(Request $request, Closure $next)
+    		{
+        		if(Auth::check() && Auth::user()->role_id == 1)
+			{
+				return $next($request);
+			}
+			else
+			{
+				return redirect('login');
+			}
+    		}
+	}
+
+12. open UserMiddleware: go to yourproject\app\Http\Middleware and open "UserMiddleware.php" and below way code
+
+	<?php
+
+	namespace App\Http\Middleware;
+
+	use Closure;
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Auth;  //add
+
+	class UserMiddleware
+	{
+    		public function handle(Request $request, Closure $next)
+    		{
+        		if(Auth::check() && Auth::user()->role_id == 2)
+			{
+				return $next($request);
+			}
+			else
+			{
+				return redirect('login');
+			}
+    		}
+	}
+
+
+13. run migration command to create default table in database
+
+	php artisan migrate    <====|
+
+14. add 2 record in "roles" table of database
+
+	Admin      //in "name" field of first record
+	User	   //in "name" field of second record  and click on "Go" button
+
+
+15. RedirectIfAuthenticated config: go to yourprojectname\app\Http\Middleware and open "RedirectIfAuthenticated.php" 
+
+
+    public function handle(Request $request, Closure $next, ...$guards)
+    {
+        $guards = empty($guards) ? [null] : $guards;
+
+        foreach ($guards as $guard) {
+            if(Auth::guard($guard)->check() && Auth::user()->role->id == 1 )
+		{
+			return redirect()->route('admin.dashboard');
+		}
+		elseif(Auth::guard($guard)->check() && Auth::user()->role->id == 2 )
+		{
+			return redirect()->route('user.dashboard');
+		}
+		else
+		{
+			return $next($request);
+		}
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
