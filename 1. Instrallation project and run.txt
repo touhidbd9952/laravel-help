@@ -22,16 +22,18 @@ For Multiple Athentication : install ui package
 -----------------------
 go to https://laravel.com/docs/7.x/frontend and copy below code
 
-	composer require laravel/ui		//install ui package
-	php artisan ui bootstrap --auth		//install bootstrap authentication
+	composer require laravel/ui		//install ui package and enter
+	php artisan ui bootstrap --auth		//install bootstrap authentication and enter
+	npm install && npm run dev          	//to install node package manager for complete fresh scaffolding and enter
 
 1. open command prompt from run "cmd"
 2. c:/xmpp/htdocs/yourProject/Name
 
 	now the above code here and enter
 
-	composer require laravel/ui
-	php artisan ui bootstrap --auth    
+	composer require laravel/ui		<====|
+	php artisan ui bootstrap --auth   	<====|
+	npm install && npm run dev		<====|
 	
 
 
