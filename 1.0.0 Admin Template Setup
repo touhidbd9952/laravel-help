@@ -1,4 +1,4 @@
-1. go to Adminlte and download admin template
+1. go to Adminlte (https://adminlte.io/) and download admin template
 2. go to C:\xampp\htdocs\yourprojectname\public and create a folder "backend" and paste all image, css, js and other supported folder
 3. go to C:\xampp\htdocs\yourprojectname\resources\views\layouts and create a file "admin_master.blade.php" and change link of image, css, js like below
 
