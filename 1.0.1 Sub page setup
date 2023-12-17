@@ -1,3 +1,7 @@
+C:\xampp\htdocs\yourprojectname\resources\views\admin\category "add_category.blade.php"
+=========================================================================================================
+
+
 @extends('layouts.admin_master')
 
 @section('content')
