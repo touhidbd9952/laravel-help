@@ -24,6 +24,7 @@ $x = 5985;  //integer
 $x = 10.365;  //Float
 $x = null;
 $x = true;  //Boolean
+$cars = array(); //Blank Array
 $cars = array("Volvo","BMW","Toyota");  //Array
 echo $cars[0];
 $cars[0] = "Volvo";
