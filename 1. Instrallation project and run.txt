@@ -3,7 +3,7 @@
 What are the requirement to setup laravel project
 -------------------------------------------------
 1. Xampp Server    //Xampp: jam server
-2. Composer (https://getcomposer.org/)
+2. Composer (https://getcomposer.org/)   //https://getcomposer.org/download/ --> Download and run "Composer-Setup.exe" 
 3. NodeJS
 4. git (https://git-scm.com)
 
