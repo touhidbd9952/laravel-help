@@ -46,6 +46,8 @@ Run Project:
   -----------
   cod:	php artisan serve
 
+  copy: "http://127.0.0.1:8000/" and open browser, paste it in browser address-bar
+
 
 Open Project in VS Code
 ----------------------
