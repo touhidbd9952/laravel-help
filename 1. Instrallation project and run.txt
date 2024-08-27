@@ -27,9 +27,9 @@ go to https://laravel.com/docs/7.x/frontend and copy below code
 	npm install && npm run dev          	//to install node package manager for complete fresh scaffolding and enter
 
 1. open command prompt from run "cmd"
-2. c:/xmpp/htdocs/yourProject/Name
+2. c:/xmpp/htdocs> cd yourProjectName
 
-	now the above code here and enter
+	//now the above code here and enter
 
 	composer require laravel/ui		<====|
 	php artisan ui bootstrap --auth   	<====|
