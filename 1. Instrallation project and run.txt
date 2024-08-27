@@ -40,7 +40,7 @@ go to https://laravel.com/docs/7.x/frontend and copy below code
 Run Project:
 ------------
 1. open command prompt
-2. c:/xmpp/htdocs/yourProject/Name
+2. c:/xmpp/htdocs/yourProjectName
 
   Run project
   -----------
@@ -52,7 +52,7 @@ Run Project:
 Open Project in VS Code
 ----------------------
 1. open command prompt from run "cmd"
-2. c:/xmpp/htdocs/yourProject/Name
+2. c:/xmpp/htdocs/yourProjectName
 
 	code .
 
