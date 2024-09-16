@@ -16,7 +16,7 @@ New Project Create:
    New project create (--prefer-dist means "prefer distributable")
    ----------------------------------------------------------------
    cod:	  composer create-project --prefer-dist laravel/laravel yourProjectName
-   cod:	  composer create-project --prefer-dist laravel/laravel 8.0 yourProjectName
+   cod:	  composer create-project --prefer-dist laravel/laravel yourProjectName 8.0
 
 For Multiple Athentication : install ui package
 -----------------------
