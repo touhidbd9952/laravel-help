@@ -1,0 +1,116 @@
+///////in php.ini////////////(1)////////////
+
+extension=php_fileinfo.dll        //if not exist, add it
+
+ 
+
+///////in composer.json////////(2)////
+
+"require": {
+        "php": "^7.3",
+        "fideloper/proxy": "^4.2",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "intervention/image": "^2.7",     <====  //if not exist, add     "intervention/image": "dev-master"
+        "laravel/framework": "^8.0",        
+        "laravel/tinker": "^2.0"
+    },
+
+
+//////in config/app.php///////(3)////
+'providers' => [
+	       :
+	       Intervention\Image\ImageServiceProvider::class,     <=====
+	       :
+	]
+
+'aliases' => [
+	    :
+	    'Image' => Intervention\Image\Facades\Image::class,    <=====
+	]
+
+
+/////run command//////////////(4)//////////
+
+	composer require intervention/image 
+
+
+
+
+//////In Page////////////////////(5)///////
+
+<form action="{{route('student.add')}}"  method="POST">
+
+                                @csrf
+
+                            <div class="form-group">
+                                <label for="name">Image:</label>
+                                <input type="file" class="form-control" name="pic">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" name="name" placeholder="Enter name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <textarea class="form-control" name="address" placeholder="Address"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" class="form-control" name="email" placeholder="Enter email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone:</label>
+                                <input type="number" class="form-control" name="phone" placeholder="Enter phone">
+                            </div>
+
+
+                            <button type="submit" class="btn btn-primary btnsave">Submit</button>
+                            </form>
+                            
+/////In Controller///////////////(6)////
+
+use Intervention\Image\Facades\Image;
+
+$request->validate([
+            'pic' => 'required|image|mimes:jpeg,png,jpg',    <=====
+            'name' => 'required|max:255',
+            'address' => 'required|max:255',
+            'email' => 'required|max:255',
+            'phone' => 'required|min:11|max:11',
+        ],
+        [
+            'pic.required' => 'Image Required',   <=====
+            'name.required' => 'Name Required',
+            'name.max' => 'Maximum 255 chars',
+            'address.required' => 'Address Required',
+            'address.max' => 'Maximum 255 chars',
+            'email.required' => 'Email Required',
+            'email.max' => 'Maximum 255 chars',
+            'phone.required' => 'Phone Required',
+            'phone.max' => 'Maximum 255 chars',
+            
+        ]);
+
+||
+||
+\/
+
+$photo = $request->file('pic'); 
+        $photo_name_gen = hexdec(uniqid()).'.'.$photo->getClientOriginalExtension();
+        Image::make($photo)->resize(600,600)->save('img/'.$photo_name_gen);
+
+        $photo_image = 'img/'.$photo_name_gen;
+
+        Student::insert([
+            'name'=>$request->name,
+            'address'=>$request->address,
+            'email'=>$request->email,
+            'phone'=>$request->phone,
+            'photo' => $photo_image,        <=====
+            'created_at'=>Carbon::now(),
+        ]);
