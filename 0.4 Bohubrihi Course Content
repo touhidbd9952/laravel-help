@@ -1,0 +1,969 @@
+//////Foreach///////
+@foreach($products as $p)
+     <h1>{{$p}}</h1>
+@endforeach
+
+//////If...Else////////////////////
+@if(count($products)>10)
+    <h1>{{count($products)}}</h1>
+   @else
+         <h1>{{count($products)}}</h1>
+@endif
+
+////////If...Else If....Else////////////
+@if(count($products)>10)
+    <h1>{{count($products)}}</h1>
+    @else if(count($products)>5)
+            <h1>{{count($products)}}</h1>
+     @else
+             <h1>{{count($products)}}</h1>
+@endif
+
+
+//////Route Parameters////////
+Query Parameters
+---------------------------
+Step-1:  in browser
+
+	localhost:8080/home?username=raju
+
+Step-2: in route web.php
+
+	Route::get('/home', function(){
+		$userName = request('username');
+		return view('homepage', ['username'=>$userName]);
+	});
+
+Step-3: in view page
+
+	Hi I am {{$username}} 
+
+
+--------------------------------------------------------------
+//////Run Laravel Project////////////////////////
+
+php artisan serve --port=8080    
+
+--------------------------------------------------------------
+//////Clear Cash/browser memory//////////////////////////////
+php artisan optimize:clear
+ctrl+C
+php artisan serve --port=8080
+
+------------------------------------------------------------------
+/////Database/////////////////////////////////
+1. create a database
+    - click on "new" 
+    - type your "database" name
+    - set "utf8_unicode_ci"
+    - click on "Create" button
+
+---------------------------------------------------------------------
+/////.env/////////////////////////
+APP_NAME=Ecommerce
+
+---------------------------------------------------------------------
+/////products table///////////////////
+$table->id();
+$table->integer('category_id');
+$table->string('size');
+$table->string('name');
+$table->string('image');
+$table->integer('amount');
+$table->integer('price');
+$table->string('details');
+$table->boolean('is_active');
+$table->timestamps();
+
+/////categories table///////////////////
+$table->id();
+$table->string('name');
+$table->timestamps();
+
+//////users table//////////////////
+$table->id();
+            $table->integer('role_id')->default(2)->comment('admin user=3, vendor=2, customer=1');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('mobile');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->boolean('is_active')->default(1
+);
+            $table->boolean('is_admin')->default(0);
+            $table->rememberToken();
+            $table->timestamps();
+
+---------------------------------------------------------------
+///////resource controller with model///////////////////////
+php artisan make:controller ProductController --resource --model=Product
+php artisan make:controller UserController --resource
+
+----------------------------------------------------------------
+///////resource route/////////////////////////////////////////////
+Route::resource('/products', ProductController::class);
+Route::resource('/users', UserController::class);
+
+----------------------------------------------------------------
+///////User Registration//////////////////////////////////////
+<form id="RegForm" method="POST" action="/users">
+@csrf
+<input type="text" name="uname" placeholder="Username">
+<input type="text" name="email" placeholder="Email"> 
+<input type="text" name="mobile" placeholder="Mobile No."> 
+<input type="password" name="pass" placeholder="Password"> 
+<button type="submit" class="btn">Register</button> 
+</form>
+
+in UserController:
+
+public function store (Request $request)
+{
+	User::insert([
+	   'name' => $request->has ('uname')? $request->get('uname'):' ', 
+	   'email' => $request->has ('email')? $request->get('email'): ' ', 
+	   'mobile' => $request->has ('mobile')? $request->get('mobile'): ' ', 
+	   'password' => $request->has ('pass')? $request->get('pass'): ' ', 
+	]); 
+	return redirect('/admin_products');
+}
+
+///////////Login//////////////////
+<form id="LoginForm" method="GET" action="/users"> 
+@csrf
+<input type="text" name="uname" placeholder="Username"> 
+<input type="password" name="pass" placeholder="Password"> 
+<button type="submit" class="btn">Login</button>
+<a href="">Forget Password</a>
+</form>
+
+in UserController:
+public function index (Request $request)
+{
+	$uName= $request->has ('uname') ? $request->get('uname') : ' ';
+	$pass= $request->has ('pass') ? $request->get('pass') : ' ';
+	$userInfo= User::where('name', '=', $uName)->where('password', '=', $pass)->first();
+	
+	if(isset($userInfo) && $userInfo !=null){
+	      return redirect('/admin_
+products');
+	}else{
+                       return redirect()->back();
+                  }
+}
+
+--------------------------------------------------------------------------------
+///////Product Add in Admin Panel///////////////////////
+<form id="LoginForm" method="POST" action="/products" enctype="multipart/form-data"> 
+@csrf
+
+<input type="text" name="name" placeholder="Product Name"> 
+<input type="text" name="price" placeholder="Price">
+<input type="text" name="amount" placeholder="Amount">
+<input type="file" name="images[]" multiple>
+<button type="submit" class="btn">Add Product</button> 
+</form>
+
+in ProductController:
+
+
+---------------------------------------------------------------------------------
+in MainController
+------------------
+$products = Product::paginate(10);
+return view('admin_products', compact('products'));
+
+////////Add a library file for Pagination css in View////////////////////////////////
+php artisan vendor:publish --tag=laravel-pagination                      //you will see a "vendor" folder in "resources/views"
+
+in View Page
+-------------
+	<div>
+	   {{$products->links (vendor.pagination.default')}}
+	</div>
+
+----------------------------------------------------------------------------------
+///////Add to Cart/////////////////////////////////////////
+Step-1: open browser and type "google.com"
+	- type : laravel shopping cart github and press enter
+	- select https://github.com/olimortimer/LaravelShoppingcart
+	     or 
+                 	   https://github.com/Crinsane/LaravelShoppingcart
+
+Step-2: Install the package through Composer:        //read the instruction and flow
+
+	composer require olimortimer/shoppingcart
+
+Step-3: 
+
+	- Open you laravel project
+	- go to "config" --> app.php
+		in "providers" add below line of code
+	
+			Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
+
+		in "aliases" add below line of code
+
+			'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
+
+ 
+in product_details.blade.php:
+---------------------------------
+
+<form method="POST" action="/add-to-cart">
+@csrf
+<select name="size">
+<option value="">Select Size</option>
+<option value="XXL">XXL</option> <option value="XL">XL</option>
+<option value="L">L</option>
+<option value="M">M</option>.
+<option value="S">S</option>
+</select>
+<input type="hidden" name="pid" value="{{$product->id}}"> 
+<input type="hidden" name="price" value="{{$product->price}}">
+<input type="hidden" name="name" value="{{$product->name}}">
+<label>Amount</label> <input name="quantity" type="number" value="1"> 
+<button type="submit" class="btn">Add To Cart</button> 
+</form>
+
+in route "web.php"
+---------------------
+	Route::post('add-to-cart', '\App\Http\Controllers\ProductController@addToCart');
+
+in ProductController
+--------------------
+public function addToCart (Request $request)
+{
+$id= $request->has ('pid')? $request->get('pid'): '';
+$name= $request->has ('name')? $request->get('name'): "';
+$quantity= $request->has ('quantity')? $request->get('quantity'): '';
+$size= $request->has ('size')? $request->get('size'): '';
+Sprice= $request->has ('price')? $request->get('price'): ;
+$images= Product::find($id)->image;
+$image= explode('|', $images)[0];
+$cart = Cart::content()->where('id', $id)->first();
+
+if(isset($cart) && $cart!=null) 
+{
+  $quantity= ((int) Squantity + (int)$cart->qty);
+  $total= ((int)$quantity * (int)$price);
+  Cart::update($cart->rowId, 'qty' => $quantity, 'options' => ['size' => $size, 'image'=>$image, 'total' => $total]);
+}
+else
+{
+  $total= ((int)$quantity * (int)$price);
+  Cart::add($id, $name, $quantity, $price, [size' => $size, 'image'=>$image, 'total' => $total]);
+}
+return redirect('/products')->with('success', 'Product Added to Your Cart!');
+
+}
+
+public function viewCart()
+{ 
+  $carts = Cart::content();
+  $subTotal = Cart::subtotal();
+  return view('cart', compact ('carts', 'subTotal'));
+}
+
+public function removeItem($rowId) 
+{
+  Cart:: remove($rowId);
+  return redirect('/cart')->with('success', 'Product Removed Successfully!');
+}
+
+in "cart_details.blade.php"
+-----------------------------
+@foreach($carts as $cart)
+<tr>
+<td>
+<div class="cart-info">
+<img src="{{ asset($cart->options['image'])}}">
+<div>
+<p>{{$cart->name}}</p>
+<small>Price: ${{$cart->price}}</small>
+<br>
+<a href="{{url('/remove-item'.$cart->rowId)}}">Remove</a>
+</div>
+</div>
+</td>
+<td>{{$cart->qty}}</td>
+<td>${{$cart->options['total']}}</td>
+</tr>
+@endforeach
+
+<div class="total-price">
+<table>
+<tr>
+<td>Subtotal</td>
+<td>{{$subTotal}}</td>
+</tr>
+<tr>
+<td> <button class="btn btn-success">Checkout </button> </td>
+</tr>
+</table>
+</div>
+
+-----------------------------------------------------------------------------
+///////How to create Object of a controller and call particular function/////////////
+$product_controller = new ProductController();
+return $product_controller->addProduct();
+
+----------------------------------------------------------------------------
+/////////Custom Middleware//////////////////////////////////
+Step-1:  create a middleware "CheckUser"
+
+	php artisan make:middleware CheckUser
+
+Step-2: add middleware in "$routeMiddleware" of "Kernel.php"
+
+	$routeMiddleware = [
+                      :
+	    'checkuser' => \App\Http\Middleware\CheckUser::class,
+	];
+
+Step-3: open "register.blade.php" and add name="reg" in button tag
+
+<form id="RegForm" method="POST" action="/users">
+@csrf
+<input type="text" name="uname" placeholder="Username">
+<input type="text" name="email" placeholder="Email"> 
+<input type="text" name="mobile" placeholder="Mobile No."> 
+<input type="password" name="pass" placeholder="Password"> 
+<button type="submit" name="reg" class="btn">Register</button> 
+</form>
+
+Step-4: open "CheckUser" middleware and add code like below
+
+- go to App\Http\Middleware and open "CheckUser" middleware
+- in handle() type below code
+
+public function handle (Request $request, Closure Snext)
+{
+if ($request->has ('reg') && $request->has ('uname')) 
+{
+  $user = User::where('name', $request->get('uname'))->first();
+  if(isset($user) && $user!=null) 
+ {
+     return redirect()->back()->with('error', 'Username already taken!');
+ }
+}
+return $next($request);
+}
+
+Step-5: declare constructor in UserController.php and add below code
+
+public function _ _constructor()
+{
+      $this->middleware('checkuser')->only('store');         //store is the function of registration
+}
+------------------------------------------------------------------
+Mailing System:
+
+Step-1
+///////Mail Configuration in .env file/////////////////
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.googlemail.com
+MAIL_PORT=465
+MAIL_USERNAME=touhidbd9952@gmail.com
+MAIL_PASSWORD=yourmail-password
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS=touhidbd9952@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+Step-2: Create a controller "MailController" for mail function
+
+	php artisan make:controller MailController
+
+Step-3: create a mail class   
+
+	php artisan make:mail TestMail                  //App/Mail/TestMail
+
+-------------------------------------------------------------------------------
+/////Update table////////////////////////////////////
+to add some new column in "users" table type below command
+
+Step-1:
+--------
+	php artisan make:migration update_users_table
+
+/////How to add new column "price" in products table
+	php artisan make:migration add_price_to_products_table
+public function up()
+{
+    Schema::table( table: 'products', function (Blueprint $table) { 
+       Stable->integer( column: 'price');|
+});
+
+	php artisan migrate:status
+	php artisan migrate
+	
+
+Step-2
+--------
+public function up()
+{
+   Schema::table('users', function (Blueprint $table){ 
+      $table->after('name', function ($table) { 
+         $table->renameColumn ('name', 'fname');
+         $table->string('lname');
+         $table->boolean('sex');
+         $table->date('b_day')->default('2024-01-01');
+         $table->string('image');
+        });
+   });
+}
+
+Step-3
+--------
+php artisan migrate:status    
+php artisan migrate
+php artisan migrate:status  
+
+if any error happen, search the error in goole. may be doctrine need to install
+
+	composer require doctrine/dbal ^2.12.1
+	composer update
+
+after composer update, 
+
+	php artisan migrate
+----------------------------------------------------------------------------
+////////Form Validation//////////////////////////////////
+public function register (Request $request)
+{ 
+	$request->validate([
+		'fname' => ['required', 'string', 'max:255'], 
+		'Iname' => ['required', 'string', 'max:255'],
+		'email' => ['required', 'string', 'email', 'unique:users'], 
+		'password' => ['required', 'string', 'min:8', 'confirmed'], 
+		'day' => ['required', 'numeric'],
+		'month' => ['required', 'numeric'], 
+		'year'> ['required', 'numeric'],
+	]);
+    $birthDay = strtotime($request->get('year').'-'.$request->get('month').'-'.$request->get('day'));
+    $birthDay = date('Y-m-d',  $birthDay);
+
+$userInfo= array();
+$userInfo['fname'] = $request->get('fname');
+$userInfo['name'] = $request->get('name'); 
+$userInfo['email'] = $request->get('email'); 
+$userInfo['sex'] = $request->get('sex') == 'male' ? 1 : 0; 
+$userInfo['password'] = dcrypt($request->get('password')); 
+$userInfo['b_day'] = $birthDay;
+
+$user = User::create($userInfo);
+
+Auth::loginUsingId($user->id);
+
+return redirect()->route('dashboard');
+}
+
+///Show error message in form/////
+<input type="text" placeholder="First Name" name="fname" value="{{old('fname')}}" class="input-lg col-sm-5"/>
+ @error('fname') <div class="alert alert-danger">{{$message}}</div> @enderror
+<input type="text" placeholder="Last Name" name="lname" value="{{old('lname')}}" class="input-lg col-sm-5"/>
+ @error('lname') <div class="alert alert-danger">{{$message}}</div> @enderror
+
+---------------------------------------------------------------------------
+///////Logout/////////////////////////////////////////
+<a href="{{route('logout')}}">Logout</a>
+
+--------------------------------------------------------------------------
+///////route group////////////////////
+Route::group(['middleware' => 'auth'], function(){
+	Route::get('/dashboard, 'DashboardController@index')->name ( 'dashboard');
+});
+
+--------------------------------------------------------------------------
+/////////Block Site//////////////////////////////////////////////
+
+public function up()
+{
+	Schema::create(table: 'posts', function (Blueprint $table) { 
+	   $table-> id();
+	   $table-> string('status', length: 250)->nullable(); 
+	   $table-> string('photo, length: 250)->nullable(); 
+	   $table-> json('likes')->nullable();
+	   $table-> json('shares')->nullable();
+	   $table-> integer ('comments')->default(value: 0); 
+	   $table-> integer('user_id');
+	   $table-> dateTime('created_at')->useCurrent(); 
+	   $table-> dateTime("updated_at')->useCurrent();
+	});
+}
+
+create resource controller and model
+--------------------------------------
+php artisan make:controller PostController --resource --model=Post
+
+in route web.php
+-----------------
+Route::resource('/posts', PostController::class);
+
+in post form
+------------
+<form method="POST" action="{{route('posts.store')}}" enctype="multipart/form-data"> 
+@csrf
+<div class="form-group">
+     <textarea name="status" placeholder="Whats up?" maxlength="250"></textarea> I
+	@if($errors->has('status'))
+	    <div class="alert alert-danger">
+	        {{$errors->first('status')}}
+	    </div>
+	@endif
+</div>
+<br>
+<div class="form-group">
+<div class="pull-left">
+    <label class="btn btn-success">
+      <input name="image" type="file" style="..."/>Add Image 
+    </label>
+	@if($errors->has('image'))
+	    <div class="alert alert-danger">
+	        {{$errors->first('image')}}
+	    </div>
+	@endif
+</div>
+<div class="pull-right">
+    <button class="btn btn-primary">POST</button>
+</div>
+<br>
+</div>
+
+in PostController
+-----------------
+public function store (Request $request)
+{
+$request->validate([
+'status' => 'string|max:250',
+'image' => 'mimes: jpg, jpeg, png, svg, gif|max: 3000',
+]);
+
+if($request->hasFile( key: 'image'))
+{
+    $file = $request->file( key: 'image');
+    Sextension = $file->getClientOriginalExtension();
+    $fileName = 'image_'. time() . '.' . Sextension; 
+    $location = '/images/user_'. Auth :: user()->id . '/';
+    $file->move(public_path() . $location, $fileName); 
+    $imageFinal = $location . $fileName;
+}
+
+   Post::insert([
+	'status' => $request->get( key: 'status') ?? '',
+	'photo => $request->hasFile( key: 'image') ? $imageFinal : '',
+	'likes' => json_encode(array()),
+	'shares' => json_encode(array()), 
+	'user_id=> Auth::user()->id,
+	]);
+
+   return back();
+}
+
+public function index()
+{
+      $allPosts = Post::query()->get();
+      $posts= array();
+      foreach ($allPosts as $post)
+     {
+	$posts[] = array();
+	'status' => $post->status??'',
+	'photo' => $post->photo??",
+	'likes' => count (json_decode($post->likes)) ?? 0,
+	'shares' => count (json_decode($post->shares)) ?? 0,
+	'comments' => $post->comment ?? 0,
+	'user'=> User::find($post->user_id),
+	'created_at' => date( format: "F j, Y, g:i a", strtotime($post->created_at)),
+     }
+     return view('dashboard', compact('posts'));
+}
+
+in postview.blade.php
+----------------------
+@foreach($posts as $post)
+<div class="post col-sm-12" id="post_1">
+<div class="row post-heading">
+<div class="col-sm-12">
+<a href="profile.html">
+</a>
+</div>
+</div>
+<img src="{{asset(auth()->user()->image ?? '/images/no_user.jpg')}}" class="profile-picture pull-left"/>
+<span class="post-user-name">{{$post['user']->fname. .$post['user']->lname}}</span>
+<small class="post-date text-mute">{{$post['created_at']}}</small>
+<div class="row post-body">
+<div class="col-sm-12">
+{{$post['status']}}
+/div>
+<div class="col-sm-12">
+<img src="{{$post['photo']}}" height="200" width="300"> 
+</div>
+
+<div class="row post-action">
+  <ul class="post-action-menu">
+     <li> <a href="javascript:void(0);" class="text-mute" onclick="like({{$post['id']}}); ">Like</a></li> 
+     <li> <a href="javascript:void(0);" class="text-mute" onclick="share({{$post['id']}}); ">Share</a></li> 
+     <li> <a href="javascript:void(0);" class="text-mute" onclick="comment({{$post['id']}}); ">Comment</a></li> 
+     <li class="pull-right"> <a href="#" class="text-mute"><span id="post_share_count_1">{{$post['shares']}}</span> Shares </a></li>
+     <li class="pull-right"> <a href="#" class="text-mute"><span id="post_comment_count_1">{{$post['comments']}}</span> Comments </a></li>
+     <li class="pull-right"> <a href="#" class="text-mute"><span id="post_like_count_1">{{$post['likes']</span> Likes </a></li>
+  </ul>
+</div>
+
+use auth in view
+----------
+{{auth()->user()->fname}}
+
+push script from one page to another
+--------------------------------------
+in view page (push from):   //dashboard.blade.php
+@push('scripts')
+<script type="text/javascript">
+function setField(field_name)
+{
+    $('#fld_name').html(field_name.charAt(0).toUpperCase()+field_name.substr(1).toLowerCase());
+    var field_value= $('#'+field_name).html();
+    $('#fid_value').val(field_value);
+    $('#field_name').val(field_value);
+}
+</script>
+@endpush
+
+in view page (push to):  //master.blade.php
+@stack('scripts')
+
+declare PUT method
+----------------------
+<form action="{{route('profile.update', auth()->user()->id)}}" method="POST">
+@method('PUT')
+@csrf
+<div class="row">
+  <div class="col-sm-4">
+       	<h4><label id="fld_name" class="pull-right"></label></h4> 
+	<input type="hidden" value="" name="fld_name" id="field_name">
+   </div>
+   <div class="col-sm-8">
+	<input class="form-group" type="text" value="" name="fld_value" id="fld_value">
+    </div>
+    <div class="modal-footer">
+        	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    	<button type="submit" class="btn btn-primary">Save changes</button>
+     </div>
+</div>
+</form>
+
+
+maping coumn name with database column name
+------------------------------------------------
+///in config/app.php:
+
+'columns' => [
+   'f_name' => 'fname',
+   'L_name' => 'name',
+   'birthday' => 'b_day', 
+   'email' => 'email',
+],
+
+///in controller:
+
+public function update (Request $request, $id)
+{
+$fieldName= $request->get( key: 'fld_name') ??; 
+$fieldVal= $request->get( key: 'fld_value') ??";
+if($fieldName== 'birthday'){
+   $fieldVal= date( format: 'Y-m-d', strtotime($fieldVal));
+}
+
+$columnName= config( key: 'app.columns.'.$fieldName);
+
+User::where('id', $id)->update([
+    $columnName => $fieldVal
+]);
+return back();
+}
+
+-----------------------------------------------------------------
+//////How to update Likes ////////////////////////////////
+in view page
+------------
+<li> <a href="javascript:void(0);" class="text-mute" onclick="like({{$post['id']}}); ">Like</a></li> 
+
+<script type="text/javascript">
+function like (post_id) 
+{
+var elem = document.getElementById("post_like_count_"+post_id);
+var count = parseInt(elem.innerHTML);
+$.ajax({
+	url: '{{route('updateLikes')}}', 
+	type: 'POST',
+	dataType: 'json',
+	async: false,
+	data: {
+		post_id: post_id,
+		_token: {{csrf_token()}}'
+	},
+	Success: function (data) {
+	    elem.innerHTML = count + parseInt(data.result);	
+	    highlight(elem);
+	}
+});
+
+}
+
+in route web.php
+----------------
+Route::post('update-likes', 'PostController@updateLikes')->name('updateLikes');
+
+in controller
+----------------
+public function updateLikes (Request $request) 
+{ 
+SpostId= $request->get('post_id') ?? '';
+ if($postId) 
+{
+	$post = Post::find($postId);
+	$likes= $post->likes;
+	$likes_array= json_decode($likes, true);
+
+        if(in_array(auth()->user()->id, $likes_array))
+       {
+	$likes_array= array_diff($likes_array, [auth()->user()->id]);
+	$post->likes= json_encode($likes_array);
+	$post->save();
+
+	return json_encode([
+		'success' => true,
+		'result' => -1
+	]);
+
+        } 
+        else
+       {
+	array.push($likes_array, auth()->user()->id);
+	$post->likes = json_encode($likes_array);
+	$post->save();
+
+	return json_encode([
+		'success' => true,
+		'result' => 1
+	]);
+       }
+}
+else
+{
+       return json_encode([
+	'success' => false 
+       ]);
+}
+
+----------------------------------------------------------------------------
+//////Comments Table//////////////////
+Schema::create( table: 'comments', function (Blueprint $table) 
+{ 
+   $table->id();
+   $table->integer('post_id');
+   $table->unsignedBigInteger ('user_id');
+   $table->string('comment');
+   $table->foreign('user_id')->references ('id')->on('users'); 
+   $table->timestamps();
+});
+
+in viewpage
+----------------
+@php
+    $all_comments = \App\Models\Comment::where('post_id', $post['id'])->get();
+@endphp
+
+@php
+   $users= \App\Models\User::where('id', '=', auth()->user()->id)->get(); 
+   $time = now()->subMinutes(10);
+   $active_users= \App\Models\User::where('last_login', '>=', $time)->pluck('id')->toArray();
+@endphp
+
+<form action="{{route('saveComment')}}" method="POST"> 
+@csrf
+<div class="col-sm-1 form-group">
+<a href="profile.html">
+   <img src="{{asset(auth()->user()->image ?? '/images/no_user.jpg')}}" class="profile-picture-small pull-left"/>
+</a>
+</div>
+
+<div class="col-sm-9 form-group">
+    <textarea rows="1" name="comment" class="comment-text" placeholder="Add Comment" oninput="auto_heir"></textarea>
+</div>
+
+<div class="col-sm-1 form-group">
+    <input type="hidden" name="post_id" value="{{$post['id']}}">
+    <button type="submit" class="btn btn-success btn-xs">Comment</button>
+</div>
+</form>
+
+in CommentController
+----------------------
+public function saveComment (Request $request)
+{
+    $comment= $request->get('comment') ?? ' '; 
+    $postId= $request->get('post_id') ?? ' ';
+
+    $data= new Comment();
+    $data->user_id= auth()->user()->id; 
+    $data->post_id= $postId; 
+    $data->comment= $comment;
+    $data->save();
+
+    Post::find($postId)->increment('comments');
+
+    return back();
+}
+
+----------------------------------------------------------------------------
+//////Payment Gateway///////////////////////////////////////////////////
+Create Account in SSL Commerz
+----------------------------------
+Step-1: go to sslcommerz.com --> Developers : Try the Sandbox (click) 
+
+Step-2: click on "Create Sandbox Account" button
+	Your application domain name: your domain name or abc.com  --> Next (click)
+	Your Company name: your company name or your name  --> Next (click)
+	Your company address: your company address or bla bla bla --> Next (click)
+	Your name: Md. Salim --> Next (click)
+	Your email address: your valid email address --> Next (click)
+	Your phone number: your valid phone or 01234567890 --> Next (click)
+	Your username: your username or admin --> Next (click)
+	Your password: your password or admin123 --> Next (click)
+	Confirm password: retype password --> Sign Up (click)
+
+Step-3: Sandbox Verification Code 
+	check your mail and verify sandbox account by code
+
+Step-4: SSL Commerz sandbox details
+	check your mail, you will get a mail of details sandbox (open it)
+	click on "Merchant Panel URL" link to login sandbox account by LoginID and Password
+	click on "My Store" menu --> IPN Settings (click) --> Enable HTTP Listener: your-domain-url/success-payment-message-page-url    (in local project: http://127.0.0.1:8080/ipn) --> Save (click)
+
+Integrating SSLCommerz-1
+-----------------------------
+Step-1: go to sslcommerz.com --> Products : Payment Gateway (click) 
+Step-2: click on "View Integrations" button 
+Step-3: click on "SSLCommerz-Laravel" and follow the github SSLCOMMERZ instructions
+	Instruction-1:
+	a. click on "Code" --> Download Zip (click) and save in Download folder
+	b. go to Download --> select "SSL Commerz-Laravel-master.zip" --> Extract Here
+	
+	Instruction-2: 
+	Copy the "Library" folder from SSL Commerz-Laravel-master and put it in the laravel project's "app/" directory
+	
+	Instruction-3: 
+	Copy the "config/sslcommerz.php" file into your project's "config/" folder
+	
+	Instruction-4:  
+	add "STORE_ID" and "STORE_PASSWORD" valies (from sslcommerz mail) on your project ".env" file to register it in sslcommercz
+	a. open .env file of your project's
+	b. type
+		STORE_ID = ...
+		STORE_PASSWORD = ...
+
+	Instruction-5: 
+	Copy the "SslcommerzPaymentController" into your project's Controllers folder.
+	
+	Instruction-6:
+	Copy the defined routers from "routers/web.php" into your project's route file.
+
+	Instruction-7: 
+	Add the below routes into the "$excepts" array of "VerifyCsrfToken" middleware.
+
+		protected $except - [
+			'/pay-via-ajax', '/success', '/cancel', '/fail', '/ipn'
+		];
+
+	Instruction-8: 
+	Copy the "resources/views/" all blade.php file into your project's  "resources/views/" folder
+
+	Instruction-9:
+	To integrate popup checkout use the below "script" below script before the end of body tag.
+
+	For Sandbox (Local project): in exampleEasycheckout.blade.php (add if not exist)
+	For Live Project : 
+
+	Instruction-10:
+	Use the below button where you want to show the "Pay Now" button  (already added  in exampleEasycheckout.blade.php)
+	
+	Instruction-11:
+	Import a table "orders.sql" from sslcommerce to your project database
+		a. go to  phpmyadmin and select your database
+		b. click on "import" --> orders.sql (select) --> Go
+		c. click on "structure" of orders table --> id (column select) --> change (click) --> auto increment (click) --> save
+
+	Instruction-12:
+	Call Payment function form "Checkout" button of your project
+
+		<button class="btn btn-success" onclick="window.location= '{{url("example1")}}">Checkout</button>
+
+	Instuction-13: in exampleEasycheckout.blade.php, update below way
+
+		<h4 class="d-flex justify-content-between align-items-center mb-3"> <span class="text-muted">Your cart</span>
+		<span class="badge badge-secondary badge-pill">{{Cart::count()}}</span> </h4>
+		<ul class="list-group mb-3">
+		@foreach (Cart::content() as $content)
+		    <li class="list-group-item d-flex justify-content-between th-condensed">
+		    <div>
+		       <h6 class="my-0">{{$content->name}}</h6>
+		    </div>
+		    <span class="text-muted">{{$content->price}}</span>
+		   </li> 
+		@endforeach
+
+		<li class="list-group-item d-flex justify-content-between">
+		   <span>Total (BDT)</span>
+		  <strong>{{Cart: Isubtotal}</strong>
+		</li>
+		</ul>
+
+----------------------------------------------------------------------------
+
+to know more go to "laravel.com" 
+	
+	
+	  
+
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
