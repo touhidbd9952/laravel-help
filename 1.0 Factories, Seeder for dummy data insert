@@ -49,6 +49,18 @@ class UserFactory extends Factory
     }
 }
 
+//for admin
+return [
+            'role_id' => 3,
+            'fname' => 'Admin',
+            'lname' => '',
+            'email' => 'admin@abc.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make(00123456789), // password
+            'remember_token' => Str::random(10),
+            'permission' => 1,
+
+        ];
 
 
 Now Add a seeder For UserTable by running command below.
