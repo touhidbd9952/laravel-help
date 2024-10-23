@@ -1,0 +1,96 @@
+ //////////////Laravel 8 Factories, Seeder/////////////////////////////////////////////
+
+
+Creating dummy data in database by using Laravel Factory and Seed the Database by using Database Seeder.
+
+To generate model factory run the command below.
+----------------------------------------------------------
+
+	php artisan make:factory UserFactory --model=User
+
+
+- This will generate file in database/dactory/UserFactory.php
+- Now let's add fake data for each column.
+
+
+
+<?php
+
+namespace Database\Factories;
+
+use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class UserFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = User::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ];
+    }
+}
+
+
+
+Now Add a seeder For UserTable by running command below.
+----------------------------------------------------------------
+
+	php artisan make:seed UserTableSeeder
+
+
+- This command generate a file in database/seeders/UserTableSeeder.php
+- Next Update the run function of seeder file.
+
+
+
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\User;
+
+class UserTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        User::factory()->count(50)->create();
+    }
+}
+
+
+
+Now Run the command below to seed the data:
+
+	php artisan db:seed --class=UserTableSeeder
+
+
+		or 
+
+	php artisan db:seed --class=DatabaseSeeder
+
+
