@@ -1,0 +1,7 @@
+https://www.hostinger.com/tutorials/docker-cheat-sheet?utm_campaign=Generic-Tutorials-DSA|NT:Se|LO:BD&utm_medium=ppc&gad_source=1&gclid=CjwKCAiAxKy5BhBbEiwAYiW--2MKj58C67muMLub0Y5AOms9pQw475xdXQZFePQb8Ul63V2DjUdEOhoCkXsQAvD_BwE#Docker_Architecture
+
+docker compose up -d
+docker ps
+docker exec -it paperless-portal bash
+docker compose up -d payment
+docker compose up -d paperless-payment
