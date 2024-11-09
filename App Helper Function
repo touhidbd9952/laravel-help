@@ -2,6 +2,26 @@
 
 https://laraveldev.pro/blog/understanding-the-app%28%29-helper-function-in-laravel
 
+$apiKey = app('config')->get('services.api_key'); 
+$user = app('db')->table('users')->where('id', 1)->first(); 
+
+app('cache')->put('key', 'value', $minutes); 
+app('mailer')->send(...); 
+app('session')->put('key', 'value'); 
+
+$serviceName = 'StripePaymentGateway'; 
+// This could come from user input or configuration. 
+$className = 'App\\\\Services\\\\\\\\' . $serviceName; 
+$serviceInstance = app($className); 
+
+app()->bind('App\\\\Contracts\\\\PaymentGateway', 'App\\\\Services\\\\StripePaymentGateway'); 
+
+
+
+
+
+
+
 
 
 
