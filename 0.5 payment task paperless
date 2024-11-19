@@ -1,0 +1,43 @@
+Add Payment System
+-------------------------
+Step-1: Active payment array (city, bkash, nagat, ...)
+a. go to "paperless"-->payment-->config-->bank.php
+	i. find particular array and uncomment it
+	ii. if not exist, create new array same as above array
+
+b. if bank card need to add, go to "paperless"-->payment-->config-->card.php
+	i. find particular bank card arrays and uncomment all
+	ii. if not exist, create new arrays
+
+Step-2: Controller
+	i. go to "paperless"-->payment-->controller-->Gateway-->paymentProcessController.php
+	
+		in line: 253
+			i. create new switch case
+
+Step-3: Create a class
+	i. go to "paperless"-->payment-->App-->GratewayClass
+		
+		create a class for new bank like below:
+		for "Bank"
+			|---City				//App\GatewayClasses\Banks\City
+			|	|--cityData.php
+			|	|	|--cityBank model function declare here
+			|	|--ProcessCityBankPayment
+			|	|	|--cityBank payment function declare here
+					
+		create a class for new MFS (Mobile FS service) like below
+		for "MFS"
+			|--Bkash
+			|	|--BkashApiService.php
+			|	|	|--create all the function of bkash api related
+			|	|--BkashConfig.php
+			|	|	|--create all the function of bkash configuration related
+			|	|--ProcessBkashPayment.php
+			|	|	|--initPaymentProcess()
+			|	|	|--initCallbackProcess()
+			|	|	|--initRefundProcess()
+			|	|	|--getPaymentDetails()
+			
+			
+			
