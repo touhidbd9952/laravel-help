@@ -1,0 +1,173 @@
+Nagad payment gateway in Laravel 
+----------------------------------
+
+Integrating the Nagad Payment Gateway in a Laravel application involves several steps. Below is a step-by-step guide to set up and use the gateway:
+
+1. Get API Credentials
+
+    - Register with Nagad and obtain API credentials (
+    	Merchant ID, 
+    	Merchant Secret Key, 
+    	etc.).
+    - Ensure you have access to their documentation for endpoint details and sample codes.
+
+2. Install Required Packages
+
+    - Ensure your Laravel app has the necessary dependencies. 
+    - Install guzzlehttp/guzzle for handling HTTP requests:
+
+    	composer require guzzlehttp/guzzle
+
+3. Setup Configuration
+
+    Create a configuration file for Nagad in config/nagad.php:
+
+<?php
+
+return [
+    'base_url' => env('NAGAD_BASE_URL', 'https://api.mynagad.com/'),
+    'merchant_id' => env('NAGAD_MERCHANT_ID'),
+    'merchant_secret' => env('NAGAD_MERCHANT_SECRET'),
+    'callback_url' => env('NAGAD_CALLBACK_URL'),
+];
+
+
+Add the following keys to your .env file:
+-----------------------------------------
+
+    NAGAD_BASE_URL=https://api.mynagad.com/
+    NAGAD_MERCHANT_ID=your_merchant_id
+    NAGAD_MERCHANT_SECRET=your_merchant_secret
+    NAGAD_CALLBACK_URL=https://yourdomain.com/payment/callback
+
+
+4. Create Nagad Service
+
+    Create a service class "NagadPaymentService.php" in App\Services to handle Nagad API requests:
+
+    <?php
+
+    namespace App\Services;
+
+    use GuzzleHttp\Client;
+    use Illuminate\Support\Facades\Log;
+
+    class NagadPaymentService
+    {
+        protected $baseUrl;
+        protected $merchantId;
+        protected $merchantSecret;
+        protected $callbackUrl;
+        protected $client;
+
+        public function __construct()
+        {
+            $this->baseUrl = config('nagad.base_url');
+            $this->merchantId = config('nagad.merchant_id');
+            $this->merchantSecret = config('nagad.merchant_secret');
+            $this->callbackUrl = config('nagad.callback_url');
+            $this->client = new Client();
+        }
+
+        public function initiatePayment($amount, $orderId)
+        {
+            try {
+                $response = $this->client->post($this->baseUrl . 'gateway/initialize', [
+                    'json' => [
+                        'merchant_id' => $this->merchantId,
+                        'order_id' => $orderId,
+                        'amount' => $amount,
+                        'callback_url' => $this->callbackUrl,
+                    ],
+                ]);
+
+                return json_decode($response->getBody(), true);
+            } catch (\Exception $e) {
+                Log::error('Nagad Payment Error: ' . $e->getMessage());
+                return ['error' => 'Failed to initiate payment'];
+            }
+        }
+
+        public function verifyPayment($paymentRef)
+        {
+            try {
+                $response = $this->client->get($this->baseUrl . 'gateway/verify/' . $paymentRef);
+                return json_decode($response->getBody(), true);
+            } catch (\Exception $e) {
+                Log::error('Nagad Verification Error: ' . $e->getMessage());
+                return ['error' => 'Failed to verify payment'];
+            }
+        }
+    }
+
+
+5. Setup Routes and Controller:
+
+    	a) Add routes for initiating and handling payment:
+
+use App\Http\Controllers\PaymentController;
+
+Route::get('/payment/initiate', [PaymentController::class, 'initiatePayment']);
+Route::get('/payment/callback', [PaymentController::class, 'handleCallback']);
+
+
+	b) Create a controller for payment logic:
+
+    <?php
+
+    namespace App\Http\Controllers;
+
+    use App\Services\NagadPaymentService;
+    use Illuminate\Http\Request;
+
+    class PaymentController extends Controller
+    {
+        protected $nagadService;
+
+        public function __construct(NagadPaymentService $nagadService)
+        {
+            $this->nagadService = $nagadService;
+        }
+
+        public function initiatePayment(Request $request)
+        {
+            $amount = $request->input('amount');
+            $orderId = uniqid('order_');
+
+            $response = $this->nagadService->initiatePayment($amount, $orderId);
+
+            if (isset($response['error'])) {
+                return response()->json(['message' => 'Payment initiation failed'], 500);
+            }
+
+            return redirect($response['redirect_url']);
+        }
+
+        public function handleCallback(Request $request)
+        {
+            $paymentRef = $request->input('paymentRefId');
+            $verification = $this->nagadService->verifyPayment($paymentRef);
+
+            if (isset($verification['error'])) {
+                return response()->json(['message' => 'Payment verification failed'], 500);
+            }
+
+            return response()->json(['message' => 'Payment successful', 'data' => $verification]);
+        }
+    }
+
+
+6. Test the Integration
+
+    - Set up a test environment using Nagad’s sandbox (if available).
+    - Test all scenarios, including successful and failed payments.
+
+
+7. Security Best Practices
+
+    - Validate all inputs before making API calls.
+    - Use HTTPS to secure data transmission.
+    - Log errors but avoid exposing sensitive information.
+
+
+By following these steps, you can integrate Nagad Payment Gateway into your Laravel application.
