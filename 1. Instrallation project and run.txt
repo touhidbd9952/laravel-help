@@ -17,6 +17,7 @@ New Project Create:
    ----------------------------------------------------------------
    cod:	  composer create-project --prefer-dist laravel/laravel yourProjectName
    cod:	  composer create-project --prefer-dist laravel/laravel yourProjectName 8.0
+   cod:   composer create-project laravel/laravel=8.* your-project-name --prefer-dist
 
 For Multiple Athentication : install ui package
 -----------------------
