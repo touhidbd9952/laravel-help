@@ -1,0 +1,122 @@
+
+---------------------------------------------------------------------
+
+//////How to Create "Environment" Variable/////////////////////////
+
+1. Select your "Collection Name" and click on it "Environment"
+2. Chanage the name as "CollectionNameEnvironment"
+3. Create a Variable 
+
+	VARIABLE	|	INITIAL VALUE	|	CURRENT VALUE
+        --------------------------------------------------------------------------------------------------------------------
+        BaseUrl		|	https://abc.com	|	https://abc.com
+        --------------------------------------------------------------------------------------------------------------------
+	CustomerId	|	1		|
+        --------------------------------------------------------------------------------------------------------------------
+        Token		|       abcd		|
+
+4. Save
+5. Now you can change "API Url" like as   {{BaseUrl}}/booking                  
+
+
+
+//////How to Set value to "CustomerId" Environment Variable/////////////////////////
+
+when insert data, follow below steps
+
+1. click on "Body" --> click on "Tests/Script" and type below code
+
+	var jsonData = pm.response.json()                               // pm = postman
+	pm.environment.set("CustomerId", jsonData.bookingid)            // "bookingid"
+
+
+//////How to Set value to "Token" Environment Variable/////////////////////////
+
+when  login by username and password, follow below steps
+1. Select your "Collection Name" and right click on it
+2. Select "Add request"
+3. Create Name your request "POST Authentication"
+4. Set "POST" as request type
+5. Set "API Url" in Text box (beside "POST") as "https://abc.com/auth"
+6. Click on "Body" --> "raw" (select) --> JSON (select)
+	in "raw", type below way json data
+
+	{
+	   "username": "admin",
+	   "password": "password123"
+	}
+
+7. Click on "Send" button
+
+1. click on "Body" --> click on "Tests/Script" and type below code
+
+	var jsonData = pm.response.json()                                     // pm = postman
+	pm.environment.set("Token", jsonData.token)                           // get "token"
+
+
+
+//////How to Set Authentication for Update and Delete  /////////////////////////
+
+1. open "Update Data" API request
+2. click on "Headers" and set below "key" and its "VALUE" like below
+	
+	KEY		|	VALUE		
+      -------------------------------------------------------------------------------
+	Content-Type	|	application/json
+      -------------------------------------------------------------------------------
+	Accept		|	application/json
+      -------------------------------------------------------------------------------
+     	Cookie		|	token={{Token}}
+
+
+//////How to Check Inner Response /////////////////////////
+
+	var jsonData = pm.response.json()                                            // pm = postman
+	pm.environment.set("CustomerId", jsonData.bookingid)
+
+	pm.test("Status code is 200", function(){                                   
+	     pm.response.to.have.status(200);
+	});
+	
+	pm.test("Check First Name", function(){
+	     pm.expect(jsonData.booking.firstname).to.eql("Mohoshin");
+	});
+
+    
+   //Output
+
+	Pass  :   Status code is 200
+	Pass  :   Check First Name
+
+
+//////How to Generate Report in console /////////////////////////
+
+1. First install Node.js
+2. Install newman by "cmd"
+
+	npm install -g newman              //npm: node package manager
+
+3. run collection of your postman
+
+	newman run SQAStudy.postman_collection.json                       //SQAStudy: collection name
+
+4. run collection of your postman with environment variable
+
+	newman run SQAStudy.postman_collection.json -e SQAStudyEnvironment.postman_environment.json            //SQAStudyEnvironment: environment name
+	
+
+
+//////How to Generate HTML Report /////////////////////////
+
+1. Export Postman collection file
+---------------------------------
+Click on the three (...) dot beside the "your collection name" ---> click on "Export" and save it in "d:/api-test" folder
+
+2. Generate Report
+--------------------------------
+a. Go to "d:/api-test" folder
+b. Open command prompt "cmd"
+c. type
+	newman run your-export-file-name -r htmlextra
+
+   
