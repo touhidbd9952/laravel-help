@@ -1,0 +1,40 @@
+<form action="{{route('paperless_createTransaction')}}" method="POST"    enctype="multipart/form-data">
+@csrf
+{{-- <input type="hidden" name="_token" id="_token" value="<?php echo csrf_token(); ?>"> --}}
+
+<div class="form-group row">
+  <label for="fname"
+      class="col-sm-3 text-end control-label col-form-label text_l">Merchant Id <span id="eaccess_app_key"></span></label>
+  <div class="col-sm-9">
+      <input type="text"  id="access_app_key" name="access_app_key" value="UkAKIBujYNnn30U851xXy5HoP8xUtY7Td614sBJb" class="form-control @error('access_app_key') is-invalid @enderror"
+          placeholder="Customer Merchant Access_app_key Here" tabindex="2">
+      @error('access_app_key')
+          <span class="text-danger"> {{$message}}  </span>
+      @enderror
+  </div>
+</div>
+<div class="form-group row mb-0" style="padding-bottom: 25px;">
+    <label class="col-md-3 col-form-label text-md-right"></label>
+    <div class="col-md-8">
+        <button type="submit" onclick="CreatePayment()"   class="btn btn-primary" style="width: 251px;float: left;" tabindex="10">
+            Generate Token
+        </button>
+    </div>
+</div>
+</form>
+                      
+
+/////How to avoid csrf token for particular route
+1. to avoid particular post route, add route in $except[] of "VerifyCsrfToken" of Middleware below way
+
+class VerifyCsrfToken extends Middleware
+{
+    /**
+     * The URIs that should be excluded from CSRF verification.
+     *
+     * @var array<int, string>
+     */
+    protected $except = [
+        '/',
+    ];
+}
