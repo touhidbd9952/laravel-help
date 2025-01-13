@@ -1,3 +1,23 @@
+/////if need to remove all file and folder of a git repository///////////////
+1. open project
+2. open command prompt and type 
+	rm -fr .git
+3. now you can start new way
+	git init
+	git add README.md
+	git commit -m "first commit"
+	git branch -M main
+	git remote add origin https://github.com/touhidbd9952/paperlesspaymenttest.git
+	git push -u origin main
+
+	…or push an existing repository from the command line
+
+	git remote add origin https://github.com/touhidbd9952/paperlesspaymenttest.git
+	git branch -M main
+	git push -u origin main
+	
+
+
 ////git Installation///////////////////////////////
 1. go to git-scm.com and download git latest version for windows
 2. install git in pc
