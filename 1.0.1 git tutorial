@@ -1,4 +1,4 @@
-/////if need to remove all file and folder of a git repository///////////////
+/////if need to remove all files and folders of a git repository///////////////
 1. open project
 2. open command prompt and type 
 	rm -fr .git
