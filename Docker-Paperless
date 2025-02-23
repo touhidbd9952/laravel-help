@@ -58,13 +58,41 @@ Project Setup to New PC (Linux)
     docker network create paperless-local-network
 
 
-/////db-connection in .env///////
-    db-connection = mysql
-    db-Host = paperless-db
-    db-port = 3306
-    db-database = portal
-    db-username = root
-    db-password = paperless-root
+/////db-connection in portal .env///////
+    DB_CONNECTION=mysql
+    DB_HOST=paperless-db
+    DB_PORT=3306
+    DB_DATABASE=portal
+    DB_USERNAME=root
+    DB_PASSWORD=paperless_root
+
+/////db-connection in payment .env///////
+    DB_CONNECTION=mysql
+    DB_HOST=paperless-db
+    DB_PORT=3306
+    DB_DATABASE=payment
+    DB_USERNAME=paperless_user
+    DB_PASSWORD=paperless_pass
+
+****If your pc need to Restart/shutdown, then follow the below step to run paperless project
+- afer pc start,
+  1. go to "PaperlessProj/paperless/infa/local" and open Terminal
+  2. check all docker container
+      docker ps -a
+  3. if any docker container not run/stop, then run docker up command
+      docker compose up -d
+  4. to run kafka service (it should run always) between portal and payment
+      docker exec -it paperless-payment bash
+      php artisan consume:message
+
+/////How to see docker database///////
+1. download Install "dbeaver-ce" in linux
+2. To see docker database (MySQL) IP
+    docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  paperless-db
+3. 
+
+    
+    
 
 
 
