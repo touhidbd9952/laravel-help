@@ -1,0 +1,86 @@
+Project Setup to New PC (Linux)
+------------------------------------
+1. Download Source Code from Git (Polygone)
+2. Docker Install & Run
+3. Go to "PaperlessProj/paperless/infa/local" and open terminal
+4. Project up to Docker
+
+    docker compose up -d
+    docker ps  -a
+
+5. Check all service (api, kafka, zookeeper, cards, payment, mysql, portal, notification, Radis, Auth) Should be up
+6. Set payment Database in .env file
+
+    .env.example   -->  .env.sandbox
+    .env.example   -->  .env.production
+
+7. Set portal Database in .env file
+
+    .env.example  --> .env
+
+8. Migrate portal tables (in Terminal)
+
+    docker exec -it paperless-portal bash
+    chmod -R 777 storage
+    php artisan config:clear
+    php artisan cache:clear
+    php artisan migrate:fresh  --seed
+    php artisan data-migrate
+
+9. Migrate Payment tables (in Terminal)
+
+    docker exec -it paperless-payment bash
+    chmod -R 777 storage
+    php artisan config:clear
+    php artisan cache:clear
+    php artisan migrate:fresh --seed
+    php artisan consume:message          //use to run kafka.
+
+/////Installation Configuration///////////////
+-------------------------------
+- For api, auth, cards, notification, portal
+    copy   .env.example  File  to .env
+    ----------------------------------
+    cp  api/.env.example   api/.env
+    cp  auth/.env.example  auth/.env
+    cp  cards/.env.example  cards/.env
+    cp  notification/.env.example  notification/.env
+    cp  portal/.env.example  portal/.env
+
+- For payment
+  copy .env.example  File  to .env.production and .env.sandbox
+  ------------------------------------------------------------
+    cp payment/.env.example  payment/.env.production
+    cp payment/.env.example  payment/.env.sandbox
+
+/////Create Network for different service communication/////////////
+
+    docker network create paperless-local-network
+
+
+/////db-connection in .env///////
+    db-connection = mysql
+    db-Host = paperless-db
+    db-port = 3306
+    db-database = portal
+    db-username = root
+    db-password = paperless-root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
