@@ -98,6 +98,19 @@ Project Setup to New PC (Linux)
     username: admin
     password: 123456789
 
+///// Create a Merchant Account////////////
+1. open portal admin panel
+2. click on "Merchants" menu --> click on "Add Merchant" and complete registration
+3. Select particular Merchant that you have created, click on Settings (at the left "wheel symbol") 
+    Complete Below Section
+    Card Details
+    Regular Cards
+    Transaction Package (Create a Transaction Package from "Transaction package" menu first)
+    Emi Cards
+    App Keys (Merchant Crediential)
+    Bank Ids
+    
+
 
 
 
