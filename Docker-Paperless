@@ -95,6 +95,7 @@ Project Setup to New PC (Linux)
 1. After docker compose up, check docker uploaded file (docker ps)
 2. open browser and type: 0.0.0.0:10085/admin/login  
     email : admin@Paperless.com
+    username: admin
     password: 123456789
 
 
