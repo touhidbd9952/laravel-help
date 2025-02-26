@@ -91,8 +91,12 @@ Project Setup to New PC (Linux)
     docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  paperless-db
 3. 
 
-    
-    
+////// Run Paperless Portal ///////////////
+1. After docker compose up, check docker uploaded file (docker ps)
+2. open browser and type: 0.0.0.0:10085/admin/login  
+    email : admin@Paperless.com
+    password: 123456789
+
 
 
 
