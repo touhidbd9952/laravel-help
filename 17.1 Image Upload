@@ -1,10 +1,147 @@
-///////in php.ini////////////(1)////////////
+//////Intervention for image add in laravel//////////////
+1. step-1: remove previous intervention
+	composer remove intervention/image  
+	composer remove intervention/image-laravel
+2. step-2: install 
+	composer require intervention/image:2.7  
+3. step-3: publish
+	php artisan vendor:publish --provider="Intervention\Image\ImageServiceProviderLaravelRecent"
+4. config --> app.php : add below two line
 
-extension=php_fileinfo.dll        //if not exist, add it
+	In the $providers array add the service providers for this package:
+		Intervention\Image\ImageServiceProvider::class,
+	Add the facade of this package to the $aliases array:
+		'Image' => Intervention\Image\Facades\Image::class,
+
+5. config --> image.php:
+	<?php
+	return [
+	    'driver' => 'gd', // Properly formatted array
+	];
+
+6. in controller:
+
+<?php
+
+namespace App\Http\Controllers\Superadmin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Category;
+use Carbon\Carbon;
+use Intervention\Image\Facades\Image;    <=====
+
+//use Intervention\Image\ImageManagerStatic as Image;
+
+class SuperadminCategoryController extends Controller
+{
+    public function categorylist()
+    {
+        $categories = Category::latest()->paginate(10);
+        //$categories =[];
+        return view('admin.superadmin_category.superadmin_category_list', compact('categories'));
+    }
+    public function categoryadd(Request $request)
+    { 
+        //validation  
+        $request->validate([
+            'name' => 'required|max:255',
+            'slug' => 'max:255',
+            'icon' => 'max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        
+        $fileName='';
+        $image_path ="";
+        $image_path_location = "";
+        if (request()->hasFile( key: 'image'))
+        { 
+            $file=$request->image; 
+            $fileName=date('YmdHis').rand(0000000,9999999).'.webp';
+            $img = Image::make($file->getRealPath());
+            $image_path=public_path('/uploads/category/'.$fileName); 
+            //$img = $request->file('image');
+            $img->resize(1000, 1000, function ($constraint){
+            $constraint->aspectRatio();
+            })->save($image_path, 90);
+            $image_path_location = 'uploads/category/'.$fileName;
+        }
+
+
+        Category::insert([
+            'name'=>$request->name,
+            'slug'=>$request->slug,
+            'icon'=>$request->icon?$request->icon:"",
+            'image'=>$image_path_location,
+            'status'=>$request->status,
+            'created_at'=>Carbon::now(),
+        ]);
+
+        return Redirect()->back()->with('success','Saved Successfully'); 
+    }
+    //categoryedit
+    public function categoryedit($id)
+    {
+        $acategory = Category::find($id);
+        $categories = Category::latest()->paginate(10);
+        return view('admin.superadmin_category.superadmin_category_list', compact('categories','acategory','id'));
+    }
+    //categoryupdate
+    public function categoryupdate(Request $request,$id)
+    {
+        //$acategory = Category::find($id);
+        $request->validate([
+            'name' => 'required|max:255',
+            'slug' => 'max:255',
+            'icon' => 'max:255',
+            'image' => 'image|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        // if
+        $acategory = Category::find($id);
+        $old_image = $acategory->image; //dd($old_image);
+        $image_path_location = $old_image;
+
+        if ($request->hasFile('image')) {
+            if(is_file($old_image))
+            {
+                unlink($old_image);
+            }
+            
+            $file=$request->image;
+            $fileName=date('YmdHis').rand(0000000,9999999).'.webp';
+            $img=Image::make($file->getRealPath());
+            $image_path=public_path('/uploads/category/'.$fileName);
+            $img->resize(1000, 1000, function ($constraint){
+            $constraint->aspectRatio();
+            })->save($image_path, 90);
+            $image_path_location = 'uploads/category/'.$fileName;
+        }
+        
+        Category::find($id)->update([
+            'name'=>$request->name,
+            'slug'=>$request->slug,
+            'icon'=>$request->icon?$request->icon:"",
+            'image'=>$image_path_location,
+            'status'=>$request->status,
+            'updated_at'=>Carbon::now(),
+        ]);
+        
+        return Redirect()->back()->with('success','Updated Successfully');
+    }
+
+}
+
+
+
+
+
+
+
+
 
  
 
-///////in composer.json////////(2)////
+///////check composer.json if required////////////
 
 "require": {
         "php": "^7.3",
@@ -32,7 +169,7 @@ extension=php_fileinfo.dll        //if not exist, add it
 
 /////run command//////////////(4)//////////
 
-	composer require intervention/image 
+	composer require intervention/image:2.7 
 
 
 
