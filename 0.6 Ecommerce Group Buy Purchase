@@ -1,0 +1,126 @@
+Group Buy Workflow in Ecommerce System
+
+    The goal is: multiple customers can buy the same product as a group to unlock a discounted price. Once the group target 
+    (total quantity) is reached, the group is marked as completed, and the vendor can fulfill the order.
+
+🧩 Step-by-Step Logic
+🔹 STEP 1: Admin Creates Group Offer (admin_product_groups)
+
+    Admin selects:
+
+        type = 1 → by category, or type = 2 → by product IDs
+
+        type_value = category ID or comma-separated product IDs
+
+        total_quantity = total units required to complete the group
+
+        discount_price = price reduced per item
+
+    Status = active
+
+✅ Stored in: admin_product_groups table.
+🔹 STEP 2: Display Group Buy Products to Customers
+
+On frontend:
+
+    Query matching products using type and type_value
+
+    Display "Group Buy" button with discounted price
+
+    Example:
+
+<a href="{{ route('product.create_group_and_join_page', ['gid'=>$group->id, 'id'=>$product->id, 'name'=>$product->product_name]) }}">
+    Group Buy ৳{{ $product->selling_price - $group->discount_price }}
+</a>
+
+🔹 STEP 3: Customer Clicks “Group Buy” → Initiates/Joins a Group
+
+Controller: product_group_place_order(Request $request, $gid, $id, $name)
+
+2 scenarios:
+1. No Active Group Exists for Product
+
+    Create new entry in product_groups:
+
+        Fields: gid, creator_id, product_id, total_quantity, price, expires_at, status = active
+
+    Store in session: group + product info
+
+    Proceed to payment page
+
+2. Active Group Already Exists
+
+    Retrieve latest group from product_groups where:
+
+        product_id = $id
+
+        status = active
+
+        expires_at > now()
+
+    Check if:
+
+        purchased_quantity + this order qty <= total_quantity
+
+        If okay, allow customer to join group
+
+    Store in session and redirect to payment page
+
+✅ Order will be stored as pending until payment
+🔹 STEP 4: Customer Pays or Chooses COD
+
+Customer selects:
+
+    Cash on Delivery
+
+    Or Online Payment
+
+If:
+
+    ✅ Online → Proceed to Paperless gateway
+
+    ✅ COD → Immediately insert into database
+
+Then:
+
+    Store in group_purchases table:
+
+        product_group_id, user_id, quantity, is_order_success = 1, txn_status = cod/success, etc.
+
+    Update purchased_quantity in product_groups
+
+🔹 STEP 5: Check If Group Is Completed
+
+After each successful payment or COD:
+
+$purchasedQty = group_purchases()->sum('quantity');
+if ($purchasedQty >= total_quantity) {
+    $product_group->update(['status' => 'completed']);
+}
+
+This step marks the group as ready for fulfillment.
+🔹 STEP 6: Vendor Gets Notified / Ships Products
+
+    Admin/Vendor sees group marked completed
+
+    Can now:
+
+        Ship all units
+
+        Mark delivery per user
+
+        Handle logistics
+
+✅ Optional:
+
+    Email customers: “Your Group Buy is complete!”
+
+    Generate single invoice or per-user breakdown
+
+🗂️ Database Tables Summary
+Table	Purpose
+admin_product_groups	Admin-defined group offer setup
+product_groups	A specific active group created by a customer
+group_purchases	Each customer's participation in a group
+orders (optional)	Main order tracking (for COD & payment)
+payments (optional)	Stores payment results
