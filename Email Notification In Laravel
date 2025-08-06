@@ -1,0 +1,93 @@
+To create an email notification in Laravel (for example, when a customer claims a free product), you can follow these steps:
+✅ Step-by-Step: Email Notification in Laravel
+✅ 1. Create a Notification Class
+
+Use Laravel’s artisan command:
+
+php artisan make:notification FreeProductClaimed
+
+This creates a new file at:
+app/Notifications/FreeProductClaimed.php
+✅ 2. Edit the Notification Logic
+
+Open FreeProductClaimed.php and update it like this:
+
+namespace App\Notifications;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+
+class FreeProductClaimed extends Notification
+{
+    use Queueable;
+
+    protected $productName;
+
+    public function __construct($productName)
+    {
+        $this->productName = $productName;
+    }
+
+    public function via($notifiable)
+    {
+        return ['mail']; // Send via email
+    }
+
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->subject('🎁 You’ve Successfully Claimed a Free Product!')
+            ->greeting('Hello ' . $notifiable->first_name . '!')
+            ->line('You’ve successfully claimed a free product: **' . $this->productName . '**.')
+            ->line('Your reward has been converted into an order. We will process it soon.')
+            ->action('View Orders', url('/customer/orders')) // change as needed
+            ->line('Thank you for participating in our referral program!');
+    }
+}
+
+✅ 3. Send Notification from Your Controller
+
+Inside your claimFreeProduct() method, after DB::commit();, add:
+
+$customer->notify(new FreeProductClaimed($product->name));
+
+✔ This will send an email to the logged-in customer who just claimed the reward.
+✅ 4. Make Sure the User Model Uses Notifiable
+
+Check App\Models\User (or Customer model if separate):
+
+use Illuminate\Notifications\Notifiable;
+
+class User extends Authenticatable
+{
+    use Notifiable;
+    ...
+}
+
+✅ 5. Configure Mail in .env File
+
+Make sure your .env file has valid mail configuration:
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=hello@example.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+    You can test with Mailtrap.io or any SMTP provider (e.g., Gmail, SendGrid, Mailgun).
+
+✅ Optional: Send to Admin
+
+If you want to notify the admin too:
+
+$admin = User::where('role_id', 1)->first(); // or fetch all admins
+if ($admin) {
+    $admin->notify(new FreeProductClaimed($product->name));
+}
+
+You can customize the subject/body for admin notification inside the Notification class.
