@@ -95,7 +95,7 @@ class SuperadminDatabaseBackupController extends Controller
     }
     public function backupImages()
     {
-        $sourcePath = public_path('uploads'); // C:\xampp\htdocs\ecomlatest\public\uploads
+        $sourcePath = public_path('uploads'); // \public\uploads
         $zipFileName = 'uploads_backup_' . date('Ymd_His') . '.zip';
         $zipFilePath = storage_path('app/backups/' . $zipFileName);
 
