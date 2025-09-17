@@ -5,14 +5,14 @@ Laravel 10 eCommerce system, here’s a step-by-step guide:
 
 🛠️ Step 1: Create a Backup Route
 
-Add a route in your admin routes file (routes/web.php or routes/admin.php):
+Add a route in your admin routes file (routes/web.php):
 
-use App\Http\Controllers\Admin\DatabaseBackupController;
+    ///////DB Backup/////////
+    Route::get('/database/backup', [SuperadminDatabaseBackupController::class, 'index'])->name('superadmin.db_backup.index');
+    Route::get('/database/backup/run', [SuperadminDatabaseBackupController::class, 'backup'])->name('superadmin.db_backup.run');
+    Route::get('/all-images/backup', [SuperadminDatabaseBackupController::class, 'backupImages_form'])->name('superadmin.backup.all_images');
+    Route::get('/all-images/backup/run', [SuperadminDatabaseBackupController::class, 'backupImages'])->name('superadmin.backup.uploads');
 
-Route::middleware(['auth', 'is_admin'])->group(function () {
-    Route::get('/admin/backup', [DatabaseBackupController::class, 'index'])->name('admin.backup.index');
-    Route::post('/admin/backup/run', [DatabaseBackupController::class, 'backup'])->name('admin.backup.run');
-});
 
 
 🛠️ Step 2: Create Controller
@@ -26,38 +26,116 @@ b. Now edit app/Http/Controllers/Admin/DatabaseBackupController.php:
 
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
+use ZipArchive;
+use Illuminate\Http\Request;
 
-class DatabaseBackupController extends Controller
+class SuperadminDatabaseBackupController extends Controller
 {
     public function index()
     {
-        return view('admin.backup.index');
+        return view('admin.superadmin_db.superadmin_db_backup_form');
     }
 
     public function backup()
     {
-        $dbName = env('DB_DATABASE');
-        $dbUser = env('DB_USERNAME');
-        $dbPass = env('DB_PASSWORD');
-        $dbHost = env('DB_HOST');
+        $mysqlHostName = env('DB_HOST');
+        $mysqlUserName = env('DB_USERNAME');
+        $mysqlPassword = env('DB_PASSWORD');
+        $dbName        = env('DB_DATABASE');
 
-        $backupPath = storage_path('app/backups');
-        File::ensureDirectoryExists($backupPath);
+        $pdo = new \PDO(
+            "mysql:host=$mysqlHostName;dbname=$dbName;charset=utf8",
+            $mysqlUserName,
+            $mysqlPassword,
+            [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"]
+        );
 
-        $fileName = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
-        $filePath = $backupPath . '/' . $fileName;
+        // Get all tables
+        $tables = [];
+        $stmt = $pdo->query("SHOW TABLES");
+        while ($row = $stmt->fetch(\PDO::FETCH_NUM)) {
+            $tables[] = $row[0];
+        }
 
-        // Run mysqldump
-        $command = "mysqldump -h {$dbHost} -u {$dbUser} -p'{$dbPass}' {$dbName} > {$filePath}";
-        system($command);
+        $output = '';
 
-        // Return file for download
-        return response()->download($filePath)->deleteFileAfterSend(true);
+        foreach ($tables as $table) {
+            // Create table SQL
+            $stmt2 = $pdo->query("SHOW CREATE TABLE `$table`");
+            $row2 = $stmt2->fetch(\PDO::FETCH_ASSOC);
+            $output .= "\n\n" . $row2['Create Table'] . ";\n\n";
+
+            // Table data
+            $stmt3 = $pdo->query("SELECT * FROM `$table`");
+            while ($row3 = $stmt3->fetch(\PDO::FETCH_ASSOC)) {
+                $columns = array_map(function ($col) { return "`$col`"; }, array_keys($row3));
+                $values  = array_map(function ($val) use ($pdo) { return $pdo->quote($val); }, array_values($row3));
+
+                $output .= "INSERT INTO `$table` (" . implode(", ", $columns) . ") VALUES (" . implode(", ", $values) . ");\n";
+            }
+        }
+
+        // File name
+        $fileName = 'backup_' . date('Ymd_His') . '.sql';
+
+        // Let Laravel handle download
+        return response($output)
+            ->header('Content-Type', 'application/sql')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
+
+    //
+    public function backupImages_form()
+    {
+        return view('admin.superadmin_db.superadmin_backupImages_form');
+    }
+    public function backupImages()
+    {
+        $sourcePath = public_path('uploads'); // C:\xampp\htdocs\ecomlatest\public\uploads
+        $zipFileName = 'uploads_backup_' . date('Ymd_His') . '.zip';
+        $zipFilePath = storage_path('app/backups/' . $zipFileName);
+
+        // Ensure backup directory exists
+        File::ensureDirectoryExists(storage_path('app/backups'));
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) 
+        {
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($sourcePath, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($files as $file) 
+            {
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($sourcePath) + 1);
+
+                if ($file->isDir()) 
+                {
+                    $zip->addEmptyDir($relativePath);
+                } 
+                else 
+                {
+                    $zip->addFile($filePath, $relativePath);
+                }
+            }
+
+            $zip->close();
+        } 
+        else 
+        {
+            return back()->with('error', 'Failed to create zip file.');
+        }
+
+        // Download and auto-delete after sending
+        return response()->download($zipFilePath)->deleteFileAfterSend(true);
+    }
+
 }
 
 
@@ -74,7 +152,7 @@ Create file: resources/views/admin/backup/index.blade.php
         <h4>Database Backup</h4>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.backup.run') }}" method="POST">
+        <form action="{{ route('superadmin.db_backup.run') }}" method="GET">
             @csrf
             <button type="submit" class="btn btn-primary">
                 Take Backup Now
@@ -83,6 +161,28 @@ Create file: resources/views/admin/backup/index.blade.php
     </div>
 </div>
 @endsection
+
+@extends('admin.layouts.app')
+
+//////superadmin_backup_images_form.blade.php/////////////////
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <h4>All Images Backup Form</h4>
+    </div>
+    <div class="card-body">
+        <form action="{{ route('superadmin.backup.uploads') }}" method="GET">
+			@csrf
+			<button type="submit" class="btn btn-primary">
+				Take Backup Now
+			</button>
+		</form>
+    </div>
+</div>
+@endsection
+
+
+
 
 
 🛠️ Step 4: Admin Work Flow
