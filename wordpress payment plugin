@@ -1,0 +1,32 @@
+
+
+If Payment Gateway not show in checkout page, do the below task
+
+a. Collect Check out page id:
+----------------------------
+1. Pages --> All Page
+2. take curcor on "Edit" of "Checkout" page --> see the id of the page and 
+    note it 
+
+b. Create New Check out page:
+----------------------------------
+New --> Page
+1. Title: Checkout
+2. Open Browser and type: checkout code woocommerce 
+    -->go to  woocommerce.com and copy "[woocommerce_checkout]"
+3. paste "[woocommerce_checkout]" in New Checkout Page
+4. Click on "Publish" button
+
+c. Change Checkout Page Id:
+---------------------------------
+1. click on "Woocommerce" --> Setting --> Advance --> Checkout Page
+2. click on "v" dropdown and type "check" and select current id
+3. click on "Save Changes" button
+
+d. Delete Old Checkout Page:
+----------------------------------
+1. Go to "Page" menu --> All page
+2. click on "Trush" of Old Checkout page
+
+PAYMENT_GATEWAY_MERCHANT_ID="PAPERLESS68a17f062fa47"
+PAYMENT_GATEWAY_SECRET_KEY="ZiCBv4IoHUOZFppqR9FLqNqQBoKmznHpCilFo074"
