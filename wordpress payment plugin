@@ -30,3 +30,435 @@ d. Delete Old Checkout Page:
 
 PAYMENT_GATEWAY_MERCHANT_ID="PAPERLESS68a17f062fa47"
 PAYMENT_GATEWAY_SECRET_KEY="ZiCBv4IoHUOZFppqR9FLqNqQBoKmznHpCilFo074"
+
+
+paperless-payment(folder)
+    |---includes(folder)
+    |    |---class-paperless-wc.php
+    |---paperless-payment.php
+
+//////////////paperless-payment.php///////////////////////////////
+<?php
+/**
+ * Plugin Name: Paperless Payment Gateway
+ * Description: WooCommerce payment gateway integration for Paperless Ltd.
+ * Version: 1.0
+ * Author: Paperless
+ */
+
+if (!defined('ABSPATH')) exit;
+
+define('PAPERLESS_PLUGIN_DIR', plugin_dir_path(__FILE__));
+
+/**
+ * Load the gateway class when WooCommerce is loaded
+ */
+add_action('plugins_loaded', 'paperless_init_gateway', 11);
+function paperless_init_gateway()
+{
+    if (!class_exists('WC_Payment_Gateway')) return;
+
+    require_once PAPERLESS_PLUGIN_DIR . 'includes/class-paperless-wc.php';
+
+    add_filter('woocommerce_payment_gateways', function ($methods) {
+        $methods[] = 'WC_Gateway_Paperless';
+        return $methods;
+    });
+}
+
+/**
+ * Activation hook: create rewrite (if needed) or flush rules
+ */
+register_activation_hook(__FILE__, function () {
+    // flush_rewrite_rules(); // not needed in this plugin but here if you add rewrite rules later
+});
+
+/**
+ * Deactivation hook
+ */
+register_deactivation_hook(__FILE__, function () {
+    // flush_rewrite_rules();
+});
+
+///////////////////end/////////////////////////
+
+
+
+//////////////class-paperless-wc.php///////////////////////////////
+<?php
+if (!defined('ABSPATH')) exit;
+
+class WC_Gateway_Paperless extends WC_Payment_Gateway
+{
+    public $muid;
+    public $access_app_key;
+
+    public function __construct()
+    {
+        $this->id = 'paperless';
+        $this->has_fields = false;
+        $this->method_title = __('Paperless Payment', 'paperless');
+        $this->method_description = __('Pay using Paperless Ltd gateway (sandbox).', 'paperless');
+
+        // Load the settings.
+        $this->init_form_fields();
+        $this->init_settings();
+
+        // Define user set variables
+        $this->title = $this->get_option('title', 'Paperless Payment');
+        $this->enabled = $this->get_option('enabled', 'yes');
+        $this->muid = $this->get_option('muid', '');                         
+        $this->access_app_key = $this->get_option('access_app_key', '');
+
+        // Hooks
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+
+        // Callback endpoint: site.com/?wc-api=wc_gateway_paperless_callback
+        add_action('woocommerce_api_wc_gateway_paperless_callback', array($this, 'callback_handler'));
+    }
+
+    /**
+     * Admin fields
+     */
+    public function init_form_fields()
+    {
+        $this->form_fields = array(
+            'enabled' => array(
+                'title'   => __('Enable/Disable', 'paperless'),
+                'type'    => 'checkbox',
+                'label'   => __('Enable Paperless Payment', 'paperless'),
+                'default' => 'yes',
+            ),
+            'title' => array(
+                'title'       => __('Title', 'paperless'),
+                'type'        => 'text',
+                'description' => __('Title shown to customers during checkout.', 'paperless'),
+                'default'     => __('Paperless Payment', 'paperless'),
+            ),
+            'muid' => array(
+                'title'       => __('Merchant UID (muid)', 'paperless'),
+                'type'        => 'text',
+                'description' => __('Your Paperless Merchant Unique Identifier', 'paperless'),
+            ),
+            'access_app_key' => array(
+                'title'       => __('Access App Key', 'paperless'),
+                'type'        => 'text',
+                'description' => __('Paperless access app key', 'paperless'),
+            ),
+            'sandbox_info' => array(
+                'title'       => __('Sandbox Notice', 'paperless'),
+                'type'        => 'title',
+                'description' => __('This plugin uses the Paperless sandbox endpoints. Switch endpoints in code for production as instructed by Paperless.', 'paperless'),
+            ),
+        );
+    }
+
+    /**
+     * Process the payment and return the result
+     */
+    public function process_payment($order_id)
+    {
+        $order = wc_get_order($order_id);      
+
+        // 1) Check server status to get initiate/gateway URLs
+        $server_res = $this->paperless_check_server();
+        if (is_wp_error($server_res)) 
+        {
+            error_log("Paperless Debug: Server check failed - " . $server_res->get_error_message());
+            wc_add_notice(__('Payment error: could not contact payment server.', 'paperless'), 'error');
+            return array('result' => 'failure');
+        }
+
+        $initiate_url = $server_res['initiate_payment_url'] ?? null;
+        $gateway_url   = $server_res['gateway_url'] ?? null;
+        //$gateway_url   = "https://payment.paperlessltd.com/api/v1/gateway/payment-process/";
+        $gateway_url = str_replace('{token}', '', $gateway_url);
+
+        if (empty($initiate_url) || empty($gateway_url)) {
+            wc_add_notice(__('Payment error: invalid server response.', 'paperless'), 'error');
+            return array('result' => 'failure');
+        }
+
+        // 2) Generate token
+        $token_res = $this->paperless_generate_token($order, $initiate_url);
+        if (is_wp_error($token_res)) {
+            wc_add_notice($token_res->get_error_message(), 'error');
+            return array('result' => 'failure');
+        }
+
+        if (!isset($token_res['token']) || ($token_res['statusCode'] ?? '') !== '1000') {
+            wc_add_notice(__('Payment error: token generation failed.', 'paperless'), 'error');
+            return array('result' => 'failure');
+        }
+
+        $token = sanitize_text_field($token_res['token']);
+
+        // 3) Save token to order meta (for later verification)
+        $order->update_meta_data('_paperless_token', $token);
+        $order->save();
+
+        // 4) Redirect to gateway_url/{token}
+        $redirect = trailingslashit($gateway_url) . rawurlencode($token);
+
+        // set order to on-hold while customer completes payment
+        $order->update_status('on-hold', __('Awaiting Paperless payment', 'paperless'));
+
+        return array(
+            'result'   => 'success',
+            'redirect' => $redirect,
+        );
+    }
+
+    /**
+     * Check server (GET)
+     */
+    protected function paperless_check_server()
+    {
+        $url = 'https://payment.paperlessltd.com/api/v1/gateway/check-server';
+        //$response = wp_remote_get($url, array('timeout' => 30));   
+        $response = wp_remote_get($url, [
+            'timeout' => 30,
+            'sslverify' => false
+        ]);             
+
+        if (is_wp_error($response)) return $response;
+        $body = wp_remote_retrieve_body($response);
+        $json = json_decode($body, true);
+
+        if (!is_array($json)) {
+            return new WP_Error('paperless_invalid_response', __('Invalid response from Paperless check-server', 'paperless'));
+        }
+
+        return $json;
+    }
+
+    /**
+     * Generate token (POST to initiate_payment_url)
+     */
+    protected function paperless_generate_token($order, $initiate_url)
+    {
+        // Build payload
+        $payload = array(
+            'muid'              => $this->muid,
+            'access_app_key'    => $this->access_app_key,
+            'merchant_order_id' => $order->get_id(),
+            'merchant_ref_id'   => uniqid('ref_'),
+            'customer_name'     => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()),
+            'customer_email'    => $order->get_billing_email(),
+            'customer_phone'    => $order->get_billing_phone(),
+            'customer_add'      => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(),
+            'customer_city'     => $order->get_billing_city(),
+            'customer_postcode' => $order->get_billing_postcode(),
+            'customer_country'  => $order->get_billing_country(),
+            'product_desc'      => $this->generate_product_desc($order),
+            'amount'            => (float) $order->get_total(),
+            'currency'          => get_woocommerce_currency(),
+            // approve/cancel/decline must be publicly accessible URLs
+            'approve_url'       => esc_url_raw(add_query_arg([], home_url('/payment/approve'))),
+            'cancel_url'        => esc_url_raw(add_query_arg([], home_url('/payment/cancel'))),
+            'decline_url'       => esc_url_raw(add_query_arg([], home_url('/payment/decline'))),
+        );
+
+        // Send request
+        $response = wp_remote_post($initiate_url, array(
+            'body'    => $payload,
+            'timeout' => 30,
+            'sslverify' => false
+        ));
+
+        if (is_wp_error($response)) {
+            return new WP_Error('paperless_request_failed', __('Failed to request token from Paperless', 'paperless'));
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $json = json_decode($body, true);
+
+        if (!is_array($json)) {
+            return new WP_Error('paperless_invalid_json', __('Paperless returned invalid response for token generation', 'paperless'));
+        }
+
+        return $json;
+    }
+
+    /**
+     * Build a product description string (simple)
+     */
+    private function generate_product_desc($order)
+    {
+        $items = $order->get_items();
+        $parts = array();
+        foreach ($items as $item) {
+            $name = $item->get_name();
+            $qty  = $item->get_quantity();
+            $tot  = $item->get_total();
+            $parts[] = "{$qty} x {$name} = {$tot}";
+        }
+        return implode(' | ', $parts);
+    }
+
+    /**
+     * Callback handler (wc-api endpoint)
+     * Paperless will POST merchant_txn_data (a JSON string) as per their docs.
+     */
+    public function callback_handler()
+    {
+        // Raw POST body may contain merchant_txn_data key
+        $posted = $_POST;
+
+        if (empty($posted['merchant_txn_data'])) {
+            // If not present, try php://input
+            $raw = file_get_contents('php://input');
+            // Some gateways send form-data; attempt to parse if possible
+            parse_str($raw, $parsed);
+            if (!empty($parsed['merchant_txn_data'])) {
+                $posted['merchant_txn_data'] = $parsed['merchant_txn_data'];
+            }
+        }
+
+        if (empty($posted['merchant_txn_data'])) {
+            // Bad request
+            status_header(400);
+            echo 'Missing merchant_txn_data';
+            exit;
+        }
+
+        // merchant_txn_data is a JSON-encoded string; paperless example had escaped JSON inside string
+        $txn_raw = $posted['merchant_txn_data'];
+
+        // If it's double-encoded (string containing JSON string), try to decode twice
+        $txn_json = $this->safe_json_decode($txn_raw);
+
+        if ($txn_json === null) {
+            // Attempt stripslashes and decode
+            $txn_json = $this->safe_json_decode(stripslashes($txn_raw));
+        }
+
+        if (!is_array($txn_json)) {
+            status_header(400);
+            echo 'Invalid merchant_txn_data';
+            exit;
+        }
+
+        // Extract merchant_order_id and token
+        $merchant_order_id = $txn_json['merchant_order_id'] ?? null;
+        $token = $txn_json['token'] ?? null;
+        $txn_status = isset($txn_json['txn_status']) ? (int)$txn_json['txn_status'] : null;
+
+        if (!$merchant_order_id) {
+            status_header(400);
+            echo 'Missing merchant_order_id';
+            exit;
+        }
+
+        $order = wc_get_order($merchant_order_id);
+        if (!$order) {
+            status_header(404);
+            echo 'Order not found';
+            exit;
+        }
+
+        // Optional: verify server-side by calling check-payment API
+        $verification = $this->paperless_check_payment($token);
+        $verified_status = $verification['txn_status'] ?? null;
+
+        // Prefer verification if available, else rely on callback txn_status
+        $final_status = $verified_status ?? $txn_status;
+
+        if ($final_status === 1000) {
+            // Payment Successful
+            if ($order->get_status() !== 'completed') {
+                $order->payment_complete($token);
+                $order->add_order_note(sprintf('Paperless payment successful. Token: %s. Raw callback: %s', $token, maybe_serialize($txn_json)));
+            }
+            status_header(200);
+            echo 'OK';
+            exit;
+        } else {
+            // Failed/cancelled
+            $order->update_status('failed', sprintf('Paperless transaction failed. Token: %s. Raw callback: %s', $token, maybe_serialize($txn_json)));
+            status_header(200);
+            echo 'DECLINED';
+            exit;
+        }
+    }
+
+    /**
+     * Check payment API (server-side verification)
+     */
+    protected function paperless_check_payment($token)
+    {
+        if (empty($token)) return null;
+
+        $url = 'https://payment.paperlessltd.com/api/v1/gateway/check-payment';
+
+        $response = wp_remote_post($url, array(
+            'body' => array(
+                'muid'  => $this->muid,
+                'token' => $token,
+            ),
+            'timeout' => 30,
+            'sslverify' => false
+        ));
+
+        if (is_wp_error($response)) return null;
+
+        $body = wp_remote_retrieve_body($response);
+        $json = json_decode($body, true);
+
+        if (!is_array($json)) return null;
+
+        return $json;
+    }
+
+    /**
+     * Safely decode a JSON value that might be double encoded or escaped
+     */
+    private function safe_json_decode($raw)
+    {
+        if (empty($raw)) return null;
+
+        // If raw is already array/object, return it
+        if (is_array($raw) || is_object($raw)) return $raw;
+
+        // If it's a JSON string containing quotes & backslashes, try to unescape
+        $first_try = json_decode($raw, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $first_try;
+        }
+
+        // If raw looks like a quoted JSON string (e.g., ""{..}""), strip quotes and try again
+        $trimmed = trim($raw, "\"'");
+        $second_try = json_decode($trimmed, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $second_try;
+        }
+
+        // Try stripslashes then decode
+        $third_try = json_decode(stripslashes($raw), true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $third_try;
+        }
+
+        return null;
+    }
+	
+	  /**
+     * Make sure gateway is available at checkout
+     */
+    public function is_available()
+    {
+        if ($this->enabled !== 'yes') {
+            return false;
+        }
+
+        // Optional: only allow BDT
+        // if (get_woocommerce_currency() !== 'BDT') {
+        //     return false;
+        // }
+
+        return true;
+    }
+
+}
+
+/////////////////////////////////////////////////
