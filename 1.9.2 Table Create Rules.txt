@@ -20,3 +20,8 @@ $table->string('status')->default(0);
 
 $table->timestamps();
 
+////////Migrate a Table/////////////////////
+php artisan migrate --path=database/migrations/2025_10_25_083648_create_refer_commissions_table.php
+
+
+
