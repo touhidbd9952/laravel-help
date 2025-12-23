@@ -11,7 +11,7 @@ Key				Value
 Content-Type	| application/json
 Accept			| application/json
 
-📦 Body (raw → JSON)   and type below way
+d. 📦 Body (raw → JSON)   and type below way
 
 {
 	"muid": "......",
