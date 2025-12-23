@@ -1,3 +1,44 @@
+---------------------------------------------------------------------
+a. Url:
+		https://api.yourdomain.com/gateway/payment-process/initiate
+
+b. Method: Get/Post
+
+c. 🧾 Headers (In Postman → Headers tab):
+
+Key				Value
+-------------------------------------
+Content-Type	| application/json
+Accept			| application/json
+
+📦 Body (raw → JSON)   and type below way
+
+{
+	"muid": "......",
+  "access_app_key": "......",
+  "merchant_order_id": "105",
+  "merchant_ref_id": "571607886240c",
+  "amount": "2340",
+  "currency": "BDT",
+  "approve_url": "https://www.approve.com",
+  "cancel_url": "https://www.cancel.com",
+  "decline_url": "https://www.decline.com",
+
+  "customer_city": "Dhaka",
+  "customer_postcode": "1229",
+  "customer_country": "Bangladesh",
+
+  "shipping_name": "Linking Burrows",
+  "shipping_email": "test@test.com",
+  "shipping_add": "House:01,Road:08,Nikunja-2,Dhaka-1229",
+  "shipping_city": "Dhaka",
+  "shipping_postCode": "1600",
+  "shipping_country": "Bangladesh",
+
+  "product_desc": ""
+}
+
+
 
 ---------------------------------------------------------------------
 
