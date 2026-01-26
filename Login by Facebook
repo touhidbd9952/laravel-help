@@ -1,0 +1,61 @@
+Login by Facebook
+-------------------------------------------
+Need facebook id, secret key
+
+If developer account not exist:
+- go to developers.facebook.com
+- get started (click)
+- Register (click)
+- continue
+- contact info
+	- primary email: your email
+	- I agree (check mark)
+	- confirm Email (click)
+- About you
+	- Developer (click)
+	- complete registration (click)
+
+If developer account exist:
+- go to developers.facebook.com
+- My Apps (click)
+	- create App (click)
+	Add use case
+	-------------------
+	Other (click)
+	- Next (click)
+	
+	Type: 
+		Customer 
+	Next
+
+	Details:
+	- Add an app name: wewe.com.bd
+	- App contact email: info@wewe.com.bd
+	- Create app (button click)
+
+	Add product to your app
+	------------------------------------
+	- Facebook Login
+		- Set up (butto click)
+		- web (click)
+			- Site url: http://wewe.com.bd
+			- Save (click)
+			- continue (click)
+			- Next
+
+	click on "App Settings" (from Left side bar)
+		- Basic (click)
+		- App domains: https://wewe.com.bd/
+		- Privacy policy URL: https://wewe.com.bd/privacy_policy/
+		- Terms of Service URL: https://wewe.com.bd/terms_service/
+		- User detetion instruction URL: https://wewe.com.bd/privacy_policy/
+		- Category: select your website business type
+		- Save change (button click)
+
+	Now, click on "App Mode" (At the top)
+			|____ Developer to Live (set)
+
+
+	!!copy App_Id and Secret Key and use it in your project!!
+
+
