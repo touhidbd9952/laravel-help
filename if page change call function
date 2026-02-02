@@ -1,3 +1,38 @@
+////step-1 route////////////////
+Route::post('/group/cleanup', [GroupOrderController::class, 'cleanupGroup'])->middleware('web')->name('group.cleanup');
+
+////step-2 controller////////////////
+//cleanupGroup
+    public function cleanupGroup(Request $request)
+    {
+        if (!session()->has('cus_id')) {
+            return response()->json(['status' => 'unauthorized'], 401);
+        }
+
+        $groupId = session()->get('last_product_group_id');
+
+        if (!$groupId) {
+            return response()->json(['status' => 'no_group']);
+        }
+
+        $group = ProductGroup::where('id', $groupId)
+            ->where('creator_id', session()->get('cus_id'))
+            ->where('status', 'active')
+            ->first();
+
+        if ($group && $group->purchased_quantity == 0) {
+            $group->delete();
+            session()->forget('last_product_group_id');
+
+            return response()->json(['status' => 'deleted']);
+        }
+
+        return response()->json(['status' => 'kept']);
+    }
+
+////step-3 javascript////////////////
+//set this script on that page
+
 {{-- User clicks another page
 ✔ User presses link
 ✔ User presses back
