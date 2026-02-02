@@ -1,0 +1,54 @@
+{{-- User clicks another page
+✔ User presses link
+✔ User presses back
+✔ User closes tab
+✔ User refreshes page
+✔ Network-safe cleanup
+✔ No accidental deletion after purchase 
+if customer create only group but not purchase any product
+then delete group
+--}}
+
+<!---====group.cleanup ==== Start--->
+<script>
+let cleanupDone = false;
+
+function cleanupAndGo(url) {
+    if (cleanupDone) {
+        window.location.href = url;
+        return;
+    }
+
+    cleanupDone = true;
+
+    fetch("{{ route('group.cleanup') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({})
+    }).finally(() => {
+        window.location.href = url;
+    });
+}
+
+// Catch ALL link clicks
+document.addEventListener("click", function (e) {
+    const link = e.target.closest("a");
+
+    if (!link) return;
+
+    // Ignore:
+    if (
+        link.target === "_blank" ||
+        link.hasAttribute("download") ||
+        link.href.startsWith("javascript:")
+    ) {
+        return;
+    }
+
+    e.preventDefault();
+    cleanupAndGo(link.href);
+});
+</script>
