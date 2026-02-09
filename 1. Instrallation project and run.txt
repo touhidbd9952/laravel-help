@@ -68,6 +68,32 @@ Multiple Authentication
 
 	$table->integer('role_id')->default(2);
 
+	////you can also creat a admin user///////////
+	public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->integer('role_id')->default(2);
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+        User::create([
+            'name' => 'Super Admin',
+            'username' => '0171',
+            'email' => 'superadmin@yourdomain.com',
+            'role_id' => 1,
+            'slug' => 'paperless',
+            'email_verified_at' => '2026-02-20 16:52:36',
+            'password' => Hash::make('abcd1234'),
+            'status' => 1,
+        ]);
+    }
+
 3. add field "role_id" in user model: go to yourprojectname\app\Models and open "User.php"
 
 	protected $fillable = [
