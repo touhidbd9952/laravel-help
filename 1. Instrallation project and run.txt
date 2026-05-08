@@ -65,10 +65,14 @@ Multiple Authentication
 ----------------------------
 1. create a database name in php-myadmin and configure in .env
 2. add below field in "user" table : go to yourprojectname\database\migrations and open "....create_users_table.php"
+3. create an account for super admin/admin user in users table
 
 	$table->integer('role_id')->default(2);
 
 	////you can also creat a admin user///////////
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
 	public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
