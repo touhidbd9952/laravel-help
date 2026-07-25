@@ -1,0 +1,142 @@
+If you're using Laravel 10, you shouldn't hardcode the pagination HTML. Instead, use Laravel's built-in pagination.
+
+Controller
+
+Replace get() with paginate():
+
+$cars = Car::with([
+        'brand',
+        'model',
+        'thumbnail',
+        'images'
+    ])
+    ->where('status', 1)
+    ->orderBy('id', 'desc')
+    ->paginate(12); // 12 cars per page
+
+If you already have filters:
+
+$cars = Car::with([
+        'brand',
+        'model',
+        'thumbnail'
+    ])
+    ->where('status', 1)
+    ->paginate(12)
+    ->withQueryString(); // Keeps existing query parameters
+Blade
+
+Replace your static HTML with:
+
+@if($cars->hasPages())
+<div class="col-md-12 col-xs-12 col-sm-12 no-padding">
+    <div class="rating-pagination pagination-lg">
+        {{ $cars->withQueryString()->links() }}
+    </div>
+</div>
+@endif
+If you want the pagination to look exactly like your HTML
+
+Publish Laravel pagination views:
+
+php artisan vendor:publish --tag=laravel-pagination
+
+It will create:
+
+resources/views/vendor/pagination/
+
+Copy bootstrap-4.blade.php (or bootstrap-5.blade.php) and rename it:
+
+inventory-pagination.blade.php
+
+Then customize it like this:
+
+@if ($paginator->hasPages())
+<nav>
+    @if ($paginator->onFirstPage())
+        <span class="page-numbers disabled">« Previous</span>
+    @else
+        <a class="prev page-numbers" href="{{ $paginator->previousPageUrl() }}">
+            « Previous Page
+        </a>
+    @endif
+
+    @foreach ($elements as $element)
+
+        @if (is_string($element))
+            <span class="page-numbers dots">{{ $element }}</span>
+        @endif
+
+        @if (is_array($element))
+            @foreach ($element as $page => $url)
+
+                @if ($page == $paginator->currentPage())
+                    <span class="page-numbers current">{{ $page }}</span>
+                @else
+                    <a class="page-numbers" href="{{ $url }}">{{ $page }}</a>
+                @endif
+
+            @endforeach
+        @endif
+
+    @endforeach
+
+    @if ($paginator->hasMorePages())
+        <a class="next page-numbers" href="{{ $paginator->nextPageUrl() }}">
+            Next Page »
+        </a>
+    @else
+        <span class="page-numbers disabled">Next Page »</span>
+    @endif
+</nav>
+@endif
+
+Display it using:
+
+<div class="rating-pagination pagination-lg">
+    {{ $cars->withQueryString()->links('vendor.pagination.inventory-pagination') }}
+</div>
+CSS
+
+To match your theme:
+
+.rating-pagination {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.rating-pagination .page-numbers {
+    display: inline-block;
+    padding: 10px 16px;
+    margin: 0 4px;
+    border: 1px solid #ddd;
+    color: #333;
+    text-decoration: none;
+    border-radius: 3px;
+}
+
+.rating-pagination .page-numbers.current {
+    background: #ffcc00;
+    color: #000;
+    border-color: #ffcc00;
+}
+
+.rating-pagination .page-numbers:hover {
+    background: #f5f5f5;
+}
+
+.rating-pagination .page-numbers.dots {
+    border: none;
+    background: transparent;
+}
+
+.rating-pagination .page-numbers.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+This will produce pagination very similar to:
+
+1 2 3 ... 8 Next Page »
+
+while automatically handling page numbers, ellipses (...), previous/next links, and preserving query string parameters.
