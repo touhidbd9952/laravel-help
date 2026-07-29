@@ -204,6 +204,15 @@ use Illuminate\Support\Facades\Hash;
 
 	php artisan migrate    <====|
 
+////to clear cache///////////////////
+php artisan optimize:clear
+
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan event:clear
+
 14. add 2 record in "roles" table of database
 
 	Admin      //in "name" field of first record
