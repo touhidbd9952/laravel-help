@@ -1,0 +1,30 @@
+/////If you want the Back button to return to the previous page (regardless of which route the user came from), 
+use Laravel's url()->previous() or the browser history.
+
+Option 1 (Recommended - Laravel)
+
+<a href="{{ url()->previous() }}"
+   class="btn btn-secondary"
+   style="float:right;">
+    <i class="fas fa-arrow-left"></i>
+    Back
+</a>
+
+Option 2 (Browser History)
+
+<a href="javascript:history.back()"
+   class="btn btn-secondary"
+   style="float:right;">
+    <i class="fas fa-arrow-left"></i>
+    Back
+</a>
+
+or
+
+<button type="button"
+        class="btn btn-secondary"
+        style="float:right;"
+        onclick="history.back();">
+    <i class="fas fa-arrow-left"></i>
+    Back
+</button>
