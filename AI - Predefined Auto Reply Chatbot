@@ -1,0 +1,571 @@
+//////AI + Predefined Auto Reply Chatbot///////////////////////////////
+
+Laravel 10 website-এ AI + Predefined Auto Reply Chatbot তৈরি করার সবচেয়ে ভালো পদ্ধতি হলো:
+
+Website Visitor
+       ↓
+Chat Widget
+       ↓
+Laravel Controller
+       ↓
+1. Predefined/Keyword Reply আছে?
+       ↓
+      YES → নির্দিষ্ট উত্তর
+       ↓
+      NO
+       ↓
+2. AI API
+       ↓
+Business Knowledge অনুযায়ী AI Reply
+       ↓
+Website Visitor
+
+
+
+এভাবে সাধারণ এবং গুরুত্বপূর্ণ প্রশ্নের উত্তর আপনার নিজের predefined answer থেকে আসবে, আর জটিল বা নতুন প্রশ্নের উত্তর AI দেবে।
+
+1. Database Structure /////////////////////////////////////////////
+
+আমি ৩টি প্রধান টেবিল ব্যবহার করার পরামর্শ দিচ্ছি।
+
+chat_sessions Table
+
+একজন visitor-এর chat session সংরক্ষণ করার জন্য।
+
+php artisan make:migration create_chat_sessions_table
+Schema::create('chat_sessions', function (Blueprint $table) {
+    $table->id();
+    $table->string('session_token')->unique();
+    $table->string('visitor_name')->nullable();
+    $table->string('email')->nullable();
+    $table->string('phone')->nullable();
+    $table->timestamps();
+});
+chat_messages Table
+
+Visitor এবং Bot-এর সব message সংরক্ষণ করার জন্য।
+
+php artisan make:migration create_chat_messages_table
+Schema::create('chat_messages', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('chat_session_id')
+        ->constrained()
+        ->cascadeOnDelete();
+
+    $table->text('message');
+
+    $table->enum('sender', [
+        'visitor',
+        'bot',
+        'admin'
+    ]);
+
+    $table->enum('reply_type', [
+        'predefined',
+        'ai',
+        'manual'
+    ])->nullable();
+
+    $table->timestamps();
+});
+chat_auto_replies Table
+
+Admin এখান থেকে predefined question এবং answer যোগ করতে পারবে।
+
+php artisan make:migration create_chat_auto_replies_table
+Schema::create('chat_auto_replies', function (Blueprint $table) {
+    $table->id();
+
+    $table->string('title');
+
+    $table->text('keywords');
+
+    $table->text('answer');
+
+    $table->boolean('status')
+        ->default(true);
+
+    $table->timestamps();
+});
+
+
+Example Data
+Title	Keywords	Answer
+Car Import	car, import, vehicle, গাড়ি	আমরা Japan থেকে গাড়ি import করি
+Student Visa	student, study, university	আমরা student consultancy service প্রদান করি
+Employment	job, work, employment	আমরা employment consultancy service প্রদান করি
+
+2. Models তৈরি করুন /////////////////////////////////////////////
+php artisan make:model ChatSession
+php artisan make:model ChatMessage
+php artisan make:model ChatAutoReply
+ChatSession.php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ChatSession extends Model
+{
+    protected $fillable = [
+        'session_token',
+        'visitor_name',
+        'email',
+        'phone'
+    ];
+
+    public function messages()
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
+}
+
+3. Predefined Reply Service তৈরি করুন /////////////////////////////////////////////
+
+একটি service তৈরি করুন:
+
+app/Services/ChatbotService.php
+namespace App\Services;
+
+use App\Models\ChatAutoReply;
+
+class ChatbotService
+{
+    public function getPredefinedReply($message)
+    {
+        $message = strtolower($message);
+
+        $replies = ChatAutoReply::where('status', true)->get();
+
+        foreach ($replies as $reply) {
+
+            $keywords = explode(',', strtolower($reply->keywords));
+
+            foreach ($keywords as $keyword) {
+
+                $keyword = trim($keyword);
+
+                if (
+                    !empty($keyword) &&
+                    str_contains($message, $keyword)
+                ) {
+                    return [
+                        'found' => true,
+                        'answer' => $reply->answer
+                    ];
+                }
+            }
+        }
+
+        return [
+            'found' => false,
+            'answer' => null
+        ];
+    }
+}
+
+এখন visitor যদি লিখে:
+
+I want to import a car from Japan
+
+তাহলে car অথবা import keyword খুঁজে পেলে predefined answer চলে আসবে।
+
+4. AI Service যোগ করুন /////////////////////////////////////////////
+
+AI integration-এর জন্য একটি API ব্যবহার করতে পারেন। API key কখনো JavaScript-এ রাখবেন না; শুধুমাত্র Laravel backend-এর .env file-এ রাখবেন।
+
+প্রথমে HTTP client ব্যবহার করতে Laravel-এর Http facade ব্যবহার করুন।
+
+use Illuminate\Support\Facades\Http;
+
+একটি service তৈরি করুন:
+
+app/Services/AiChatService.php
+namespace App\Services;
+
+use Illuminate\Support\Facades\Http;
+
+class AiChatService
+{
+    public function getReply($userMessage)
+    {
+        $businessInfo = "
+You are the AI assistant for LeadX Global Ltd.
+
+Business information:
+- LeadX Global imports cars and car parts from Japan.
+- The company also provides student consultancy services.
+- The company provides employment consultancy services.
+- Do not invent prices, availability, visa approval guarantees,
+  legal guarantees, or services not provided by the company.
+- If you do not know something, politely ask the customer
+  to contact a company representative.
+
+Reply professionally and clearly.
+";
+
+        $response = Http::withToken(config('services.openai.key'))
+            ->post('https://api.openai.com/v1/responses', [
+                'model' => config('services.openai.model'),
+                'input' => [
+                    [
+                        'role' => 'system',
+                        'content' => [
+                            [
+                                'type' => 'input_text',
+                                'text' => $businessInfo
+                            ]
+                        ]
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'input_text',
+                                'text' => $userMessage
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+        if ($response->failed()) {
+            return null;
+        }
+
+        // Response parsing should be adjusted according
+        // to the API response structure you use.
+        return data_get(
+            $response->json(),
+            'output.0.content.0.text'
+        );
+    }
+}
+
+5. .env Configuration /////////////////////////////////////////////
+OPENAI_API_KEY=your_api_key_here
+OPENAI_MODEL=your_selected_model
+
+তারপর:
+
+// config/services.php
+
+'openai' => [
+    'key' => env('OPENAI_API_KEY'),
+    'model' => env('OPENAI_MODEL'),
+],
+
+তারপর cache clear করুন:
+
+php artisan config:clear
+php artisan cache:clear
+6. Main Chat Controller
+php artisan make:controller ChatController
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Models\ChatSession;
+use App\Models\ChatMessage;
+use App\Services\ChatbotService;
+use App\Services\AiChatService;
+
+class ChatController extends Controller
+{
+    public function sendMessage(
+        Request $request,
+        ChatbotService $chatbotService,
+        AiChatService $aiChatService
+    ) {
+        $request->validate([
+            'message' => 'required|string|max:1000'
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create or Find Chat Session
+        |--------------------------------------------------------------------------
+        */
+
+        $token = session('chat_session_token');
+
+        if (!$token) {
+
+            $token = Str::uuid()->toString();
+
+            session([
+                'chat_session_token' => $token
+            ]);
+        }
+
+        $chatSession = ChatSession::firstOrCreate(
+            [
+                'session_token' => $token
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save Visitor Message
+        |--------------------------------------------------------------------------
+        */
+
+        ChatMessage::create([
+            'chat_session_id' => $chatSession->id,
+            'message' => $request->message,
+            'sender' => 'visitor'
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Check Predefined Reply
+        |--------------------------------------------------------------------------
+        */
+
+        $predefined = $chatbotService
+            ->getPredefinedReply($request->message);
+
+        if ($predefined['found']) {
+
+            $answer = $predefined['answer'];
+
+            $replyType = 'predefined';
+
+        } else {
+
+            /*
+            |--------------------------------------------------------------------------
+            | 2. Ask AI
+            |--------------------------------------------------------------------------
+            */
+
+            $answer = $aiChatService
+                ->getReply($request->message);
+
+            $replyType = 'ai';
+
+            /*
+            |--------------------------------------------------------------------------
+            | AI Failed
+            |--------------------------------------------------------------------------
+            */
+
+            if (!$answer) {
+
+                $answer = "Thank you for your message. "
+                    . "Our representative will contact you soon.";
+
+                $replyType = 'manual';
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save Bot Reply
+        |--------------------------------------------------------------------------
+        */
+
+        ChatMessage::create([
+            'chat_session_id' => $chatSession->id,
+            'message' => $answer,
+            'sender' => 'bot',
+            'reply_type' => $replyType
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $answer,
+            'reply_type' => $replyType
+        ]);
+    }
+}
+
+7. Route /////////////////////////////////////////////
+
+routes/web.php:
+
+use App\Http\Controllers\ChatController;
+
+Route::post(
+    '/chat/send-message',
+    [ChatController::class, 'sendMessage']
+)->name('chat.send');
+8. Frontend Chat UI
+
+আপনার main Blade layout-এ এটি যোগ করতে পারেন:
+
+<div id="chat-container">
+
+    <button id="chat-button">
+        💬 Chat With Us
+    </button>
+
+    <div id="chat-box" style="display:none;">
+
+        <div class="chat-header">
+            LeadX Global Assistant 🤖
+        </div>
+
+        <div id="chat-messages">
+
+            <div class="bot-message">
+                Hello! 👋 Welcome to LeadX Global.
+                How can I help you today?
+            </div>
+
+        </div>
+
+        <form id="chat-form">
+
+            <input
+                type="text"
+                id="chat-input"
+                placeholder="Type your message..."
+            >
+
+            <button type="submit">
+                Send
+            </button>
+
+        </form>
+
+    </div>
+
+</div>  
+
+9. JavaScript দিয়ে AJAX Message /////////////////////////////////////////////
+<script>
+
+document.getElementById('chat-button')
+.addEventListener('click', function () {
+
+    let chatBox = document.getElementById('chat-box');
+
+    chatBox.style.display =
+        chatBox.style.display === 'none'
+        ? 'block'
+        : 'none';
+});
+
+
+document.getElementById('chat-form')
+.addEventListener('submit', async function (event) {
+
+    event.preventDefault();
+
+    let input =
+        document.getElementById('chat-input');
+
+    let message = input.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    let messages =
+        document.getElementById('chat-messages');
+
+    messages.innerHTML += `
+        <div class="visitor-message">
+            ${message}
+        </div>
+    `;
+
+    input.value = '';
+
+    try {
+
+        let response = await fetch(
+            "{{ route('chat.send') }}",
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).getAttribute('content')
+                },
+
+                body: JSON.stringify({
+                    message: message
+                })
+            }
+        );
+
+        let data = await response.json();
+
+        messages.innerHTML += `
+            <div class="bot-message">
+                ${data.message}
+            </div>
+        `;
+
+    } catch (error) {
+
+        messages.innerHTML += `
+            <div class="bot-message">
+                Sorry, something went wrong.
+                Please try again later.
+            </div>
+        `;
+    }
+
+});
+
+</script>
+
+আপনার <head> section-এ অবশ্যই CSRF token থাকতে হবে:
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+সবচেয়ে ভালো Architecture
+
+আমি আপনার LeadX Global chatbot-এর জন্য এই flow ব্যবহার করার পরামর্শ দেব:
+
+Priority 1: Exact FAQ
+"Office address কোথায়?"
+
+↓ Database-এ predefined উত্তর থাকলে সেটি দিন।
+
+Priority 2: Keyword Match
+"Japan থেকে গাড়ি আনতে চাই"
+
+↓ Japan, car, import keyword match করুন।
+
+Priority 3: AI Reply
+
+কোনো keyword না মিললে:
+
+"আমি Toyota গাড়ি কিনতে চাই কিন্তু পুরো process জানতে চাই"
+
+↓ AI আপনার business knowledge ব্যবহার করে উত্তর দেবে।
+
+Priority 4: Human Support
+
+AI যদি উত্তর দিতে না পারে:
+
+Please leave your name and phone number.
+Our representative will contact you.
+আরও একটি গুরুত্বপূর্ণ বিষয়
+
+শুধু keyword-based system ব্যবহার করলে chatbot অনেক প্রশ্ন বুঝতে পারবে না। তাই ভবিষ্যতে আপনার system-এ Conversation History AI-কে পাঠানো উচিত। তাহলে user বলতে পারবে:
+
+আমি একটি Toyota গাড়ি চাই।
+
+তারপর:
+
+দাম কত?
+
+AI বুঝতে পারবে যে “দাম কত?” বলতে Toyota গাড়ির দাম বোঝানো হচ্ছে।
+
+আমি আপনার জন্য পরবর্তী ধাপে একটি সম্পূর্ণ production-ready Laravel structure তৈরি করে দিতে পারি, যেখানে থাকবে:
+
+সুন্দর floating chatbot UI
+Admin FAQ management
+AI fallback
+Conversation history
+Visitor name ও phone সংগ্রহ
+LeadX Global-এর car import ও consultancy information
+Unknown question → human support
+Database থেকে AI knowledge base
